@@ -35,7 +35,7 @@ namespace DataLayer
         public UserDTO FindUserByUserName(string uName)
         {
 
-            DbCom.CommandText = "SELECT * FROM Users WHERE UserName = @name";
+            DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE UserName = @name";
             DbCom.Parameters.AddWithValue("@name", uName);
             var reader = DbCom.ExecuteReader();
             var user = new UserDTO(0, "NONEX", 0);
