@@ -13,9 +13,9 @@ namespace BusinessLayer
 
         public UserContainer(IUserContainer iUCont) { uCont = iUCont; }
 
-        public User AttemptLogIn(string uName, string password)
+        public User AttemptLogin(string uName, string password)
         {
-            return new User(uCont.AttemptLogIn(uName, password));
+            return new User(uCont.AttemptLogin(uName.ToLower(), password));
         }
     }
 }
