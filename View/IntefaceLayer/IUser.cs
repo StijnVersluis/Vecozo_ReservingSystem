@@ -2,7 +2,7 @@
 
 namespace IntefaceLayer
 {
-    public interface ISomeThing
+    public interface IUser
     {
     }
 }
