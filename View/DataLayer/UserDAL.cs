@@ -19,18 +19,17 @@ namespace DataLayer
         }
 
 
-        public UserDTO AttemptLogin(string uName, string password)
+        public bool AttemptLogin(string uName, string password)
         {
             UserDTO DBuser = FindUserByUserName(uName);
             UserDTO user = null;
 
-            if (DBuser.GetPassword() == HashString(password))
-            {
-                user = DBuser;
-            }
+            if (DBuser == null) { return false; }
+
+            if (GetUserPassword(DBuser) == HashString(password)) { user = DBuser; }
 
             GlobalVariables.LoggedInUser = user;
-            return user;
+            return true;
         }
 
         public UserDTO FindUserByUserName(string uName)
@@ -39,13 +38,25 @@ namespace DataLayer
             DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE UserName = @name";
             DbCom.Parameters.AddWithValue("@name", uName);
             var reader = DbCom.ExecuteReader();
-            var user = new UserDTO(0, "NONEX", 0);
+            UserDTO user = null;
             while (reader.Read())
             {
                 user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
             }
             DBConnection.Close();
             return user;
+        }
+
+        public string GetUserPassword(UserDTO user)
+        {
+            DBConnection.Open();
+            DbCom.CommandText = "SELECT Password FROM Users WHERE Id = @id";
+            DbCom.Parameters.AddWithValue("@id", user.Id);
+            var reader = DbCom.ExecuteReader();
+            string password = String.Empty;
+            while (reader.Read()) { password = (string)reader["Password"]; }
+            DBConnection.Close();
+            return password;
         }
 
         static string HashString(string text, string salt = "")
@@ -66,6 +77,11 @@ namespace DataLayer
                 Console.WriteLine(text + " hashed = " + hash);
                 return hash;
             }
+        }
+
+        public UserDTO GetLoggedInUser()
+        {
+            return GlobalVariables.LoggedInUser;
         }
     }
 }

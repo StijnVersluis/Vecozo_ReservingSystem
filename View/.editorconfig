@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS0006: Metadata file 'C:\Users\stijn\source\repos\Vecozo_proftaak\Vecozo_proftaak\View\DataLayer\bin\Debug\net5.0\ref\DataLayer.dll' could not be found
+dotnet_diagnostic.CS0006.severity = error

@@ -9,6 +9,7 @@ namespace IntefaceLayer
 {
     public interface IUserContainer
     {
-        public UserDTO AttemptLogin(string uName, string password);
+        public bool AttemptLogin(string uName, string password);
+        public UserDTO GetLoggedInUser();
     }
 }
