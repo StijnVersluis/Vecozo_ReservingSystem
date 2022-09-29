@@ -6,6 +6,7 @@ namespace DataLayer
 {
     public class UserDAL : SqlConnect, IUser, IUserContainer
     {
+        public UserDAL() { InitializeDB(); }
 
         public bool IsLoggedIn()
         {
@@ -34,7 +35,7 @@ namespace DataLayer
 
         public UserDTO FindUserByUserName(string uName)
         {
-
+            DBConnection.Open();
             DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE UserName = @name";
             DbCom.Parameters.AddWithValue("@name", uName);
             var reader = DbCom.ExecuteReader();
@@ -43,6 +44,7 @@ namespace DataLayer
             {
                 user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
             }
+            DBConnection.Close();
             return user;
         }
 
