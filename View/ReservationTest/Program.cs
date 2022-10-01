@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using BusinessLayer;
 using DataLayer;
+using IntefaceLayer;
 
 namespace ReservationTest
 {
@@ -8,20 +10,12 @@ namespace ReservationTest
     {
         static void Main(string[] args)
         {
+            TeamContainer tCont = new TeamContainer(new TeamDAL());
             UserContainer uCont = new UserContainer(new UserDAL());
 
-            Console.WriteLine("Hello World! Please fill in your information");
-            Console.Write("Username: ");
-            var username = Console.ReadLine();
+            tCont.CreateTeam("team1", new User(3, "timmeh", 1), new List<User> { new User(7,"Kim", 1)});
 
-            Console.WriteLine();
-            Console.Write("Password: ");
-
-            var password = Console.ReadLine();
-
-            uCont.AttemptLogin(username, password);
-
-            Console.WriteLine(uCont.GetLoggedInUser().Name);
+            Console.WriteLine("Hello World! Please fill in your information");            
         }
     }
 }

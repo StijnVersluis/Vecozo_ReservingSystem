@@ -19,7 +19,7 @@ namespace IntefaceLayer
         {
             return iTeam.GetTeams().ConvertAll(x => new Team(x));
         }
-        public bool CreateTeam(string name, User aUser, List<User> users, ITeam iTeam)
+        public bool CreateTeam(string name, User aUser, List<User> users)
         {
             return iTeam.CreateTeam(name, aUser.ToDTO(), users.ConvertAll(x=>x.ToDTO()));
         }
