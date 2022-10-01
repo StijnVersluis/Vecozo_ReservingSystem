@@ -23,5 +23,10 @@ namespace BusinessLayer
             Name = user.Name;
             Role = user.Role;
         }
+
+        public UserDTO ToDTO()
+        {
+            return new UserDTO(Id, Name, Role);
+        }
     }
 }
