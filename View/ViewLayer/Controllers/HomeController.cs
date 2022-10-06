@@ -24,12 +24,13 @@ namespace ViewLayer.Controllers
 
         public IActionResult Index()
         {
-            if (uCont.IsLoggedIn()) return View();
+            if (uCont.IsLoggedIn()) { ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name; return View(); }
             else { return RedirectToAction("Login"); }
         }
 
         public ActionResult Login()
         {
+            if (uCont.IsLoggedIn()) return RedirectToAction(nameof(Index));
             return View();
         }
 
