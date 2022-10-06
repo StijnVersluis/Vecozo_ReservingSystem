@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessLayer;
+using DataLayer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,6 +15,7 @@ namespace ViewLayer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private UserContainer uCont = new UserContainer(new UserDAL());
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -21,6 +25,31 @@ namespace ViewLayer.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult Login(IFormCollection collection)
+        {
+            try
+            {
+                string name = (string)collection["name"];
+                string pass = (string)collection["password"];
+                if (name == "" || pass == "") { ViewData["error"] = "Please enter Name and Password!"; return RedirectToAction(""); }
+                uCont.AttemptLogin(name, pass);
+                if (GlobalVariables.LoggedInUser != null)
+                {
+                    return RedirectToAction("Index", "Website");
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception e)
+            {
+                ViewData["error"] = e.ToString();
+                return RedirectToAction("Index");
+            }
         }
 
         public IActionResult Privacy()
