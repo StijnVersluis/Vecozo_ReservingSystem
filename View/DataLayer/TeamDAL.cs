@@ -2,14 +2,17 @@
 using IntefaceLayer.DTO;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DataLayer
 {
     public class TeamDAL : SqlConnect, ITeam
     {
+        SqlDataReader reader;
         public TeamDAL()
         {
             InitializeDB();
@@ -76,6 +79,42 @@ namespace DataLayer
                 Console.Write(e);
                 return false;
             }
+        }
+
+        public List<TeamDTO> GetTeamsOfUser(int userId)
+        {
+            OpenCon();
+            List<int> teamIds = new List<int>();
+            List<TeamDTO> teams = new List<TeamDTO>();
+
+            DbCom.CommandText = "SELECT Team_Id FROM TeamMembers WHERE User_Id = @userId";
+            DbCom.Parameters.AddWithValue("userId", userId);
+
+            reader = DbCom.ExecuteReader();
+
+            while (reader.Read())
+            {
+                teamIds.Add(reader.GetInt32(0));
+            }
+            CloseCon();
+            teamIds.ForEach(teamId =>
+            {
+                OpenCon();
+                reader = null;
+                DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
+                DbCom.Parameters.Clear();
+                DbCom.Parameters.AddWithValue("id", teamId);
+
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    teams.Add(new TeamDTO((int)reader["Id"], (string)reader["Name"]));
+                }
+                CloseCon();
+            });
+            CloseCon();
+            return teams;
         }
 
         public List<TeamDTO> GetTeams()
