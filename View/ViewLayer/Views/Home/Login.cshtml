@@ -1,6 +1,8 @@
-﻿@using DataLayer;
+﻿@using BusinessLayer;
+@using DataLayer;
 @{
     ViewData["Title"] = "Login Page";
+    var uCont = new UserContainer(new UserDAL());
 }
 
 <div class="text-center">
@@ -11,7 +13,7 @@
         <div class="alert alert-danger">@ViewData["error"]</div>
     }
 
-    @if (GlobalVariables.LoggedInUser == null)
+    @if (!uCont.IsLoggedIn())
     {
         <div class="col-md-6 m-auto">
             <form asp-action="Login" method="post">

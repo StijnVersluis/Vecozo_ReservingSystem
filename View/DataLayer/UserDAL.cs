@@ -8,17 +8,6 @@ namespace DataLayer
     {
         public UserDAL() { InitializeDB(); }
 
-        public bool IsLoggedIn()
-        {
-            if (GlobalVariables.LoggedInUser != null) return true;
-            return false;
-        }
-        public void Logout()
-        {
-            GlobalVariables.LoggedInUser = null;
-        }
-
-
         public bool AttemptLogin(string uName, string password)
         {
             UserDTO DBuser = FindUserByUserName(uName);
@@ -26,10 +15,18 @@ namespace DataLayer
 
             if (DBuser == null) { return false; }
 
-            if (GetUserPassword(DBuser) == HashString(password)) { user = DBuser; }
+            var userPass = GetUserPassword(DBuser);
+            var filledIn = HashString(password);
+
+            Console.WriteLine("UserPass = " + userPass);
+            Console.WriteLine("filledIn = " + filledIn);
+            Console.WriteLine("Compared = " + filledIn == userPass);
+
+            if (userPass == filledIn) { user = DBuser; }
 
             GlobalVariables.LoggedInUser = user;
-            return true;
+            if (user == null) { return false; }
+            else return true;
         }
 
         public UserDTO FindUserByUserName(string uName)
@@ -82,6 +79,16 @@ namespace DataLayer
         public UserDTO GetLoggedInUser()
         {
             return GlobalVariables.LoggedInUser;
+        }
+
+        public bool IsLoggedIn()
+        {
+            return GlobalVariables.LoggedInUser != null;
+        }
+
+        public void Logout()
+        {
+            GlobalVariables.LoggedInUser = null;
         }
     }
 }
