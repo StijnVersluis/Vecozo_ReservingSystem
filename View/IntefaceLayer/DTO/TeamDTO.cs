@@ -8,9 +8,11 @@ namespace IntefaceLayer.DTO
 {
     public class TeamDTO
     {
+        public int Id { get; set; }
         public string Name { get; set; }
-        public TeamDTO(string name)
+        public TeamDTO(int id, string name)
         {
+            Id = id;
             Name = name;
         }
     }

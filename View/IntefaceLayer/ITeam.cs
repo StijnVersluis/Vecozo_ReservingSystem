@@ -10,6 +10,7 @@ namespace IntefaceLayer
     public interface ITeam
     {
         public bool AddUser(TeamDTO team, UserDTO user); 
+        public bool RemoveUser(TeamDTO team, UserDTO user); 
         public List<TeamDTO> GetTeams();
         public bool CreateTeam(string name, UserDTO aUser, List<UserDTO> users);
     }

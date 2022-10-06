@@ -17,7 +17,30 @@ namespace DataLayer
 
         public bool AddUser(TeamDTO team, UserDTO user)
         {
-            throw new NotImplementedException();
+            OpenCon();
+
+            DbCom.Parameters.Clear();
+            DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id) Values (@tId, @uId)";
+            DbCom.Parameters.AddWithValue("tId", team.Id);
+            DbCom.Parameters.AddWithValue("uId", user.Id);
+
+            bool success = DbCom.ExecuteNonQuery()>0;
+            CloseCon();
+            return success;
+        }
+
+        public bool RemoveUser(TeamDTO team, UserDTO user)
+        {
+            OpenCon();
+
+            DbCom.Parameters.Clear();
+            DbCom.CommandText = "DELETE FROM TeamMembers WHERE Team_Id = @tId and User_Id = @uId";
+            DbCom.Parameters.AddWithValue("tId", team.Id);
+            DbCom.Parameters.AddWithValue("uId", user.Id);
+
+            bool success = DbCom.ExecuteNonQuery() > 0;
+            CloseCon();
+            return success;
         }
 
         public bool CreateTeam(string name, UserDTO aUser, List<UserDTO> users)
