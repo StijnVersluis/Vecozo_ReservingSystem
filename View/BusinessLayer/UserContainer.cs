@@ -17,6 +17,14 @@ namespace BusinessLayer
         {
             return uCont.AttemptLogin(uName.ToLower(), password);
         }
+        public bool IsLoggedIn()
+        {
+            return uCont.IsLoggedIn();
+        }
+        public void Logout()
+        {
+            uCont.Logout();
+        }
 
         public User GetLoggedInUser()
         {

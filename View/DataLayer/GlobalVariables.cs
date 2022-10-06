@@ -9,6 +9,6 @@ namespace DataLayer
 {
     public class GlobalVariables
     {
-        public static UserDTO LoggedInUser;
+        internal static UserDTO LoggedInUser;
     }
 }

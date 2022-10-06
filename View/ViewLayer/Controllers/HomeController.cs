@@ -24,7 +24,19 @@ namespace ViewLayer.Controllers
 
         public IActionResult Index()
         {
+            if (uCont.IsLoggedIn()) return View();
+            else { return RedirectToAction("Login"); }
+        }
+
+        public ActionResult Login()
+        {
             return View();
+        }
+
+        public ActionResult Logout()
+        {
+            uCont.Logout();
+            return RedirectToAction("Login");
         }
 
         [HttpPost]
@@ -35,14 +47,14 @@ namespace ViewLayer.Controllers
                 string name = (string)collection["name"];
                 string pass = (string)collection["password"];
                 if (name == "" || pass == "") { ViewData["error"] = "Please enter Name and Password!"; return RedirectToAction(""); }
-                uCont.AttemptLogin(name, pass);
-                if (GlobalVariables.LoggedInUser != null)
+
+                if (uCont.AttemptLogin(name, pass))
                 {
-                    return RedirectToAction("Index", "Website");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Login");
                 }
             }
             catch (Exception e)

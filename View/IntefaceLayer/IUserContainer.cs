@@ -10,6 +10,8 @@ namespace IntefaceLayer
     public interface IUserContainer
     {
         public bool AttemptLogin(string uName, string password);
+        public bool IsLoggedIn();
+        public void Logout();
         public UserDTO GetLoggedInUser();
     }
 }
