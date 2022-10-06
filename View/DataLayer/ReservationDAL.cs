@@ -56,7 +56,7 @@ namespace DataLayer
                 {
 
                     ReservationDTO reservationDTO = new ReservationDTO();
-                    reservationDTO.Id = reader.GetInt32(reader["ID"])
+                    reservationDTO.Id = Convert.ToInt32(reader["ID"]);
                     reservationDTO.User_id = Convert.ToInt32(reader["User_id"]);
                     reservationDTO.Workzone_id = Convert.ToInt32(reader["Workzone_id"]);
                     reservationDTO.DateTime_Arriving = Convert.ToDateTime(reader["DateTime_Arriving"]);
