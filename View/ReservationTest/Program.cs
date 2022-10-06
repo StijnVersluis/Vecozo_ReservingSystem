@@ -12,7 +12,8 @@ namespace ReservationTest
         {
             TeamContainer tCont = new TeamContainer(new TeamDAL());
             UserContainer uCont = new UserContainer(new UserDAL());
-            Console.WriteLine("Logged In: " + uCont.AttemptLogin("timmeh", "timmeh123"));
+            Team team = new Team(5, "team1");
+            Console.WriteLine("Removed In: " + team.AddUser(new User(13, "user3", 1), new TeamDAL()));
         }
     }
 }
