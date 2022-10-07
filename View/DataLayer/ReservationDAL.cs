@@ -16,30 +16,34 @@ namespace DataLayer
         {
             try
             {
-                SqlCommand sqlCommand = new SqlCommand("INSERT INTO Reservations(User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES(Reservations(@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)", DBConnection);
-                DBConnection.Open();
-                sqlCommand.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
-                sqlCommand.Parameters.AddWithValue("@Workzone_id", reservationDTO.User_id);
-                sqlCommand.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.User_id);
-                sqlCommand.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.User_id);
+                //SqlCommand sqlCommand = new SqlCommand("INSERT INTO Reservations(User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES(Reservations(@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)", DBConnection);
+                OpenCon();
 
+                DbCom.CommandText = "INSERT INTO Reservations(User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES(Reservations(@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)";
 
-                sqlCommand.ExecuteNonQuery();
+                DbCom.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
+                DbCom.Parameters.AddWithValue("@Workzone_id", reservationDTO.User_id);
+                DbCom.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.User_id);
+                DbCom.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.User_id);
+
+                DbCom.ExecuteNonQuery();
+
                 return true;
             }
 
             catch (Exception exception)
             {
-                throw exception;
+                Console.WriteLine(exception);
+                return false;
             } 
             finally
             {
-                DBConnection.Close();
+                CloseCon();
             }
             
         }
 
-        public List<ReservationDTO> Getallreservations()
+        public List<ReservationDTO> GetAllReservations()
         {
             try
             {
@@ -73,8 +77,7 @@ namespace DataLayer
                 throw ex;
             }
             finally
-
-            { DBConnection.Close(); }
+            { CloseCon(); }
         }
     }
 }
