@@ -10,7 +10,7 @@ namespace BusinessLayer
 {
     public class Team
     {
-        private int Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public Team(int id, string name)
         {
@@ -26,6 +26,11 @@ namespace BusinessLayer
         public TeamDTO ToDTO()
         {
             return new TeamDTO(Id, Name);
+        }
+
+        public List<User> GetUsers(ITeam iTeam)
+        {
+            return iTeam.GetUsers(this.Id).ConvertAll(x => new User(x));
         }
 
         public bool AddUser(User user, ITeam iTeam)

@@ -7,8 +7,30 @@
     List<Team> teams = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id);
 }
 
+<div class="modal" id="TeamSelectedModal" tabindex="-1" role="teamSelect">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="text-left">
-    <h1 class="display-4">Welcome - @ViewData["LoggedInUserName"]</h1>
+    <h1 class="display-4">Welkom @ViewData["LoggedInUserName"]</h1>
     <div class="row">
         <div class="col-md-3">
             <div id="LeftForm" class="">
@@ -23,30 +45,32 @@
                 </div>
                 <hr style="height: 2px; background-color: #4525F2;" />
                 <div id="TeamSelector" class="select-menu-item">
-                    <input class="form-check-input d-none" type="checkbox" id="TeamCheckBox" onchange="CheckTeamInput()"/>
-                    <label class="form-check-label" for="TeamCheckBox">Team
-                    <span id="TeamCheckBoxOff" class="teamcheckboxOff">
-                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
-                             class="bi bi-toggle-off" fill="black"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                  d="M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4h3zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5z" />
-                        </svg>
-                    </span>
-                    <span id="TeamCheckBoxOn" class="teamcheckboxOn d-none">
-                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
-                             class="bi bi-toggle-on" fill="#4525F2"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                                  d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
-                        </svg>
+                    <input class="form-check-input d-none" type="checkbox" id="TeamCheckBox" onchange="CheckTeamInput()" />
+                    <label class="form-check-label" for="TeamCheckBox">
+                        Team
+                        <span id="TeamCheckBoxOff" class="teamcheckboxOff">
+                            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
+                                 class="bi bi-toggle-off" fill="black"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                      d="M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4h3zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5z" />
+                            </svg>
+                        </span>
+                        <span id="TeamCheckBoxOn" class="teamcheckboxOn d-none">
+                            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
+                                 class="bi bi-toggle-on" fill="#4525F2"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                      d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                            </svg>
                         </span>
                     </label>
                 </div>
                 <div id="TeamList" class="list-group team-list d-none">
                     @{
-                        foreach (Team team in teams) {
-                            <div class="list-group-item team-list-item">@team.Name</div>
+                        foreach (Team team in teams)
+                        {
+                            <a data-teamid="@team.Id" data-teamname="@team.Name" data-toggle="modal" data-target="#TeamSelectedModal" class="list-group-item team-list-item">@team.Name</a>
                         }
                     }
                 </div>
@@ -63,3 +87,9 @@
         <div class="col-md-9 bg-white"></div>
     </div>
 </div>
+<script>
+    var floorSelect = document.getElementById("FloorSelectorSelect")
+    function SelectedFloorChanged() {
+        var html = fetch(window.location.origin + "/Workzone/Get/" + floorSelect[floorSelect.selectedIndex].value)
+    }
+</script>

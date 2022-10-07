@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -16,6 +17,41 @@ namespace DataLayer
         public TeamDAL()
         {
             InitializeDB();
+        }
+
+        public List<UserDTO> GetUsers(int id)
+        {
+            OpenCon(); 
+
+            List<int> userIds = new List<int>();
+            List<UserDTO> users = new List<UserDTO>();
+
+            DbCom.CommandText = "SELECT * FROM TeamMembers WHERE Team_Id = @id";
+            DbCom.Parameters.AddWithValue("id", id);
+
+            reader = DbCom.ExecuteReader();
+
+            while (reader.Read())
+            {
+                userIds.Add((int)reader["User_Id"]);
+            }
+            CloseCon();
+            userIds.ForEach(userid =>
+            {
+                OpenCon();
+                DbCom.CommandText = "SELECT * FROM Users WHERE Id = @id";
+                DbCom.Parameters.Clear();
+                DbCom.Parameters.AddWithValue("id", userid);
+
+                reader = DbCom.ExecuteReader();
+
+                while(reader.Read())
+                {
+                    users.Add(new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                }
+                CloseCon();
+            });
+            return users;
         }
 
         public bool AddUser(TeamDTO team, UserDTO user)
@@ -120,6 +156,21 @@ namespace DataLayer
         public List<TeamDTO> GetTeams()
         {
             throw new NotImplementedException();
+        }
+
+        public TeamDTO GetTeam(int id)
+        {
+            OpenCon();
+            TeamDTO team = null;
+            DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
+            DbCom.Parameters.AddWithValue("id", id);
+            reader = DbCom.ExecuteReader();
+            while (reader.Read())
+            {
+                team = new TeamDTO((int)reader["Id"], (string)reader["Name"]);
+            }
+            CloseCon();
+            return team;
         }
     }
 }
