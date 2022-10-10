@@ -45,7 +45,7 @@ namespace DataLayer
             {
                 List<ReservationDTO> reservationlist = new List<ReservationDTO>();
 
-                SqlCommand comand = new SqlCommand("select * from [Book] where Visibility='True'", DBConnection);
+                SqlCommand comand = new SqlCommand("select * from [Reservations]", DBConnection);
                 if (comand.Connection.State != ConnectionState.Open)
                 {
                     comand.Connection.Open();
