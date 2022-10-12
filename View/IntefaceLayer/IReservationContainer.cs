@@ -11,5 +11,7 @@ namespace IntefaceLayer
     {
         bool CreateReservation(ReservationDTO reservationDTO);
         List<ReservationDTO> GetAllReservations();
+        public List<ReservationDTO> GetDateReservationsFromUser(int id, DateTime dateTime);
+        public List<ReservationDTO> GetReservationsFromUser(int id);
     }
 }

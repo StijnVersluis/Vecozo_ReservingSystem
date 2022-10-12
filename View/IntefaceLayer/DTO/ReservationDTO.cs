@@ -14,10 +14,6 @@ namespace IntefaceLayer.DTO
         public DateTime DateTime_Arriving;
         public DateTime DateTime_Leaving;
 
-        public ReservationDTO()
-        {
-        }
-
         public ReservationDTO(int id, int user_id, int workzone_id, DateTime dateTime_Arriving, DateTime dateTime_Leaving)
         {
             this.Id = id;

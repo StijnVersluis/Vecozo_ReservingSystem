@@ -1,13 +1,19 @@
 ﻿using IntefaceLayer;
 using IntefaceLayer.DTO;
 using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Xml.Linq;
 
 namespace DataLayer
 {
     public class UserDAL : SqlConnect, IUser, IUserContainer
     {
+        private SqlDataReader reader;
         public UserDAL() { InitializeDB(); }
 
+        #region IUserContainer functions
+        //Done
         public bool AttemptLogin(string uName, string password)
         {
             UserDTO DBuser = FindUserByUserName(uName);
@@ -28,13 +34,13 @@ namespace DataLayer
             if (user == null) { return false; }
             else return true;
         }
-
+        //Done
         public UserDTO FindUserByUserName(string uName)
         {
             DBConnection.Open();
             DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE UserName = @name";
             DbCom.Parameters.AddWithValue("@name", uName);
-            var reader = DbCom.ExecuteReader();
+            reader = DbCom.ExecuteReader();
             UserDTO user = null;
             while (reader.Read())
             {
@@ -43,19 +49,19 @@ namespace DataLayer
             DBConnection.Close();
             return user;
         }
-
+        //Done
         public string GetUserPassword(UserDTO user)
         {
             DBConnection.Open();
             DbCom.CommandText = "SELECT Password FROM Users WHERE Id = @id";
             DbCom.Parameters.AddWithValue("@id", user.Id);
-            var reader = DbCom.ExecuteReader();
+            reader = DbCom.ExecuteReader();
             string password = String.Empty;
             while (reader.Read()) { password = (string)reader["Password"]; }
             DBConnection.Close();
             return password;
         }
-
+        //Done
         static string HashString(string text, string salt = "")
         {
             if (String.IsNullOrEmpty(text)) return String.Empty;
@@ -75,20 +81,22 @@ namespace DataLayer
                 return hash;
             }
         }
-
+        //Done
         public UserDTO GetLoggedInUser()
         {
             return GlobalVariables.LoggedInUser;
         }
-
+        //Done
         public bool IsLoggedIn()
         {
             return GlobalVariables.LoggedInUser != null;
         }
-
+        //Done
         public void Logout()
         {
             GlobalVariables.LoggedInUser = null;
         }
+        #endregion
+
     }
 }
