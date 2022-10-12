@@ -84,7 +84,6 @@ $('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
     modal.find('#WorkzoneIdForm').val(workzoneId)
 
     let time = datetimeArrive.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "")
-
     modal.find('#WorkzoneLeavingForm').attr({
         "min": time
     })
