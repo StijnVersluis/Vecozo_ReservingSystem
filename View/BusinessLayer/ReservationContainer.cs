@@ -32,5 +32,13 @@ namespace BusinessLayer
             //}                 
             return ireservationContainer.GetAllReservations().ConvertAll(x => new Reservation(x));
         }
+        public List<Reservation> GetDateReservationsFromUser(int id, DateTime dateTime)
+        {
+            return ireservationContainer.GetDateReservationsFromUser(id, dateTime).ConvertAll(x => new Reservation(x));
+        }
+        public List<Reservation> GetReservationsFromUser(int id)
+        {
+            return ireservationContainer.GetReservationsFromUser(id).ConvertAll(x => new Reservation(x));
+        }
     }
 }
