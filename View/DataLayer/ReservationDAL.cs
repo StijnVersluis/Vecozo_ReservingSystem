@@ -16,7 +16,7 @@ namespace DataLayer
         {
             try
             {
-                SqlCommand sqlCommand = new SqlCommand("INSERT INTO Reservations(User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES(Reservations(@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)", DBConnection);
+                SqlCommand sqlCommand = new SqlCommand("INSERT INTO Reservations (User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES(Reservations(@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)", DBConnection);
                 DBConnection.Open();
                 sqlCommand.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
                 sqlCommand.Parameters.AddWithValue("@Workzone_id", reservationDTO.User_id);
@@ -45,7 +45,7 @@ namespace DataLayer
             {
                 List<ReservationDTO> reservationlist = new List<ReservationDTO>();
 
-                SqlCommand comand = new SqlCommand("select * from [Reservations]", DBConnection);
+                SqlCommand comand = new SqlCommand("select * from Reservations", DBConnection);
                 if (comand.Connection.State != ConnectionState.Open)
                 {
                     comand.Connection.Open();
