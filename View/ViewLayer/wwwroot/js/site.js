@@ -69,21 +69,24 @@ function GenerateTeamModal(modal, data) {
 
 
 
-$('#WorkzoneSelectedModal').on('show.bs.modal', function (event) {
+$('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
     var workzoneId = button.data('workzone-id') // Extract info from data-teamid attributes
     var workzoneName = button.data('workzone-name') // Extract info from data-teamid attributes
+    let datetimeArrive = $("#DateSelectorInput").val()
     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
 
     var modal = $(this)
     modal.find('.modal-title').text('Werkblok: ' + workzoneName)
     modal.find('#DateAndTimeReservation').text($("#DateSelectorInput").val().replace(/T/g, " "))
+    modal.find('#WorkzoneArrivingForm').val(datetimeArrive)
+    modal.find('#WorkzoneIdForm').val(workzoneId)
+
+    let time = datetimeArrive.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "")
+
     modal.find('#WorkzoneLeavingForm').attr({
-        //"min": $("#DateSelectorInput").val().replace(/[0-9]/g, "")
+        "min": time
     })
-    //fetch users
-    //var html = fetch(window.location.origin + "/Workzone/GetRemainingSeates/" + workzoneId).then(resp => resp.text()).then(data => GenerateTeamModal(modal, data));
-    //console.log(html);
 })
 

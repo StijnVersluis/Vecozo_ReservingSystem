@@ -20,12 +20,8 @@ namespace ViewLayer.Controllers
         {
             try
             {
-                Reservation reservation = new Reservation();
-                reservation.User_id = reservationmodel.User_id;
-                reservation.Workzone_id = reservationmodel.Workzone_id;
-                reservation.DateTime_Leaving = reservationmodel.DateTime_Leaving;
-                reservation.DateTime_Arriving = reservationmodel.DateTime_Arriving;
-               
+                Reservation reservation = new Reservation(reservationmodel.User_id, reservationmodel.Workzone_id, reservationmodel.DateTime_Leaving, reservationmodel.DateTime_Arriving);
+                    
                 _reservationContainer.CreateReservation(reservation);
                 return RedirectToAction("index", "Home");
             }

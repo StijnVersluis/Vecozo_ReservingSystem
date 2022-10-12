@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ViewLayer.Models;
 
@@ -80,18 +81,14 @@ namespace ViewLayer.Controllers
         {
             try
             {
-                string name = (string)collection["name"];
-                string pass = (string)collection["password"];
-                if (name == "" || pass == "") { ViewData["error"] = "Please enter Name and Password!"; return RedirectToAction(""); }
-
-                if (uCont.AttemptLogin(name, pass))
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return RedirectToAction("Login");
-                }
+                var dtStart = (string)collection["datetime-start"];
+                var dtleave = Regex.Replace((string)collection["datetime-start"], @"/T[0 - 9\:0 - 9]+/g", " " + (string)collection["datetime-leaving"]);
+                var workzone = (string)collection["workzone-id"];
+                DateTime start = DateTime.Parse(dtStart);
+                DateTime leave = DateTime.Parse(dtleave);
+                int workzone_id = Int32.Parse(workzone);
+                rCont.CreateReservation(new Reservation(uCont.GetLoggedInUser().Id, workzone_id, start, leave));
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception e)
             {

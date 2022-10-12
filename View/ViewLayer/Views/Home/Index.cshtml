@@ -37,7 +37,7 @@
 <div class="modal" id="WorkzoneSelectedModal" tabindex="-1" role="form">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-                <form action="Reserve" method="post">
+                <form asp-action="Reserve" method="post">
             <div class="modal-header">
                 <h5 class="modal-title">Modal title</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -50,7 +50,7 @@
                     <div class="col-6" id="DateAndTimeReservation"></div>
                     <div class="col-6">Tot en met:</div>
                     <div class="col-6">
-                    <input type="time" max="18:00" value="08:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control"/> 
+                    <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control"/> 
                     </div>
                 </div>
             </div>

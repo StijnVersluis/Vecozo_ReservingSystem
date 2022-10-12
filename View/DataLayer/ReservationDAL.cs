@@ -27,9 +27,9 @@ namespace DataLayer
                 DbCom.CommandText = "INSERT INTO Reservations (User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES (@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)";
 
                 DbCom.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
-                DbCom.Parameters.AddWithValue("@Workzone_id", reservationDTO.User_id);
-                DbCom.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.User_id);
-                DbCom.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.User_id);
+                DbCom.Parameters.AddWithValue("@Workzone_id", reservationDTO.Workzone_id);
+                DbCom.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.DateTime_Arriving);
+                DbCom.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.DateTime_Leaving);
 
                 DbCom.ExecuteNonQuery();
 
