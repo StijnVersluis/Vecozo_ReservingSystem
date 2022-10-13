@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using BusinessLayer;
 using DataLayer;
 using IntefaceLayer;
@@ -10,10 +11,7 @@ namespace ReservationTest
     {
         static void Main(string[] args)
         {
-            TeamContainer tCont = new TeamContainer(new TeamDAL());
-            UserContainer uCont = new UserContainer(new UserDAL());
-            Team team = new Team(5, "team1");
-            Console.WriteLine("Removed In: " + team.AddUser(new User(13, "user3", 1), new TeamDAL()));
+            Console.WriteLine("2022-01-01T09:01".Replace(Regex.@T[0-9]{1,2}\:[0-9]{1,2}/g, "T"+"18:00"));
         }
     }
 }

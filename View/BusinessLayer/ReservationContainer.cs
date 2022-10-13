@@ -21,6 +21,10 @@ namespace BusinessLayer
             ReservationDTO reservationDTO = reservation.ToDTO();
             return ireservationContainer.CreateReservation(reservationDTO);
         }
+        public bool CancelReservation(int id)
+        {
+            return ireservationContainer.CancelReservation(id);
+        }
 
         public List<Reservation> GetAllReservations()
         {

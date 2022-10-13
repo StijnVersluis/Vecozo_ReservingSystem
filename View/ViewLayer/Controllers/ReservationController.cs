@@ -1,6 +1,7 @@
 ﻿using BusinessLayer;
 using DataLayer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using ViewLayer.Models;
 
 namespace ViewLayer.Controllers
@@ -30,6 +31,19 @@ namespace ViewLayer.Controllers
                 return RedirectToAction("index", "home");
             }
 
+        }
+
+        public ActionResult Cancel(int id)
+        {
+            try
+            {
+                _reservationContainer.CancelReservation(id);
+                return RedirectToAction("index", "Home");
+            }
+            catch
+            {
+                return RedirectToAction("index", "home");
+            }
         }
     }
 }
