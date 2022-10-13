@@ -24,16 +24,58 @@ namespace DataLayer
             {
                 OpenCon();
 
-                DbCom.CommandText = "INSERT INTO Reservations (User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES (@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)";
+                DbCom.CommandText = "SELECT Workspaces FROM Workzones WHERE Id = @id";
+                DbCom.Parameters.AddWithValue("@id", reservationDTO.Workzone_id);
 
-                DbCom.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
-                DbCom.Parameters.AddWithValue("@Workzone_id", reservationDTO.Workzone_id);
-                DbCom.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.DateTime_Arriving);
-                DbCom.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.DateTime_Leaving);
+                reader = DbCom.ExecuteReader();
+                int workzonePlaces = 0;
+                while (reader.Read())
+                {
+                    workzonePlaces = (int)reader["Workspaces"];
+                }
 
-                DbCom.ExecuteNonQuery();
+                CloseCon();
+                OpenCon();
 
-                return true;
+                DbCom.CommandText = "SELECT * FROM Reservations WHERE Workzone_Id = @workzone_id and @datetime BETWEEN DateTime_Arriving and DateTime_Leaving";
+                DbCom.Parameters.AddWithValue("@workzone_id", reservationDTO.Workzone_id);
+                DbCom.Parameters.AddWithValue("@datetime", reservationDTO.DateTime_Arriving);
+
+                List<ReservationDTO> ExistingReservations = new List<ReservationDTO>();
+
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    ExistingReservations.Add(new((int)reader["User_Id"], (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
+                }
+
+                CloseCon();
+
+                bool IsReserved = false;
+                foreach (ReservationDTO reservation in ExistingReservations)
+                {
+                    if (reservation.User_id == reservationDTO.User_id)
+                    {
+                        IsReserved = true;
+                        break;
+                    }
+                }
+                if (!IsReserved && ExistingReservations.Count < workzonePlaces)
+                {
+                    OpenCon();
+                    DbCom.CommandText = "INSERT INTO Reservations (User_Id, Workzone_Id, DateTime_Arriving, DateTime_Leaving) VALUES (@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)";
+
+                    DbCom.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
+                    DbCom.Parameters.AddWithValue("@Workzone_id", reservationDTO.Workzone_id);
+                    DbCom.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.DateTime_Arriving);
+                    DbCom.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.DateTime_Leaving);
+
+                    DbCom.ExecuteNonQuery();
+                    CloseCon();
+                    return true;
+                }
+                else return false;
             }
 
             catch (Exception exception)
@@ -48,6 +90,16 @@ namespace DataLayer
 
         }
 
+        public bool CancelReservation(int id)
+        {
+            OpenCon();
+
+            DbCom.CommandText = "DELETE FROM Reservations WHERE id = @id";
+            DbCom.Parameters.AddWithValue("id", id);
+
+            if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
+        }
+
         public List<ReservationDTO> GetAllReservations()
         {
             try
@@ -58,6 +110,7 @@ namespace DataLayer
                 DbCom.CommandText = "select * from Reservations";
 
                 reader = DbCom.ExecuteReader();
+
                 while (reader.Read())
                 {
                     reservationlist.Add(new ReservationDTO((int)reader["Id"], (int)reader["User_Id"], (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));

@@ -82,7 +82,8 @@ namespace ViewLayer.Controllers
             try
             {
                 var dtStart = (string)collection["datetime-start"];
-                var dtleave = Regex.Replace((string)collection["datetime-start"], @"/T[0 - 9\:0 - 9]+/g", " " + (string)collection["datetime-leaving"]);
+                var tleave = (string)collection["datetime-leaving"];
+                var dtleave = Regex.Replace((string)collection["datetime-start"], @"T[0-9]{1,2}\:[0-9]{1,2}", "T" + tleave);
                 var workzone = (string)collection["workzone-id"];
                 DateTime start = DateTime.Parse(dtStart);
                 DateTime leave = DateTime.Parse(dtleave);

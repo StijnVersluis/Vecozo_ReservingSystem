@@ -122,8 +122,12 @@
                             <text>
                                 <div class="list-group-item">
                                     <div class="row">
-                                        <div class="col-6">@reservation.DateTime_Arriving</div>
-                                        <div class="col-6">@reservation.Workzone_id</div>
+                                        <div class="col-4">@reservation.DateTime_Arriving.TimeOfDay</div>
+                                        <div class="col-4">@reservation.Workzone_id</div>
+                                        <div class="col-4">@reservation.DateTime_Leaving.TimeOfDay</div>
+                                        <div class="col-12">
+                                            <a asp-action="Cancel" asp-controller="Reservation" asp-route-id="@reservation.id">Cancel</a>
+                                        </div>
                                     </div>
                                 </div>
                             </text>

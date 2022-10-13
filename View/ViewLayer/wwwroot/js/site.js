@@ -6,7 +6,7 @@
 $(document).ready(function () {
     var date = new Date();
 
-    var currentDateFormat = date.toISOString().substring(0, 10) + " " + date.toISOString().substring(11, 16);
+    var currentDateFormat = date.toISOString().substring(0, 10) + " " + date.toLocaleString().substring(12, 17);
     $("#DateSelectorInput").val(currentDateFormat)
 });
 
@@ -22,9 +22,6 @@ function CheckTeamInput() {
         document.getElementById("TeamCheckBoxOn").classList.add("d-none")
         document.getElementById("TeamList").classList.add("d-none")
     }
-}
-
-function ChangeWorkzoneSelect(value) {
 }
 
 $('#TeamSelectedModal').on('show.bs.modal', function (event) {

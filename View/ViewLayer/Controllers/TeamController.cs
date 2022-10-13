@@ -1,6 +1,8 @@
 ﻿using BusinessLayer;
 using DataLayer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace ViewLayer.Controllers
 {
@@ -10,6 +12,12 @@ namespace ViewLayer.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Create(IFormCollection collection)
+        {
+            //Create a team with members
+            throw new NotImplementedException();
         }
 
         public ActionResult Getusers(int id)
