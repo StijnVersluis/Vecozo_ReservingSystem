@@ -15,6 +15,6 @@ namespace IntefaceLayer
         public List<TeamDTO> GetTeams();
         public TeamDTO GetTeam(int id);
         public List<TeamDTO> GetTeamsOfUser(int userId);
-        public bool CreateTeam(string name, UserDTO aUser, List<UserDTO> users);
+        public bool CreateTeam(string name, List<int> userids);
     }
 }

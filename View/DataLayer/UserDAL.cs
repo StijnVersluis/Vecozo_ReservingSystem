@@ -3,6 +3,7 @@ using IntefaceLayer.DTO;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Net;
 using System.Xml.Linq;
 
 namespace DataLayer
@@ -13,6 +14,20 @@ namespace DataLayer
         public UserDAL() { InitializeDB(); }
 
         #region IUserContainer functions
+        //Done
+        public List<UserDTO> GetAll()
+        {
+            OpenCon();
+            List<UserDTO> list = new List<UserDTO>();
+            DbCom.CommandText = "SELECT * FROM Users";
+            reader = DbCom.ExecuteReader();
+
+            while(reader.Read())
+            {
+                list.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+            }
+            return list;
+        }
         //Done
         public bool AttemptLogin(string uName, string password)
         {
@@ -95,6 +110,25 @@ namespace DataLayer
         public void Logout()
         {
             GlobalVariables.LoggedInUser = null;
+        }
+
+        public List<UserDTO> GetFilteredUsers(string filterStr)
+        {
+            List<UserDTO> users = new List<UserDTO>();
+            OpenCon();
+
+            DbCom.CommandText = "SELECT * FROM Users WHERE Name LIKE @str";
+            var str = "%" + filterStr + "%";
+            DbCom.Parameters.AddWithValue("str", str);
+
+            reader = DbCom.ExecuteReader();
+            while (reader.Read())
+            {
+                users.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+            }
+
+            CloseCon();
+            return users;
         }
         #endregion
 

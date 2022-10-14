@@ -85,4 +85,67 @@ $('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
         "min": time
     })
 })
+var userbtns = $(".add-user-btn")
 
+$("#FilterUserInput").on("change", () => {
+    var input = $("#FilterUserInput");
+    var ft = fetch(window.location.origin + "/User/GetFilteredUsers?filterstr=" + input.val())
+        .then((response) => response.text())
+        .then((data) => {
+            $("#FilteredUserList").html(data)
+            userbtns = $(".add-user-btn")
+        });
+})
+
+function AddUserToTeam(id, name) {
+    var list = $("#TeamAddedUsers")
+    var input = $("#AddedUserIds")
+    var ids = $("#AddedUserIds")
+
+    if (ids.val().indexOf(id) != -1) return
+    if (input.val() != "") input.val(input.val() + ", " + id)
+    else input.val(id)
+    if (list.html() == "") list.html(CreateUserAddedHtml(id, name))
+    else {
+        list.html(list.html() + CreateUserAddedHtml(id, name))
+    }
+}
+
+function CreateUserAddedHtml(id, name) {
+    var namediv = $("<span>").html("" + name)
+    var button = $("<button>").text("-")
+    var listItem = $("<div>")
+    var returnlist = $("<div>")
+
+    namediv.addClass("ml-2")
+
+    button.attr("type", "button")
+    button.attr("onclick", "RemoveUser(" + id +")")
+    button.addClass("btn")
+    button.addClass("btn-danger")
+    button.addClass("w-auto")
+    button.onclick = "RemoveUser(" + id + ")"
+
+    listItem.append(button)
+    listItem.append(namediv)
+    listItem.attr("id", "AddedUser" + id)
+    listItem.addClass("mt-1")
+    listItem.addClass("list-group-item")
+    listItem.addClass("p-1")
+    returnlist.append(listItem)
+    return returnlist.html()
+}
+
+function RemoveUser(id) {
+    //AddedUser3
+    $("#AddedUser" + id).remove()
+    var ids = $("#AddedUserIds")
+    if (ids.val().indexOf(", " + id) == -1) {
+        if (ids.val().indexOf(id) == 0) {
+            ids.val("")
+        }
+    } else {
+        ids.val(ids.val().substring(0, ids.val().indexOf(", " + id)) + ids.val().substring(ids.val().indexOf(", " + id) + 3))
+    }
+    console.log()
+}

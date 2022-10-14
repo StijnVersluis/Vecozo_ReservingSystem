@@ -1,0 +1,15 @@
+﻿@model IEnumerable<ViewLayer.Models.UserViewModel>
+
+@{
+    ViewData["Title"] = "GetFilteredUsers";
+    Layout = "";
+}
+
+@foreach (var item in Model)
+{
+    var checkboxId = "User" + item.Id + "Checkbox";
+    <div class="user-add-to-team mt-1 list-group-item p-1">
+        <button type="button" class="btn btn-success" onclick="AddUserToTeam(@item.Id, '@item.Name')">+</button>
+        <span>@item.Name</span>
+    </div>
+}

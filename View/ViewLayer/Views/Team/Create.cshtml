@@ -1,0 +1,40 @@
+﻿@model TeamViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    List<BusinessLayer.User> users = ViewData["Users"] as List<BusinessLayer.User>;
+}
+
+<h1>Create</h1>
+
+<h4>Team</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Team Naam:</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div id="TeamAddedUsers" class="list-group"></div>
+            <input type="hidden" name="userids" id="AddedUserIds" value=""/>
+            <div class="form-group mt-3">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <label for="FilterUserInput">Medewerkers Zoeken:</label>
+        <input id="FilterUserInput" type="text" class="form-control" />
+        <div class="list-group scrollable-div height-400" id="FilteredUserList">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
