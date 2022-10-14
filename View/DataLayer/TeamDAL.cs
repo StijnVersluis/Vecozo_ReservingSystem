@@ -121,5 +121,30 @@ namespace DataLayer
         {
             throw new NotImplementedException();
         }
+        public bool Check_Accessibility(string username)
+        {
+            bool Is_Team_Admin = false;
+            OpenCon();
+            reader = null;
+            DbCom.CommandText = "select * TeamMembers Where UserName=@username  ";
+            DbCom.Parameters.AddWithValue("username", username);
+            reader = DbCom.ExecuteReader(); 
+            while (reader.Read())
+            {
+                
+                Is_Team_Admin = Convert.ToBoolean(reader["Is_Team_Admin"]);
+
+            }
+            CloseCon();
+            if (Is_Team_Admin == true)
+            {
+                return true;
+            }
+            return false;   
+        
+
+
+
+        }
     }
 }
