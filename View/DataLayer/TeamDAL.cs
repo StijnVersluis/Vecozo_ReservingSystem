@@ -82,7 +82,7 @@ namespace DataLayer
             return success;
         }
 
-        public bool CreateTeam(string name, UserDTO aUser, List<UserDTO> users)
+        public bool CreateTeam(string name, List<int> userids)
         {
             try
             {
@@ -94,17 +94,17 @@ namespace DataLayer
                 DbCom.Parameters.Clear();
                 DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id, Is_Team_Admin) Values (@tId, @uId, @isAdmin)";
                 DbCom.Parameters.AddWithValue("tId", idDec);
-                DbCom.Parameters.AddWithValue("uId", aUser.Id);
+                DbCom.Parameters.AddWithValue("uId", GlobalVariables.LoggedInUser.Id);
                 DbCom.Parameters.AddWithValue("isAdmin", 1);
 
                 DbCom.ExecuteNonQuery();
 
-                users.ForEach(user =>
+                userids.ForEach(userid =>
                 {
                     DbCom.Parameters.Clear();
                     DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id, Is_Team_Admin) Values (@tId, @uId, @isAdmin)";
                     DbCom.Parameters.AddWithValue("tId", idDec);
-                    DbCom.Parameters.AddWithValue("uId", user.Id);
+                    DbCom.Parameters.AddWithValue("uId", userid);
                     DbCom.Parameters.AddWithValue("isAdmin", 0);
 
                     DbCom.ExecuteNonQuery();

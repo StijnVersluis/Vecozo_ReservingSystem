@@ -113,7 +113,7 @@ namespace DataLayer
 
                 while (reader.Read())
                 {
-                    reservationlist.Add(new ReservationDTO((int)reader["Id"], (int)reader["User_Id"], (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
+                    reservationlist.Add(new((int)reader["Id"], (int)reader["User_Id"], (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
                 }
                 reader.Close();
 

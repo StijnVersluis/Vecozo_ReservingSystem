@@ -11,7 +11,6 @@ namespace ReservationTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("2022-01-01T09:01".Replace(Regex.@T[0-9]{1,2}\:[0-9]{1,2}/g, "T"+"18:00"));
         }
     }
 }

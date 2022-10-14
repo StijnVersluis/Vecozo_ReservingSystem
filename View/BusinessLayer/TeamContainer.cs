@@ -17,7 +17,7 @@ namespace BusinessLayer
         }
         public List<Team> GetTeams()
         {
-            return iTeam.GetTeams().ConvertAll(x => new Team(x));
+            return iTeam.GetTeams().ConvertAll(teamdto => new Team(teamdto));
         }
         public Team GetTeam(int id)
         {
@@ -25,11 +25,11 @@ namespace BusinessLayer
         }
         public List<Team> GetTeamsOfUser(int userId)
         {
-            return iTeam.GetTeamsOfUser(userId).ConvertAll(x => new Team(x));
+            return iTeam.GetTeamsOfUser(userId).ConvertAll(teamdto => new Team(teamdto));
         }
-        public bool CreateTeam(string name, User aUser, List<User> users)
+        public bool CreateTeam(string name, List<int> userids)
         {
-            return iTeam.CreateTeam(name, aUser.ToDTO(), users.ConvertAll(x=>x.ToDTO()));
+            return iTeam.CreateTeam(name, userids);
         }
     }
 }

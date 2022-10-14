@@ -13,6 +13,11 @@ namespace BusinessLayer
 
         public UserContainer(IUserContainer iUCont) { uCont = iUCont; }
 
+        public List<User> GetAll()
+        {
+            return uCont.GetAll().ConvertAll(x => new User(x));
+        }
+
         public bool AttemptLogin(string uName, string password)
         {
             return uCont.AttemptLogin(uName.ToLower(), password);
@@ -29,6 +34,11 @@ namespace BusinessLayer
         public User GetLoggedInUser()
         {
             return new User(uCont.GetLoggedInUser());
+        }
+
+        public List<User> GetFilteredUsers(string filterStr)
+        {
+            return uCont.GetFilteredUsers(filterStr).ConvertAll(userdto=>new User(userdto));
         }
     }
 }

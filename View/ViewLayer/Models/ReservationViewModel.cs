@@ -21,8 +21,8 @@ namespace ViewLayer.Models
             
         }
 
-        public ReservationViewModel()
-        {
-        }
+        //public ReservationViewModel()
+        //{
+        //}
     }
 }
