@@ -121,5 +121,49 @@ namespace DataLayer
         {
             throw new NotImplementedException();
         }
+
+        public bool DeleteUserOutTeam(int userID, int teamID)
+        {
+            try
+            {
+            OpenCon();
+            DbCom.CommandText = "DELETE FROM TeamMembers WHERE Team_id = @Team_id AND User_id = @User_id";
+                DbCom.Parameters.AddWithValue("User_id", userID);
+                DbCom.Parameters.AddWithValue("Team_id", teamID);
+                var result = DbCom.ExecuteNonQuery() > 0;
+                return result;
+            }
+            catch (Exception exception)
+            {
+               Console.WriteLine(exception);
+                return false;
+            }
+            finally
+            {
+                CloseCon();
+            }
+        }
+
+        public int ChangeFromTeam(int teamID, int userID)
+        {
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = ("UPDATE TeamMembers SET Team_id = @Team_id WHERE User_id = @User_id");
+                DbCom.Parameters.AddWithValue("Team_id", teamID);
+                DbCom.Parameters.AddWithValue("User_id", userID);
+                return DbCom.ExecuteNonQuery();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return DbCom.ExecuteNonQuery();
+                //????????
+            }
+            finally
+            {
+                CloseCon();
+            }
+        }
     }
 }

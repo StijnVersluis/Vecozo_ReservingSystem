@@ -27,5 +27,13 @@ namespace BusinessLayer
         {
             return iTeam.CreateTeam(name, aUser.ToDTO(), users.ConvertAll(x=>x.ToDTO()));
         }
+        public bool DeleteUserOutTeam(int userID, int teamID)
+        {
+            return iTeam.DeleteUserOutTeam(userID, teamID);
+        }
+        public int ChangeFromTeam(int teamID, int userID)
+        {
+            return iTeam.ChangeFromTeam(teamID, userID);
+        }
     }
 }
