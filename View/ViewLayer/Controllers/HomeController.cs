@@ -76,28 +76,6 @@ namespace ViewLayer.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Reserve(IFormCollection collection)
-        {
-            try
-            {
-                var dtStart = (string)collection["datetime-start"];
-                var tleave = (string)collection["datetime-leaving"];
-                var dtleave = Regex.Replace((string)collection["datetime-start"], @"T[0-9]{1,2}\:[0-9]{1,2}", "T" + tleave);
-                var workzone = (string)collection["workzone-id"];
-                DateTime start = DateTime.Parse(dtStart);
-                DateTime leave = DateTime.Parse(dtleave);
-                int workzone_id = Int32.Parse(workzone);
-                rCont.CreateReservation(new Reservation(uCont.GetLoggedInUser().Id, workzone_id, start, leave));
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception e)
-            {
-                ViewData["error"] = e.ToString();
-                return RedirectToAction("Index");
-            }
-        }
-
         public IActionResult Privacy()
         {
             return View();

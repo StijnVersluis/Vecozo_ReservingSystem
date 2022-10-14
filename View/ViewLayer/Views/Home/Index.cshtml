@@ -37,7 +37,7 @@
 <div class="modal" id="WorkzoneSelectedModal" tabindex="-1" role="form">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-                <form asp-action="Reserve" method="post">
+                <form asp-action="Reserve" asp-controller="Reservation" method="post">
             <div class="modal-header">
                 <h5 class="modal-title">Modal title</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -102,13 +102,13 @@
                         </span>
                     </label>
                 </div>
-                <div id="TeamList" class="list-group team-list d-none">
+                <div id="TeamList" class="list-group team-list d-none height-150 scrollable-div">
                     @foreach (var team in teams)
                         {
                             <a data-teamid="@team.Id" data-teamname="@team.Name" data-toggle="modal" data-target="#TeamSelectedModal" class="list-group-item team-list-item">@team.Name</a>
                         }
                 </div>
-                <button asp-action="Create" asp-controller="Team" class="btn btn-primary">Team aanmaken</button>
+                <button asp-action="Create" asp-controller="Team" class="btn btn-primary mt-1">Team aanmaken</button>
                 <hr style="height: 2px; background-color: #4525F2;" />
                 <div id="WorkSpotSelect" class="select-menu-item">
                     <h3>Werkplekken: </h3>
