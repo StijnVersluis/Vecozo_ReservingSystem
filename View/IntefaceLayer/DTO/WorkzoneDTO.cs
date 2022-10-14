@@ -12,13 +12,15 @@ namespace IntefaceLayer.DTO
         public string Name { get; private set; }
         public int Workspaces { get; private set; }
         public int Floor { get; private set; }
+        public bool TeamOnly { get; private set; }
 
-        public WorkzoneDTO(int id, string name, int workspaces, int floor)
+        public WorkzoneDTO(int id, string name, int workspaces, int floor, bool teamOnly)
         {
             Id = id;
             Name = name;
             Workspaces = workspaces;
             Floor = floor;
+            TeamOnly = teamOnly;
         }
     }
 }
