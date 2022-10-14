@@ -27,5 +27,11 @@ namespace BusinessLayer
         {
             return iTeam.CreateTeam(name, aUser.ToDTO(), users.ConvertAll(x=>x.ToDTO()));
         }
+
+        public bool Check_Accessibility(string username)
+        {
+
+            return iTeam.Check_Accessibility(username);
+        }
     }
 }
