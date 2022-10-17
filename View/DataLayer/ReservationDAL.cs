@@ -37,9 +37,18 @@ namespace DataLayer
                 CloseCon();
                 OpenCon();
 
-                DbCom.CommandText = "SELECT * FROM Reservations WHERE Workzone_Id = @workzone_id and @datetime BETWEEN DateTime_Arriving and DateTime_Leaving";
+                DbCom.CommandText = "SELECT * FROM Reservations WHERE Workzone_Id = @workzone_id and "+
+                                    "(@datetime_arrive BETWEEN DateTime_Arriving and DateTime_Leaving "+
+                                    "OR "+
+                                    "@datetime_leave BETWEEN DateTime_Arriving and DateTime_Leaving "+
+                                    "OR "+
+                                    "DateTime_Arriving BETWEEN @datetime_arrive and @datetime_leave " +
+                                    "OR "+
+                                    "DateTime_Leaving BETWEEN @datetime_arrive and @datetime_leave)";
+
                 DbCom.Parameters.AddWithValue("@workzone_id", reservationDTO.Workzone_id);
-                DbCom.Parameters.AddWithValue("@datetime", reservationDTO.DateTime_Arriving);
+                DbCom.Parameters.AddWithValue("@datetime_arrive", reservationDTO.DateTime_Arriving);
+                DbCom.Parameters.AddWithValue("@datetime_leave", reservationDTO.DateTime_Leaving);
 
                 List<ReservationDTO> ExistingReservations = new List<ReservationDTO>();
 

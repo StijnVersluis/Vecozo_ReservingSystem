@@ -13,13 +13,15 @@ namespace BusinessLayer
         public string Name { get; private set; }
         public int Workspaces { get; private set; }
         public int Floor { get; private set; }
+        public bool TeamOnly { get; private set; }
 
-        public Workzone(int id, string name, int workspaces, int floor)
+        public Workzone(int id, string name, int workspaces, int floor, bool teamOnly)
         {
             Id = id;
             Name = name;
             Workspaces = workspaces;
             Floor = floor;
+            TeamOnly = teamOnly;
         }
         public Workzone(WorkzoneDTO workzone)
         {
@@ -27,6 +29,7 @@ namespace BusinessLayer
             Name = workzone.Name;
             Workspaces = workzone.Workspaces;
             Floor = workzone.Floor;
+            TeamOnly = workzone.TeamOnly;
         }
     }
 }
