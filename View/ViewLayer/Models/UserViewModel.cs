@@ -14,9 +14,5 @@ namespace ViewLayer.Models
             Name = user.Name;
             Role = user.Role;
         }
-
-        //public UserViewModel()
-        //{
-        //}
     }
 }

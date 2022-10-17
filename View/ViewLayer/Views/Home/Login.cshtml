@@ -12,21 +12,17 @@
     {
         <div class="alert alert-danger">@ViewData["error"]</div>
     }
-
-    @if (!uCont.IsLoggedIn())
-    {
-        <div class="col-md-6 m-auto">
-            <form asp-action="Login" method="post">
-                <div class="form-group">
-                    <label>Gebruikersnaam:</label>
-                    <input type="text" name="name" value="" class="form-control" autocomplete="off"/>
-                </div>
-                <div class="form-group">
-                    <label>Wachtwoord:</label>
-                    <input type="password" name="password" value="" class="form-control" autocomplete="off"/>
-                </div>
-                <input type="submit" value="Login" />
-            </form>
-        </div>
-    }
+    <div class="col-md-6 m-auto">
+        <form asp-action="Login" method="post">
+            <div class="form-group">
+                <label>Gebruikersnaam:</label>
+                <input type="text" name="name" value="" class="form-control" autocomplete="off" />
+            </div>
+            <div class="form-group">
+                <label>Wachtwoord:</label>
+                <input type="password" name="password" value="" class="form-control" autocomplete="off" />
+            </div>
+            <input type="submit" value="Login" />
+        </form>
+    </div>
 </div>

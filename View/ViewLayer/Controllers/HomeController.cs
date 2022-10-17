@@ -32,7 +32,7 @@ namespace ViewLayer.Controllers
             if (uCont.IsLoggedIn()) {
                 ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id);
                 ViewData["AllWorkzones"] = wCont.GetAll();
-                ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id);
+                ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
                 ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
                 return View(); 
             }

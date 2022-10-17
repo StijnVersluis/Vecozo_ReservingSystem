@@ -1,12 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-    var teams = ViewData["TeamsOfUser"] as List<BusinessLayer.Team>;
-    var workzones = ViewData["AllWorkzones"] as List<BusinessLayer.Workzone>;
-    var reservations = ViewData["AllUserReservations"] as List<BusinessLayer.Reservation>;
-    var currentDateReservations = new List<BusinessLayer.Reservation>();
+    var teams = ViewData["TeamsOfUser"] as List<TeamViewModel>;
+    var workzones = ViewData["AllWorkzones"] as List<ReservationViewModel>;
+    var reservations = ViewData["AllUserReservations"] as List<ReservationViewModel>;
+    var currentDateReservations = new List<ReservationViewModel>();
     reservations.ForEach(reser =>
     {
-        if (DateTime.Compare(reser.DateTime_Arriving.Date, DateTime.Now.Date) == 0)
+        if (DateTime.Compare(reser.DateTime_Arriving.Date, DateTime.Now.Date) >= 0)
         {
             currentDateReservations.Add(reser);
         }
