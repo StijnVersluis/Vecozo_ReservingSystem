@@ -4,8 +4,6 @@
     var workzones = ViewData["AllWorkzones"] as List<WorkzoneViewModel>;
     var reservations = ViewData["AllUserReservations"] as List<ReservationViewModel>;
     var currentDateReservations = new List<ReservationViewModel>();
-    if (reservations != null)
-    {
         reservations.ForEach(reser =>
         {
             if (DateTime.Compare(reser.DateTime_Arriving.Date, DateTime.Now.Date) >= 0)
@@ -13,7 +11,6 @@
                 currentDateReservations.Add(reser);
             }
         });
-    }
 }
 
 <div class="modal" id="TeamSelectedModal" tabindex="-1" role="form">
@@ -143,30 +140,3 @@
         <div class="col-md-9 bg-white"></div>
     </div>
 </div>
-<script>
-    var floorSelect = document.getElementById("FloorSelectorSelect")
-    let workzones = [];
-    let workzone = {Id: 0, Name: "null", Workspaces: 0, Floor: 0}
-    @{foreach (var workzone in workzones) { <text>
-    workzone = {Id: 0, Name: "null", Workspaces: 0, Floor: 0}
-    workzone.Id = @workzone.Id;
-    workzone.Name = "@workzone.Name";
-    workzone.Workspaces = @workzone.Workspaces;
-    workzone.Floor = @workzone.Floor;
-    workzones.push(workzone)
-    console.log(@workzone.Id)</text>}}
-
-    var select = document.getElementById("FloorSelectorSelect");
-    var workspotlist = document.getElementById("WorkSpotSelectList");
-
-    loadWorkzones();
-    function loadWorkzones() {
-        workspotlist.innerHTML = ""
-        workzones.forEach(workzone => {
-            if (workzone.Floor == select.options[select.selectedIndex].value) {
-                //TODO add to workzonelist
-                workspotlist.innerHTML += '<a class="list-group-item" data-toggle="modal" data-target="#WorkzoneSelectedModal" data-workzone-id="'+workzone.Id+'" data-workzone-name="'+workzone.Name+'"><div class="row"><div class="col-6">'+workzone.Name+'</div><div class="col-6">'+workzone.Workspaces+'</div></div></a>'
-            }
-        })
-    }
-</script>

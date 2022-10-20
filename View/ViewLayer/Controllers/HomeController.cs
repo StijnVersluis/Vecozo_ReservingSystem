@@ -30,8 +30,8 @@ namespace ViewLayer.Controllers
         public IActionResult Index()
         {
             if (uCont.IsLoggedIn()) {
-                ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id);
-                ViewData["AllWorkzones"] = wCont.GetAll();
+                ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).ConvertAll(reservation => new ReservationViewModel(reservation));
+                ViewData["AllWorkzones"] = wCont.GetAll().ConvertAll(workzone => new WorkzoneViewModel(workzone));
                 ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
                 ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
                 return View(); 
