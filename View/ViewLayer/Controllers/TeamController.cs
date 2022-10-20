@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using ViewLayer.Models;
 
 namespace ViewLayer.Controllers
 {
@@ -18,7 +19,7 @@ namespace ViewLayer.Controllers
 
         public ActionResult Create()
         {
-            ViewData["Users"] = uCont.GetAll();
+            ViewData["Users"] = uCont.GetAll().ConvertAll(user => new UserViewModel(user));
             return View();
         }
 
