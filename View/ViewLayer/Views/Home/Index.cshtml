@@ -1,16 +1,19 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
     var teams = ViewData["TeamsOfUser"] as List<TeamViewModel>;
-    var workzones = ViewData["AllWorkzones"] as List<ReservationViewModel>;
+    var workzones = ViewData["AllWorkzones"] as List<WorkzoneViewModel>;
     var reservations = ViewData["AllUserReservations"] as List<ReservationViewModel>;
     var currentDateReservations = new List<ReservationViewModel>();
-    reservations.ForEach(reser =>
+    if (reservations != null)
     {
-        if (DateTime.Compare(reser.DateTime_Arriving.Date, DateTime.Now.Date) >= 0)
+        reservations.ForEach(reser =>
         {
-            currentDateReservations.Add(reser);
-        }
-    });
+            if (DateTime.Compare(reser.DateTime_Arriving.Date, DateTime.Now.Date) >= 0)
+            {
+                currentDateReservations.Add(reser);
+            }
+        });
+    }
 }
 
 <div class="modal" id="TeamSelectedModal" tabindex="-1" role="form">
@@ -127,7 +130,7 @@
                                         <div class="col-4">@reservation.Workzone_id</div>
                                         <div class="col-4">@reservation.DateTime_Leaving.TimeOfDay</div>
                                         <div class="col-12">
-                                            <a asp-action="Cancel" asp-controller="Reservation" asp-route-id="@reservation.id">Cancel</a>
+                                            <a asp-action="Cancel" asp-controller="Reservation" asp-route-id="@reservation.Id">Cancel</a>
                                         </div>
                                     </div>
                                 </div>
