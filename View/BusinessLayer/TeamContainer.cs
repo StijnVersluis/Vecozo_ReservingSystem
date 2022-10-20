@@ -31,9 +31,9 @@ namespace BusinessLayer
         {
             return iTeam.DeleteUserOutTeam(userID, teamID);
         }
-        public int ChangeFromTeam(int teamID, int userID)
-        {
-            return iTeam.ChangeFromTeam(teamID, userID);
-        }
+        //public int ChangeFromTeam(int teamID, int userID)
+        //{
+        //    return iTeam.ChangeFromTeam(teamID, userID);
+        //}
     }
 }
