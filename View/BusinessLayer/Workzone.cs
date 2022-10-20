@@ -23,6 +23,8 @@ namespace BusinessLayer
         }
         public Workzone(WorkzoneDTO workzone)
         {
+            if (workzone == null) return;
+
             Id = workzone.Id;
             Name = workzone.Name;
             Workspaces = workzone.Workspaces;

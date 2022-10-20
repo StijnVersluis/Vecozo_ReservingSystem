@@ -16,6 +16,24 @@ namespace DataLayer
         {
             InitializeDB();
         }
+
+        public WorkzoneDTO Get(int id)
+        {
+            OpenCon();
+            WorkzoneDTO workzone = null;
+            DbCom.CommandText = "SELECT * FROM Workzones WHERE Id = @id";
+            DbCom.Parameters.AddWithValue("id", id);
+            reader = DbCom.ExecuteReader();
+
+            while (reader.FieldCount > 0 && reader.Read())
+            {
+                workzone = new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"]);
+            }
+
+            CloseCon();
+            return workzone;
+        }
+
         public List<WorkzoneDTO> GetAll()
         {
             OpenCon();

@@ -11,5 +11,6 @@ namespace IntefaceLayer
     {
         public List<WorkzoneDTO> GetAll();
         public List<WorkzoneDTO> GetAllFromFloor(int id);
+        public WorkzoneDTO Get(int id);
     }
 }

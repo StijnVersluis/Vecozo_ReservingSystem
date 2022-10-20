@@ -39,6 +39,8 @@ $('#TeamSelectedModal').on('show.bs.modal', function (event) {
     console.log(html);
 })
 
+$("#AdHocWorkzoneModal").modal('show');
+
 function GenerateTeamModal(modal, data) {
 
     let count = data.lastIndexOf("\,");

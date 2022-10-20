@@ -17,12 +17,13 @@ namespace ViewLayer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddBook(ReservationViewModel reservationmodel)
         {
             try
             {
                 Reservation reservation = new Reservation(reservationmodel.User_id, reservationmodel.Workzone_id, reservationmodel.DateTime_Leaving, reservationmodel.DateTime_Arriving);
-                    
+
                 _reservationContainer.CreateReservation(reservation);
                 return RedirectToAction("index", "Home");
             }
@@ -30,7 +31,6 @@ namespace ViewLayer.Controllers
             {
                 return RedirectToAction("index", "home");
             }
-
         }
 
         public ActionResult Cancel(int id)

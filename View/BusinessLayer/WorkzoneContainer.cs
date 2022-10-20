@@ -23,5 +23,17 @@ namespace BusinessLayer
         {
             return workzoneContainer.GetAllFromFloor(id).ConvertAll(x => new Workzone(x));
         }
+
+        public Workzone Get(int workzoneId)
+        {
+            Workzone model = null;
+            var dto = workzoneContainer.Get(workzoneId);
+            if (dto != null)
+            {
+                model = new(dto);
+            }
+
+            return model;
+        }
     }
 }
