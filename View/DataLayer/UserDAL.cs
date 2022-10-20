@@ -29,19 +29,15 @@ namespace DataLayer
             return list;
         }
         //Done
-        public bool AttemptLogin(string uName, string password)
+        public bool AttemptLogin(string email, string password)
         {
-            UserDTO DBuser = FindUserByUserName(uName);
+            UserDTO DBuser = FindUserByEmail(email);
             UserDTO user = null;
 
             if (DBuser == null) { return false; }
 
             var userPass = GetUserPassword(DBuser);
             var filledIn = HashString(password);
-
-            Console.WriteLine("UserPass = " + userPass);
-            Console.WriteLine("filledIn = " + filledIn);
-            Console.WriteLine("Compared = " + filledIn == userPass);
 
             if (userPass == filledIn) { user = DBuser; }
 
@@ -50,11 +46,11 @@ namespace DataLayer
             else return true;
         }
         //Done
-        public UserDTO FindUserByUserName(string uName)
+        public UserDTO FindUserByEmail(string email)
         {
             DBConnection.Open();
-            DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE UserName = @name";
-            DbCom.Parameters.AddWithValue("@name", uName);
+            DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE Email = @name";
+            DbCom.Parameters.AddWithValue("@name", email);
             reader = DbCom.ExecuteReader();
             UserDTO user = null;
             while (reader.Read())

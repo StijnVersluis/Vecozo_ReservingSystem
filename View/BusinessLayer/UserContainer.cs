@@ -18,9 +18,9 @@ namespace BusinessLayer
             return uCont.GetAll().ConvertAll(x => new User(x));
         }
 
-        public bool AttemptLogin(string uName, string password)
+        public bool AttemptLogin(string email, string password)
         {
-            return uCont.AttemptLogin(uName.ToLower(), password);
+            return uCont.AttemptLogin(email.ToLower(), password);
         }
         public bool IsLoggedIn()
         {
