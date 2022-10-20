@@ -149,3 +149,17 @@ function RemoveUser(id) {
     }
     console.log()
 }
+
+function loadWorkzones() {
+    fetch(window.location.origin + "/Workzone/GetFloor", {
+        method: "POST",
+        body: JSON.stringify({
+            floorId: $('#FloorSelectorSelect').val()
+        }),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(resp => resp.text())
+        .then(data => $("#WorkSpotSelectList").html(data))
+}
