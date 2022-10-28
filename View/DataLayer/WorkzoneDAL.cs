@@ -25,7 +25,7 @@ namespace DataLayer
 
             while (reader.Read())
             {
-                workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"]));
+                workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (string)reader["Positionx"], (string)reader["Positiony"]));
             }
 
             CloseCon();
@@ -42,7 +42,7 @@ namespace DataLayer
 
             while (reader.Read())
             {
-                workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"]));
+                workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (string)reader["PositionX"], (string)reader["PositionY"]));
             }
 
             CloseCon();

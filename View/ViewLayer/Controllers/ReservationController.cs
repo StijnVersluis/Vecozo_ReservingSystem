@@ -13,7 +13,7 @@ namespace ViewLayer.Controllers
     {
         ReservationContainer rCont = new ReservationContainer(new ReservationDAL());  
         UserContainer uCont = new (new UserDAL());  
-      
+
         [HttpGet]
         public ActionResult AddBook()
         {
@@ -68,7 +68,7 @@ namespace ViewLayer.Controllers
             catch (Exception e)
             {
                 ViewData["error"] = e.ToString();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
         }
     }
