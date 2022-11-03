@@ -86,5 +86,36 @@ namespace ViewLayer.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        [HttpGet]
+        public IActionResult Outsourcing()
+        {
+            if (uCont.IsLoggedIn())
+            {
+                List<ReservationViewModel> reservations = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).ConvertAll(reservation => new ReservationViewModel(reservation));
+                List<WorkzoneViewModel> workzones = wCont.GetAllFromFloor(1).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+                List<TeamViewModel> TeamsOfUsers = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
+                UserViewModel LoggedInUser = new( uCont.GetLoggedInUser());
+                OutsourcingReservationViewModel model = new(reservations, workzones, TeamsOfUsers, LoggedInUser);
+
+                return View(model);
+            }
+            else { return RedirectToAction("Login"); }
+        }
+        [HttpPost]
+        public IActionResult OutsourcingFilter(OutsourcingReservationViewModel model)
+        {
+            WorkZoneFinder Finder = new();
+            List<Workzone> workzones = wCont.GetAllFromFloor(1);
+            List<Reservation> reservations = rCont.GetAllReservations();
+            model.TeamsOfUser = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
+            List<User> users = new();
+            users.Add(uCont.GetLoggedInUser());
+            users.Add(uCont.GetAll().Where(user => user.Id == 7).Single());
+            model.AllWorkzones = Finder.AvailableWorkzones(workzones, reservations, users,
+                                                model.dateTime_Planned_Start.GetValueOrDefault(), model.dateTime_Planned_Leaving.GetValueOrDefault()
+                                                ).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            model.SelectedUsers = users;
+            return View("Outsourcing", model);
+        }
     }
 }

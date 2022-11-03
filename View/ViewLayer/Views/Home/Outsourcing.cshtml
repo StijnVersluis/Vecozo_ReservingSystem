@@ -1,0 +1,47 @@
+﻿@using BusinessLayer
+@model OutsourcingReservationViewModel
+@{
+    ViewData["Title"] = "Outsourcing";
+}
+
+<h1>Outsourcing</h1>
+<form asp-action="OutsourcingFilter" method="post">
+    @foreach (TeamViewModel team in Model.TeamsOfUser)
+    {
+        <div>@team.Name
+            <select> 
+                @if (team.Users != null)
+                {
+
+                    @foreach (User user in team.Users)
+                    {
+                        @if (Model.SelectedUsers.Any(SelUser => SelUser.Id == user.Id))
+                        {
+                            <option><input type="checkbox" asp-for="SelectedUsers" value=@user checked></option>
+                        }
+                        else
+                        {
+                            <option><input type="checkbox" asp-for="SelectedUsers" value=@user></option>
+                        }
+
+                    }
+                }
+
+            </select>
+        </div>
+    }
+    <input type="hidden" asp-for="SelectedUsers.Add(@Model.LoggedInUser)" value=@Model.LoggedInUser/>
+    <input type="time" max="18:00" min="08:00" value=@Model.dateTime_Planned_Start asp-for="dateTime_Planned_Start" class="form-control" />
+    <input type="time" max="18:00" min="08:00" value=@Model.dateTime_Planned_Leaving asp-for="dateTime_Planned_Leaving" class="form-control" />
+    <button type="submit" class="btn btn-primary">Find Aivalable</button>
+</form>
+<div>
+    @foreach(WorkzoneViewModel workzone in Model.AllWorkzones)
+    {
+        <div>
+            Name : @workzone.Name
+            Floor : @workzone.Floor
+            Workspaces : @workzone.Workspaces
+        </div>
+    }
+</div>

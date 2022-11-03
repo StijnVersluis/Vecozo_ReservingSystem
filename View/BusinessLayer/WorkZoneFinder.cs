@@ -36,10 +36,10 @@ namespace BusinessLayer
         {
             List<Reservation> filteredReservation;
             filteredReservation = allReservations.Where(reser => dateTime_Arriving <= reser.DateTime_Arriving && reser.DateTime_Arriving <= dateTime_Leaving).ToList(); // checks if any reservation is starting a during the users planned reservation
-            
-            filteredReservation.AddRange(allReservations.Where(reser => dateTime_Arriving  <= reser.DateTime_Leaving && reser.DateTime_Leaving <= dateTime_Leaving).ToList()); // checks if any reservation is ending a during the users planned reservation
-           
-            filteredReservation.AddRange(allReservations.Where(reser => (reser.DateTime_Arriving <= dateTime_Arriving &&  dateTime_Leaving <= reser.DateTime_Arriving) 
+
+            filteredReservation.AddRange(allReservations.Where(reser => dateTime_Arriving <= reser.DateTime_Leaving && reser.DateTime_Leaving <= dateTime_Leaving).ToList()); // checks if any reservation is ending a during the users planned reservation
+
+            filteredReservation.AddRange(allReservations.Where(reser => (reser.DateTime_Arriving <= dateTime_Arriving && dateTime_Leaving <= reser.DateTime_Arriving)
                                                                         &&
                                                                      (reser.DateTime_Leaving <= dateTime_Arriving && dateTime_Arriving <= reser.DateTime_Leaving)).ToList()); // checks if planned reservation is happening during a going reservation
             return filteredReservation;
@@ -54,16 +54,20 @@ namespace BusinessLayer
         public List<Workzone> GetfreeWorkZones(List<Workzone> allWorkZones, List<Reservation> filteredReservation, List<User> Users)
         {
             List<Workzone> UnavailableWorkZones = new();
-            filteredReservation.ForEach(reser => 
-                                                UnavailableWorkZones.Add( 
-                                                            allWorkZones.First(workZone =>
-                                                                workZone.Id == reser.Workzone_id 
-                                                                &&
-                                                                    (
-                                                                        (filteredReservation.Count(reser =>reser.Workzone_id == workZone.Id) >= workZone.Workspaces) //Checks if there is any workspace available
+            filteredReservation.ForEach(reser =>
+                                                UnavailableWorkZones.AddRange(
+                                                            allWorkZones.Where(workZone =>
+                                                                workZone.Id == reser.Workzone_id
+                                                                /* &&
+                                                                     (
+                                                                         (filteredReservation.Count(reser =>reser.Workzone_id == workZone.Id) >= workZone.Workspaces) //Checks if there is any workspace available
+                                                                         ||
+                                                                         (workZone.Workspaces - filteredReservation.Count(reser => reser.Workzone_id == workZone.Id)) > Users.Count() //Checks if the availabe workspace is enough for the amount of users
+                                                                     )  */
+                                                                ).Where(workZone =>
+                                                                        (filteredReservation.Count(reser => reser.Workzone_id == workZone.Id) >= workZone.Workspaces) //Checks if there is any workspace available
                                                                         ||
-                                                                        (workZone.Workspaces - filteredReservation.Count(reser => reser.Workzone_id == workZone.Id)) > Users.Count() //Checks if the availabe workspace is enough for the amount of users
-                                                                    )  
+                                                                        (workZone.Workspaces - filteredReservation.Count(reser => reser.Workzone_id == workZone.Id)) < Users.Count() //Checks if the availabe workspace is enough for the amount of users
                                                                 )
                                                             )
                                                 ); // makes a list of workzones that are taken or contains to little workspace for the users 
