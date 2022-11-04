@@ -39,9 +39,7 @@ namespace BusinessLayer
 
             filteredReservation.AddRange(allReservations.Where(reser => dateTime_Arriving <= reser.DateTime_Leaving && reser.DateTime_Leaving <= dateTime_Leaving).ToList()); // checks if any reservation is ending a during the users planned reservation
 
-            filteredReservation.AddRange(allReservations.Where(reser => (reser.DateTime_Arriving <= dateTime_Arriving && dateTime_Leaving <= reser.DateTime_Arriving)
-                                                                        &&
-                                                                     (reser.DateTime_Leaving <= dateTime_Arriving && dateTime_Arriving <= reser.DateTime_Leaving)).ToList()); // checks if planned reservation is happening during a going reservation
+            filteredReservation.AddRange(allReservations.Where(reser => (reser.DateTime_Arriving <= dateTime_Arriving && dateTime_Leaving <= reser.DateTime_Leaving)).ToList()); // checks if planned reservation is happening during a going reservation
             return filteredReservation;
         }
         /// <summary>

@@ -92,7 +92,7 @@ namespace ViewLayer.Controllers
             if (uCont.IsLoggedIn())
             {
                 List<ReservationViewModel> reservations = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).ConvertAll(reservation => new ReservationViewModel(reservation));
-                List<WorkzoneViewModel> workzones = wCont.GetAllFromFloor(1).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+                List<WorkzoneViewModel> workzones = wCont.GetAll().ConvertAll(workzone => new WorkzoneViewModel(workzone));
                 List<TeamViewModel> TeamsOfUsers = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
                 UserViewModel LoggedInUser = new( uCont.GetLoggedInUser());
                 OutsourcingReservationViewModel model = new(reservations, workzones, TeamsOfUsers, LoggedInUser);
@@ -105,7 +105,7 @@ namespace ViewLayer.Controllers
         public IActionResult OutsourcingFilter(OutsourcingReservationViewModel model)
         {
             WorkZoneFinder Finder = new();
-            List<Workzone> workzones = wCont.GetAllFromFloor(1);
+            List<Workzone> workzones = wCont.GetAll();
             List<Reservation> reservations = rCont.GetAllReservations();
             model.TeamsOfUser = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
             List<User> users = new();
