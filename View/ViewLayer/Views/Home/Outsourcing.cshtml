@@ -8,8 +8,9 @@
 <form asp-action="OutsourcingFilter" method="post">
     @foreach (TeamViewModel team in Model.TeamsOfUser)
     {
-        <div>@team.Name
-            <select> 
+        <div>
+            @team.Name
+            <select>
                 @if (team.Users != null)
                 {
 
@@ -28,17 +29,38 @@
                 }
 
             </select>
+
         </div>
     }
-    <input type="hidden" asp-for="SelectedUsers.Add(@Model.LoggedInUser)" value=@Model.LoggedInUser/>
-    <input type="time" max="18:00" min="08:00" value=@Model.dateTime_Planned_Start asp-for="dateTime_Planned_Start" class="form-control" />
-    <input type="time" max="18:00" min="08:00" value=@Model.dateTime_Planned_Leaving asp-for="dateTime_Planned_Leaving" class="form-control" />
+    @if (Model.IsTeam == true)
+    {
+        <div>
+            <input type="checkbox" asp-for="IsTeam" value="true" checked id="IsTeamCBX">
+            <label for="IsTeamCBX">Reserve for team</label>
+        </div>
+    }
+    else
+    {
+        <div>
+            <input type="checkbox" asp-for="IsTeam" value="true" id="IsTeamCBX">
+            <label for="IsTeamCBX">Reserve for team</label>
+        </div>
+    }
+    <br />
+    <select asp-for="SelectedFloor">
+        <option value="1"> Floor 1</option>
+        <option value="2"> Floor 2</option>
+    </select>
+    <input type="hidden" asp-for="SelectedUsers.Add(@Model.LoggedInUser)" value=@Model.LoggedInUser />
+    <input type="datetime-local" max="18:00" min="08:00" value=@Model.dateTime_Planned_Start asp-for="dateTime_Planned_Start" class="form-control" />
+    <input type="datetime-local" max="18:00" min="08:00" value=@Model.dateTime_Planned_Leaving asp-for="dateTime_Planned_Leaving" class="form-control" />
     <button type="submit" class="btn btn-primary">Find Aivalable</button>
 </form>
 <div>
-    @foreach(WorkzoneViewModel workzone in Model.AllWorkzones)
+
+    @foreach (WorkzoneViewModel workzone in Model.AllWorkzones)
     {
-        <div>
+        <div class="col border border-1">
             Name : @workzone.Name
             Floor : @workzone.Floor
             Workspaces : @workzone.Workspaces

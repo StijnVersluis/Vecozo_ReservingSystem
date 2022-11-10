@@ -21,9 +21,13 @@ namespace BusinessLayer
         /// <param name="dateTime_Arriving"></param>
         /// <param name="dateTime_Leaving"></param>
         /// <returns>A list of available and free Workzones</returns>
-        public List<Workzone> AvailableWorkzones(List<Workzone> allWorkZones, List<Reservation> allReservations, List<User> Users, DateTime dateTime_Arriving, DateTime dateTime_Leaving)
+        public List<Workzone> AvailableWorkzones(List<Workzone> allWorkZones, List<Reservation> allReservations, List<User> Users, DateTime dateTime_Arriving, DateTime dateTime_Leaving, bool TeamSelected)
         {
-            return GetfreeWorkZones(allWorkZones, GetInterferingReservations(allReservations, dateTime_Arriving, dateTime_Leaving), Users);
+            List<Workzone> freeWorkzone = GetTeamOrIndiviualZones( 
+                                                            GetfreeWorkZones(allWorkZones, GetInterferingReservations(allReservations, dateTime_Arriving, dateTime_Leaving), Users)
+                                                            , TeamSelected
+                                                            );
+            return freeWorkzone;
         }
         /// <summary>
         /// Filters the reservations by date to see which are interfering with the given datetimes
@@ -56,12 +60,6 @@ namespace BusinessLayer
                                                 UnavailableWorkZones.AddRange(
                                                             allWorkZones.Where(workZone =>
                                                                 workZone.Id == reser.Workzone_id
-                                                                /* &&
-                                                                     (
-                                                                         (filteredReservation.Count(reser =>reser.Workzone_id == workZone.Id) >= workZone.Workspaces) //Checks if there is any workspace available
-                                                                         ||
-                                                                         (workZone.Workspaces - filteredReservation.Count(reser => reser.Workzone_id == workZone.Id)) > Users.Count() //Checks if the availabe workspace is enough for the amount of users
-                                                                     )  */
                                                                 ).Where(workZone =>
                                                                         (filteredReservation.Count(reser => reser.Workzone_id == workZone.Id) >= workZone.Workspaces) //Checks if there is any workspace available
                                                                         ||
@@ -71,6 +69,23 @@ namespace BusinessLayer
                                                 ); // makes a list of workzones that are taken or contains to little workspace for the users 
             UnavailableWorkZones.ForEach(workZone => allWorkZones.Remove(workZone)); // removes Unavailable Workzones from list
             return allWorkZones;
+        }
+
+        public List<Workzone> GetTeamOrIndiviualZones(List<Workzone> freeWorkzones, bool TeamSelected)
+        {
+            List<Workzone> returnlist = new();
+            if (TeamSelected == true )
+            {
+                freeWorkzones.RemoveAll(workZone => workZone.Name.StartsWith("ST-WP") ); // ST-WP staat voor de Stilte werkplek als de naam veranderd word voeg dan hier de eerste paar letters van de nieuwe naam in
+                returnlist.AddRange(freeWorkzones.Take(3)); //grabs the top 3
+            }
+            else
+            {
+                freeWorkzones.RemoveAll(workZone => workZone.TeamOnly == true);
+                returnlist.AddRange(freeWorkzones.Where(workZone => workZone.Name.StartsWith("WB")).Take(3));
+                returnlist.AddRange(freeWorkzones.Where(workZone => workZone.Name.StartsWith("ST-WP")).Take(2));
+            } 
+            return returnlist;
         }
     }
 }

@@ -105,14 +105,15 @@ namespace ViewLayer.Controllers
         public IActionResult OutsourcingFilter(OutsourcingReservationViewModel model)
         {
             WorkZoneFinder Finder = new();
-            List<Workzone> workzones = wCont.GetAll();
+            List<Workzone> workzones = wCont.GetAllFromFloor(model.SelectedFloor.GetValueOrDefault());
             List<Reservation> reservations = rCont.GetAllReservations();
             model.TeamsOfUser = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
-            List<User> users = new();
-            users.Add(uCont.GetLoggedInUser());
-            users.Add(uCont.GetAll().Where(user => user.Id == 7).Single());
+            List<User> users = new(); //this list will be filled with the selected users 
+            users.Add(uCont.GetLoggedInUser());// list van Users word standaard gevuld met de ingelogde user 
+            users.Add(uCont.GetAll().Where(user => user.Id == 7).Single());// comment this to test for a single users and not a team
             model.AllWorkzones = Finder.AvailableWorkzones(workzones, reservations, users,
                                                 model.dateTime_Planned_Start.GetValueOrDefault(), model.dateTime_Planned_Leaving.GetValueOrDefault()
+                                                ,model.IsTeam
                                                 ).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             model.SelectedUsers = users;
             return View("Outsourcing", model);

@@ -13,6 +13,8 @@ namespace ViewLayer.Models
         public DateTime? dateTime_Planned_Start { get; set; }
         public DateTime? dateTime_Planned_Leaving { get; set; }
         public List<User>? SelectedUsers { get; set; } 
+        public int? SelectedFloor { get; set; }
+        public bool IsTeam { get; set; }
 
         public OutsourcingReservationViewModel(List<ReservationViewModel> allUserReservations, List<WorkzoneViewModel> allWorkzones, List<TeamViewModel> teamsOfUser, UserViewModel loggedInUser)
         {
