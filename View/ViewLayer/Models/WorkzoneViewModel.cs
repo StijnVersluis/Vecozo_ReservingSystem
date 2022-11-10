@@ -10,6 +10,8 @@ namespace ViewLayer.Models
         public int Workspaces { get; private set; }
         public int Floor { get; private set; }
         public bool TeamOnly { get; private set; }
+        public string Xpos { get; private set; }
+        public string Ypos { get; private set; }
 
         public WorkzoneViewModel(Workzone workzone)
         {
@@ -18,6 +20,8 @@ namespace ViewLayer.Models
             Workspaces = workzone.Workspaces;
             Floor = workzone.Floor;
             TeamOnly = workzone.TeamOnly;
+            Xpos = workzone.Xpos;
+            Ypos = workzone.Ypos;
         }
     }
 }

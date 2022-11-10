@@ -70,8 +70,12 @@
     <div class="row">
         <div class="col-md-3">
             <div id="LeftForm" class="">
-                <div id="DateSelector" class="select-menu-item"><input id="DateSelectorInput" class="form-control" type="datetime-local"></div>
+                <div id="DateSelector" class="select-menu-item">
+                    <label for="DateSelectorInput">Reserveren vanaf:</label>
+                    <input id="DateSelectorInput" class="form-control" type="datetime-local">
+                </div>
                 <div id="FloorSelector" class="select-menu-item">
+                    <label for="FloorSelectorSelect">Verdieping:</label>
                     <select id="FloorSelectorSelect" class="form-control" onchange="loadWorkzones()">
                         <option value="1">Verdieping 1</option>
                         <option value="2">Verdieping 2</option>
@@ -140,7 +144,7 @@
                                         <div class="col-4">@reservation.Workzone_id</div>
                                         <div class="col-4">@reservation.DateTime_Leaving.TimeOfDay</div>
                                         <div class="col-12">
-                                            <a asp-action="Cancel" asp-controller="Reservation" asp-route-id="@reservation.Id">Cancel</a>
+                                            <a asp-action="Cancel" asp-controller="Reservation" asp-route-id="@reservation.Id" class="btn btn-danger">Annuleren</a>
                                         </div>
                                     </div>
                                 </div>
@@ -150,6 +154,13 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-9 bg-secondary"></div>
+        <div id="WorkspaceHotspots" class="col-md-9 d-none d-md-block">
+            <div class="imagemap">
+                <div class="image-overlay"></div>
+                <div class="image-wrapper">
+                    <img id="FloorImage" src="~/images/Verdieping-1.jpg" width="100%"/>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

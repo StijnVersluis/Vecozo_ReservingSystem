@@ -15,6 +15,12 @@ namespace ViewLayer.Controllers
             var workzones = workzoneContainer.GetAllFromFloor(collection.floorId).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             return View(workzones);
         }
+
+        public JsonResult GetWorkzonePositions([FromBody] FloorJson collection)
+        {
+            var workzones = workzoneContainer.GetAllFromFloor(collection.floorId).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            return new JsonResult(workzones);
+        }
     }
 
     public class FloorJson

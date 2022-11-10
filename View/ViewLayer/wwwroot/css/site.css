@@ -129,3 +129,28 @@ body {
 .height-400 {
     max-height: 400px;
 }
+
+/*Image overlay*/
+.image-overlay {
+    position: relative;
+}
+
+.overlay-image {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    opacity: .5;
+}
+
+    .overlay-image:hover {
+        opacity: .9;
+    }
+
+.data {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    padding: 40px;
+    background: #ccc;
+}
