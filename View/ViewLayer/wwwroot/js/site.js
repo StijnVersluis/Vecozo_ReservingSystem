@@ -2,7 +2,7 @@
     var date = new Date().toLocaleString();
     $("#DateSelectorInput").val(date);
 
-    loadWorkzones(date);
+    if (window.location.pathname == "/") loadWorkzones();
 });
 
 function CheckTeamInput() {
