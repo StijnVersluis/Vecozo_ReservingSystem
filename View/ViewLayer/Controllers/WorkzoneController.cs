@@ -75,11 +75,11 @@ namespace ViewLayer.Controllers
             var hasDefaultDate = date == default(DateTime);
             if (hasDefaultDate)
             {
-                formatted_date = DateTime.Now.ToString("yyyy-dd-MM HH:mm");
+                formatted_date = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
             }
             else
             {
-                formatted_date = date.ToString("yyyy-dd-MM HH:mm");
+                formatted_date = date.ToString("yyyy-MM-dd HH:mm");
             }
 
             var workzones = workzoneContainer.GetAllFromFloor(id, formatted_date).ConvertAll(workzone => new WorkzoneViewModel(workzone));
