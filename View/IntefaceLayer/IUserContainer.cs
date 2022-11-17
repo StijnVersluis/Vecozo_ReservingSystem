@@ -10,10 +10,9 @@ namespace IntefaceLayer
     public interface IUserContainer
     {
         public List<UserDTO> GetAll();
-        public bool AttemptLogin(string email, string password);
-        public bool IsLoggedIn();
-        public void Logout();
-        public UserDTO GetLoggedInUser();
+        public UserDTO GetUserById(int id);
         public List<UserDTO> GetFilteredUsers(string filterStr);
+        public UserDTO FindUserByEmail(string email);
+        public UserDTO GetLoggedInUser();
     }
 }

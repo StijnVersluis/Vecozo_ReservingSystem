@@ -2,89 +2,65 @@
 using DataLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ViewLayer.Models;
+using ViewLayer.Util;
 
 namespace ViewLayer.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private UserContainer uCont = new(new UserDAL());
-        private TeamContainer tCont = new(new TeamDAL());
-        private ReservationContainer rCont = new(new ReservationDAL());
-        private WorkzoneContainer wCont = new(new WorkzoneDAL());
+        private UserContainer userContainer = new(new UserDAL());
+        private TeamContainer teamContainer = new(new TeamDAL());
+        private ReservationContainer reservationContainer = new(new ReservationDAL());
+        private WorkzoneContainer workzoneContainer = new(new WorkzoneDAL());
+        private FloorContainer floorContainer = new(new FloorDAL());
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
+        [HttpGet]
         public IActionResult Index()
         {
-            if (uCont.IsLoggedIn()) {
-                ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).ConvertAll(reservation => new ReservationViewModel(reservation));
-                ViewData["AllWorkzones"] = wCont.GetAllFromFloor(1).ConvertAll(workzone => new WorkzoneViewModel(workzone));
-                ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
-                ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
-                return View(); 
-            }
-            else { return RedirectToAction("Login"); }
-        }
+            ViewData["UserReservations"] = reservationContainer.GetTodayReservationsFromUser(userContainer.GetLoggedInUser().Id).ConvertAll(reservation => new ReservationViewModel(reservation)
+            {
+                Workzone = workzoneContainer.GetById(reservation.Workzone_id)
+            });
 
-        public ActionResult Login()
-        {
-            if (uCont.IsLoggedIn()) return RedirectToAction(nameof(Index));
+            ViewData["TeamsOfUser"] = teamContainer.GetTeamsOfUser(userContainer.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
+            ViewData["Floors"] = floorContainer.GetAll().ConvertAll(x => new FloorViewModel(x));
+
+            this.GetResponse();
+
             return View();
         }
 
-        public ActionResult Logout()
-        {
-            uCont.Logout();
-            return RedirectToAction("Login");
-        }
-
-        [HttpPost]
-        public ActionResult Login(IFormCollection collection)
-        {
-            try
-            {
-                string name = (string)collection["name"];
-                string pass = (string)collection["password"];
-                if (name == "" || pass == "") { ViewData["error"] = "Please enter Name and Password!"; return RedirectToAction(""); }
-
-                if (uCont.AttemptLogin(name, pass))
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return RedirectToAction("Login");
-                }
-            }
-            catch (Exception e)
-            {
-                ViewData["error"] = e.ToString();
-                return RedirectToAction("Index");
-            }
-        }
-
+        [HttpGet]
         public IActionResult Privacy()
         {
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpGet("/Error")]
+        public IActionResult Error(int statuscode)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            int result;
+
+            switch (statuscode)
+            {
+                case 401:
+                    result = 404;
+                    break;
+
+                default:
+                    result = 404;
+                    break;
+            }
+
+            return View(
+                new ErrorViewModel { 
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    StatusCode = result
+                }
+            );
         }
     }
 }

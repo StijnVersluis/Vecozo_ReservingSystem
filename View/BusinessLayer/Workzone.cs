@@ -14,8 +14,6 @@ namespace BusinessLayer
         public int Workspaces { get; private set; }
         public int Floor { get; private set; }
         public bool TeamOnly { get; private set; }
-        public string Xpos { get; private set; }
-        public string Ypos { get; private set; }
 
         public Workzone(int id, string name, int workspaces, int floor, bool teamOnly)
         {
@@ -25,16 +23,6 @@ namespace BusinessLayer
             Floor = floor;
             TeamOnly = teamOnly;
         }
-        public Workzone(int id, string name, int workspaces, int floor, bool teamOnly, string xpos, string ypos)
-        {
-            Id = id;
-            Name = name;
-            Workspaces = workspaces;
-            Floor = floor;
-            TeamOnly = teamOnly;
-            Xpos = xpos;
-            Ypos = ypos;
-        }
         public Workzone(WorkzoneDTO workzone)
         {
             Id = workzone.Id;
@@ -42,8 +30,6 @@ namespace BusinessLayer
             Workspaces = workzone.Workspaces;
             Floor = workzone.Floor;
             TeamOnly = workzone.TeamOnly;
-            Xpos = workzone.Xpos;
-            Ypos = workzone.Ypos;
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using IntefaceLayer;
+using IntefaceLayer.DTO;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLayer
 {
@@ -15,13 +13,39 @@ namespace BusinessLayer
             this.workzoneContainer = workzoneContainer;
         }
 
+        public Workzone GetById(int id)
+        {
+            Workzone output = null;
+            WorkzoneDTO result = workzoneContainer.GetById(id);
+
+            if (result != null)
+            {
+                output = new Workzone(result);
+            }
+
+            return output;
+        }
+
+        public Workzone GetByDateAndId(int id, string date)
+        {
+            Workzone output = null;
+            WorkzoneDTO result = workzoneContainer.GetByDateAndId(id, date);
+
+            if (result != null)
+            {
+                output = new Workzone(result);
+            }
+
+            return output;
+        }
+
         public List<Workzone> GetAll()
         {
             return workzoneContainer.GetAll().ConvertAll(x => new Workzone(x));
         }
-        public List<Workzone> GetAllFromFloor(int id)
+        public List<Workzone> GetAllFromFloor(int id, string date)
         {
-            return workzoneContainer.GetAllFromFloor(id).ConvertAll(x => new Workzone(x));
+            return workzoneContainer.GetAllFromFloor(id, date).ConvertAll(x => new Workzone(x));
         }
     }
 }

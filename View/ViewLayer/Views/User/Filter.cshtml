@@ -1,7 +1,6 @@
 ﻿@model IEnumerable<ViewLayer.Models.UserViewModel>
 
 @{
-    ViewData["Title"] = "GetFilteredUsers";
     Layout = "";
 }
 
@@ -9,7 +8,7 @@
 {
     var checkboxId = "User" + item.Id + "Checkbox";
     <div class="user-add-to-team mt-1 list-group-item p-1">
-        <button type="button" class="btn btn-success" onclick="AddUserToTeam(@item.Id, '@item.Name')">+</button>
-        <span>@item.Name</span>
+        <button type="button" class="btn btn-success" onclick="AddUserToTeam(@item.Id, '@Html.Encode(item.Name)')">+</button>
+        <span>@Html.Encode(item.Name)</span>
     </div>
 }

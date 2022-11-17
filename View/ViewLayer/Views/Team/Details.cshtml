@@ -1,0 +1,70 @@
+﻿@model ViewLayer.Models.TeamViewModel;
+@using BusinessLayer;
+@using DataLayer;
+@{
+    UserContainer userContainer = new UserContainer(new UserDAL());
+}
+
+@if (Model.Owner.Id == userContainer.GetLoggedInUser().Id)
+{
+    <div id="editTeamModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form asp-action="Edit" asp-antiforgery="true">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@Html.Encode(Model.Name)</h5>
+                        <img class="modal__brand" width="130" src="/images/Logo_Bg-removed.png" />
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label asp-for="Name">Team Naam</label>
+                            <input asp-for="Name" class="form-control" autocomplete="off" />
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Hudige Leden</label>
+                                <div id="TeamAddedUsers" class="list-group"></div>
+                                <input asp-for="AddedUserIds"/>
+                            </div>
+                            <div class="col-6">
+                                <label for="FilterUserInput">Medewerkers Zoeken</label>
+                                <input id="FilterUserInput" type="text" class="form-control" autocomplete="off" />
+                                <div class="list-group scrollable-div height-400" id="FilteredUserList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input asp-for="Id" class="team-modal-hidden-id" />
+                        <button type="submit" class="btn btn-secondary">Wijzigen</button>
+                        <a asp-action="Index" class="ml-2">Sluiten</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+} else {
+    <div id="viewTeamModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form asp-action="Leave" asp-antiforgery="true">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@Html.Encode(Model.Name)</h5>
+                        <img class="modal__brand" width="130" src="/images/Logo_Bg-removed.png" />
+                    </div>
+                    <div class="modal-body">
+                        <label>Teamleden</label>
+                        <div class="container p-0 team-modal-members"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <input asp-for="Id" class="team-modal-hidden-id" />
+                        <button type="submit" class="btn btn-danger">Verlaten</button>
+                        <a asp-action="Index" class="ml-2">Sluiten</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<partial name="_ModelStateModalPartial" />

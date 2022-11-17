@@ -1,0 +1,51 @@
+﻿@using BusinessLayer;
+@using DataLayer;
+
+@model WorkzoneReservationViewModel;
+@{
+    var user = new User(new UserDAL());
+}
+
+<div class="modal" id="adHocModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form asp-action="ValidateData" asp-antiforgery="true">
+                <div class="modal-header">
+                    <div class="container d-inline-flex align-items-center p-0">
+                        <span class="badge badge-primary mr-2 mt-1">AdHoc</span>
+                        <h5 class="modal-title">@Html.Encode(Model.Workzone_Name)</h5>
+                    </div>
+                    <img class="modal__brand" width="130" src="/images/Logo_Bg-removed.png" />
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            @*Aantal werkplekken meegeven*@
+                            @if (!user.IsLoggedIn())
+                            {
+                                <div class="alert alert-warning">
+                                    <strong>Let op!</strong> U moet na het reserveren nog inloggen.
+                                </div>
+                            }
+                            <div class="form-group">
+                                <label asp-for="DateTime_Arriving"></label>
+                                <input asp-for="DateTime_Arriving" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="DateTime_Leaving"></label>
+                                <input asp-for="DateTime_Leaving" max="18:00" min="08:00" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input asp-for="Workzone_id" />
+                    <input asp-for="Workzone_Name" />
+                    <button type="submit" class="btn btn-primary @(Model.Workspaces == 0 ? "" : "disabled")">Reserveren</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<partial name="_ModelStateModalPartial" />

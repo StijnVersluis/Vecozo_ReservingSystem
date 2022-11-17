@@ -1,92 +1,21 @@
 ﻿using DataLayer;
 using BusinessLayer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ViewLayer.Models;
+using System.Linq;
 
 namespace ViewLayer.Controllers
 {
     public class UserController : Controller
     {
-        UserContainer uCont = new(new UserDAL());
-        // GET: UserController
-        public ActionResult Index()
-        {
-            return View();
-        }
+        private UserContainer userContainer = new(new UserDAL());
+        private RoleContainer roleContainer = new(new RoleDAL());
 
-        public ActionResult GetFilteredUsers(string filterstr)
+        [HttpGet("/User/Filter")]
+        public ActionResult Filter(string str)
         {
-            return View(uCont.GetFilteredUsers(filterstr).ConvertAll(user=> new UserViewModel(user)));
-        }
-
-        // GET: UserController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: UserController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: UserController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: UserController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: UserController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            int userId = userContainer.GetLoggedInUser().Id;
+            return View(userContainer.GetFilteredUsers(str).Where(x => x.Id != userId).ToList().ConvertAll(user => new UserViewModel(user, roleContainer.GetRole(user.Role))));
         }
     }
 }

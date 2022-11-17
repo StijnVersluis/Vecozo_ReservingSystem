@@ -11,18 +11,15 @@ namespace ViewLayer.Models
         public DateTime DateTime_Arriving;
         public DateTime DateTime_Leaving;
 
+        public Workzone Workzone { get; set; }
+
         public ReservationViewModel(Reservation reservation)
         {
             this.Id = reservation.id;
             this.User_id = reservation.User_id;
             this.Workzone_id = reservation.Workzone_id;
             this.DateTime_Arriving = reservation.DateTime_Arriving;
-            this.DateTime_Leaving = reservation.DateTime_Leaving;   
-            
+            this.DateTime_Leaving = reservation.DateTime_Leaving;        
         }
-
-        //public ReservationViewModel()
-        //{
-        //}
     }
 }

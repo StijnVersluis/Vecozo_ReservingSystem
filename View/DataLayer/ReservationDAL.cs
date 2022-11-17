@@ -18,6 +18,7 @@ namespace DataLayer
             InitializeDB();
         }
 
+        // Fix this not right
         public bool CreateReservation(ReservationDTO reservationDTO)
         {
             try
@@ -86,7 +87,6 @@ namespace DataLayer
                 }
                 else return false;
             }
-
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
@@ -101,12 +101,18 @@ namespace DataLayer
 
         public bool CancelReservation(int id)
         {
-            OpenCon();
+            try
+            {
+                OpenCon();
 
-            DbCom.CommandText = "DELETE FROM Reservations WHERE id = @id";
-            DbCom.Parameters.AddWithValue("id", id);
+                DbCom.CommandText = "DELETE FROM Reservations WHERE id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
 
-            if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
+                if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
+            } finally
+            {
+                CloseCon();
+            }
         }
 
         public List<ReservationDTO> GetAllReservations()
@@ -116,7 +122,7 @@ namespace DataLayer
                 OpenCon();
                 List<ReservationDTO> reservationlist = new List<ReservationDTO>();
 
-                DbCom.CommandText = "select * from Reservations";
+                DbCom.CommandText = "SELECT * FROM Reservations";
 
                 reader = DbCom.ExecuteReader();
 
@@ -127,59 +133,89 @@ namespace DataLayer
                 reader.Close();
 
                 return reservationlist;
+            } finally
+            { 
+                CloseCon(); 
             }
-
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            { CloseCon(); }
         }
 
-        public List<ReservationDTO> GetDateReservationsFromUser(int id, DateTime dateTime)
+        public List<ReservationDTO> GetTodayReservationsFromUser(int id)
         {
-            OpenCon();
             List<ReservationDTO> reservations = new List<ReservationDTO>();
-            DbCom.CommandText = "SELECT * FROM Reservations WHERE User_Id = @id";
 
-            DbCom.Parameters.AddWithValue("id", id);
-
-            reader = DbCom.ExecuteReader();
-
-            while (reader.Read())
+            try
             {
-                DateTime reservationDate = (DateTime)reader["DateTime_Arriving"];
+                OpenCon();
+                DbCom.CommandText = 
+                    "SELECT * FROM Reservations " +
+                    "WHERE User_Id = @id AND " +
+                    "CAST(DateTime_Arriving AS date) = CAST(GETDATE() AS date)";
+                DbCom.Parameters.AddWithValue("id", id);
+                reader = DbCom.ExecuteReader();
 
-                if (DateTime.Compare(reservationDate.Date, dateTime.Date) == 0)
+                while (reader.Read())
                 {
                     reservations.Add(new ReservationDTO((int)reader["Id"], id, (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
                 }
+            } finally
+            {
+                CloseCon();
             }
-
-            CloseCon();
 
             return reservations;
         }
 
         public List<ReservationDTO> GetReservationsFromUser(int id)
         {
-            OpenCon();
             List<ReservationDTO> reservations = new List<ReservationDTO>();
-            DbCom.CommandText = "SELECT * FROM Reservations WHERE User_Id = @id";
 
-            DbCom.Parameters.AddWithValue("id", id);
-
-            reader = DbCom.ExecuteReader();
-
-            while (reader.Read())
+            try
             {
-                reservations.Add(new ReservationDTO((int)reader["Id"], id, (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
+                OpenCon();
+                DbCom.CommandText = "SELECT * FROM Reservations WHERE User_Id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
+
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    reservations.Add(new ReservationDTO((int)reader["Id"], id, (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
+                }
+
+                CloseCon();
+            } finally
+            {
+                CloseCon();
             }
 
-            CloseCon();
-
             return reservations;
+        }
+
+        public ReservationDTO GetById(int id)
+        {
+            ReservationDTO reservation = null;
+
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = "SELECT * FROM Reservations WHERE Id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
+
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    reservation = new ReservationDTO((int)reader["Id"], id, (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]);
+                }
+
+                CloseCon();
+            }
+            finally
+            {
+                CloseCon();
+            }
+
+            return reservation;
         }
     }
 }

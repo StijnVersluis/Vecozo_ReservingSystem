@@ -1,0 +1,19 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+    Layout = "_ErrorLayout";
+}
+
+<img class="error-logo" src="/images/Logo_Bg-removed.png" />
+<h1 class="text-danger text-center statusCode">@Model.StatusCode</h1>
+
+<div class="container d-flex flex-column p-0">
+    @if (Model.ShowRequestId)
+    {
+        <p style="display: inline-bloc" class="text-center">
+            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+
+    <a style="display: inline-block" class="text-center text-decoration-none" asp-action="Index">Ga naar dashboard</a>
+</div>

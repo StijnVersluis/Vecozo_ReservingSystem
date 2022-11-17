@@ -2,12 +2,10 @@
 using IntefaceLayer.DTO;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Diagnostics;
 
 namespace DataLayer
 {
@@ -21,64 +19,92 @@ namespace DataLayer
 
         public List<UserDTO> GetUsers(int id)
         {
-            OpenCon(); 
-
             List<int> userIds = new List<int>();
             List<UserDTO> users = new List<UserDTO>();
 
-            DbCom.CommandText = "SELECT * FROM TeamMembers WHERE Team_Id = @id";
-            DbCom.Parameters.AddWithValue("id", id);
-
-            reader = DbCom.ExecuteReader();
-
-            while (reader.Read())
+            try
             {
-                userIds.Add((int)reader["User_Id"]);
-            }
-            CloseCon();
-            userIds.ForEach(userid =>
-            {
-                OpenCon();
-                DbCom.CommandText = "SELECT * FROM Users WHERE Id = @id";
-                DbCom.Parameters.Clear();
-                DbCom.Parameters.AddWithValue("id", userid);
+                if (DbCom.Connection.State == ConnectionState.Closed)
+                {
+                    OpenCon();
+                }
+
+                DbCom.CommandText = "SELECT * FROM TeamMembers WHERE Team_Id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
 
                 reader = DbCom.ExecuteReader();
 
-                while(reader.Read())
+                while (reader.Read())
                 {
-                    users.Add(new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                    userIds.Add((int)reader["User_Id"]);
                 }
                 CloseCon();
-            });
+                userIds.ForEach(userid =>
+                {
+                    OpenCon();
+
+                    DbCom.Parameters.Clear();
+                    DbCom.CommandText = "SELECT * FROM Users WHERE Id = @id";
+                    DbCom.Parameters.AddWithValue("id", userid);
+
+                    reader = DbCom.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        users.Add(new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                    }
+
+                    CloseCon();
+                });
+            }
+            catch (Exception e) { 
+                Debug.WriteLine(e.Message); 
+            }
+
             return users;
         }
 
         public bool AddUser(TeamDTO team, UserDTO user)
         {
-            OpenCon();
+            bool success = false;
 
-            DbCom.Parameters.Clear();
-            DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id) Values (@tId, @uId)";
-            DbCom.Parameters.AddWithValue("tId", team.Id);
-            DbCom.Parameters.AddWithValue("uId", user.Id);
+            try
+            {
+                OpenCon();
 
-            bool success = DbCom.ExecuteNonQuery()>0;
-            CloseCon();
+                DbCom.Parameters.Clear();
+                DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id) Values (@tId, @uId)";
+                DbCom.Parameters.AddWithValue("tId", team.Id);
+                DbCom.Parameters.AddWithValue("uId", user.Id);
+
+                success = DbCom.ExecuteNonQuery() > 0;
+            } finally
+            {
+                CloseCon();
+            }
+
             return success;
         }
 
         public bool RemoveUser(TeamDTO team, UserDTO user)
         {
-            OpenCon();
+            bool success = false;
 
-            DbCom.Parameters.Clear();
-            DbCom.CommandText = "DELETE FROM TeamMembers WHERE Team_Id = @tId and User_Id = @uId";
-            DbCom.Parameters.AddWithValue("tId", team.Id);
-            DbCom.Parameters.AddWithValue("uId", user.Id);
+            try
+            {
+                OpenCon();
 
-            bool success = DbCom.ExecuteNonQuery() > 0;
-            CloseCon();
+                DbCom.Parameters.Clear();
+                DbCom.CommandText = "DELETE FROM TeamMembers WHERE Team_Id = @tId and User_Id = @uId";
+                DbCom.Parameters.AddWithValue("tId", team.Id);
+                DbCom.Parameters.AddWithValue("uId", user.Id);
+
+                success = DbCom.ExecuteNonQuery() > 0;
+            } finally
+            {
+                CloseCon();
+            }
+
             return success;
         }
 
@@ -86,7 +112,7 @@ namespace DataLayer
         {
             try
             {
-                DBConnection.Open();
+                OpenCon();
                 DbCom.CommandText = "INSERT INTO Teams (Name) Values (@name) SELECT SCOPE_IDENTITY()";
                 DbCom.Parameters.AddWithValue("name", name);
                 decimal idDec = (decimal)DbCom.ExecuteScalar();
@@ -101,6 +127,7 @@ namespace DataLayer
 
                 userids.ForEach(userid =>
                 {
+                    if (GlobalVariables.LoggedInUser.Id == userid) return;
                     DbCom.Parameters.Clear();
                     DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id, Is_Team_Admin) Values (@tId, @uId, @isAdmin)";
                     DbCom.Parameters.AddWithValue("tId", idDec);
@@ -109,68 +136,232 @@ namespace DataLayer
 
                     DbCom.ExecuteNonQuery();
                 });
+
                 return true;
             } catch (Exception e)
             {
-                Console.Write(e);
+                Debug.WriteLine(e.Message);
                 return false;
+            } finally
+            {
+                CloseCon();
+            }
+        }
+
+        public bool EditTeam(TeamDTO team, List<int> userids)
+        {
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = "" +
+                    "UPDATE Teams SET Name = @a WHERE Id = @b " +
+                    "DELETE FROM TeamMembers WHERE Team_Id = @c AND Id IN (SELECT Id FROM TeamMembers WHERE Is_Team_Admin != 1)";
+
+                DbCom.Parameters.AddWithValue("a", team.Name);
+                DbCom.Parameters.AddWithValue("b", team.Id);
+                DbCom.Parameters.AddWithValue("c", team.Id);
+                DbCom.ExecuteNonQuery();
+                DbCom.Parameters.Clear();
+
+                userids.ForEach(userid =>
+                {
+                    if (userid == GlobalVariables.LoggedInUser.Id) return;
+
+                    DbCom.Parameters.Clear();
+                    DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id, Is_Team_Admin) Values (@tId, @uId, @isAdmin)";
+                    DbCom.Parameters.AddWithValue("tId", team.Id);
+                    DbCom.Parameters.AddWithValue("uId", userid);
+                    DbCom.Parameters.AddWithValue("isAdmin", 0);
+                    DbCom.ExecuteNonQuery();
+                });
+
+                return true;
+            }
+            catch (Exception e) 
+            { 
+                Debug.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                CloseCon();
             }
         }
 
         public List<TeamDTO> GetTeamsOfUser(int userId)
         {
-            OpenCon();
             List<int> teamIds = new List<int>();
             List<TeamDTO> teams = new List<TeamDTO>();
 
-            DbCom.CommandText = "SELECT Team_Id FROM TeamMembers WHERE User_Id = @userId";
-            DbCom.Parameters.AddWithValue("userId", userId);
-
-            reader = DbCom.ExecuteReader();
-
-            while (reader.Read())
-            {
-                teamIds.Add(reader.GetInt32(0));
-            }
-            CloseCon();
-            teamIds.ForEach(teamId =>
+            try
             {
                 OpenCon();
-                reader = null;
-                DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
-                DbCom.Parameters.Clear();
-                DbCom.Parameters.AddWithValue("id", teamId);
+
+                DbCom.CommandText = "SELECT Team_Id FROM TeamMembers WHERE User_Id = @userId";
+                DbCom.Parameters.AddWithValue("userId", userId);
 
                 reader = DbCom.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    teams.Add(new TeamDTO((int)reader["Id"], (string)reader["Name"]));
+                    teamIds.Add(reader.GetInt32(0));
                 }
                 CloseCon();
-            });
-            CloseCon();
+                teamIds.ForEach(teamId =>
+                {
+                    OpenCon();
+                    reader = null;
+                    DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
+                    DbCom.Parameters.Clear();
+                    DbCom.Parameters.AddWithValue("id", teamId);
+
+                    reader = DbCom.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        teams.Add(new TeamDTO((int)reader["Id"], (string)reader["Name"]));
+                    }
+                    CloseCon();
+                });
+                CloseCon();
+            } catch(Exception e) { Debug.WriteLine(e.Message); }
+
+
             return teams;
         }
 
-        public List<TeamDTO> GetTeams()
+        public bool DeleteTeam(int id)
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            try
+            {
+                OpenCon();
+                DbCom.Parameters.Clear();
+                DbCom.CommandText =
+                    "DELETE FROM TeamMembers WHERE Team_Id = @id " +
+                    "DELETE FROM Teams WHERE Id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
+
+                result = DbCom.ExecuteNonQuery() > 0 ? true : false;
+            }
+            finally
+            {
+                CloseCon();
+            }
+
+            return result;
         }
 
         public TeamDTO GetTeam(int id)
         {
-            OpenCon();
             TeamDTO team = null;
-            DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
-            DbCom.Parameters.AddWithValue("id", id);
-            reader = DbCom.ExecuteReader();
-            while (reader.Read())
+
+            try
             {
-                team = new TeamDTO((int)reader["Id"], (string)reader["Name"]);
+                OpenCon();
+                DbCom.Parameters.Clear();
+                DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
+                    team = new TeamDTO((int)reader["Id"], (string)reader["Name"]);
+                }
+            } finally
+            {
+                CloseCon();
             }
-            CloseCon();
+
             return team;
+        }
+
+        public bool LeaveTeam(int teamId, int userId)
+        {
+            bool result = false;
+
+            try
+            {
+                OpenCon();
+                DbCom.Parameters.Clear();
+                DbCom.CommandText = "DELETE FROM TeamMembers WHERE Team_Id = @TeamId AND User_Id = @UserId AND Is_Team_Admin = 0";
+                DbCom.Parameters.AddWithValue("TeamId", teamId);
+                DbCom.Parameters.AddWithValue("UserId", userId);
+                int rowsAffected = DbCom.ExecuteNonQuery();
+
+                result =  rowsAffected > 0;
+                if (result)
+                {
+                    // The team admin is the only one left.
+                    var users = GetUsers(teamId);
+                    if (users.Count == 1)
+                    {
+                        // The team has to get deleted.
+                        CloseCon();
+                        result = DeleteTeam(teamId);
+                    }
+                }
+            } 
+            finally
+            {
+                if (DbCom.Connection.State == ConnectionState.Open)
+                {
+                    CloseCon();
+                }
+            }
+
+            return result;
+        }
+
+        public bool IsTeamAdmin(int teamId, int userId)
+        {
+            bool result = false;
+
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = "SELECT * FROM TeamMembers WHERE Team_Id = @TeamId AND User_Id = @UserId AND Is_Team_Admin = 1";
+                DbCom.Parameters.AddWithValue("TeamId", teamId);
+                DbCom.Parameters.AddWithValue("UserId", userId);
+                reader = DbCom.ExecuteReader();
+                DbCom.Parameters.Clear();
+
+                result = reader.HasRows ? true : false;
+
+            }
+            finally
+            {
+                CloseCon();
+            }
+
+            return result;
+        }
+
+        public UserDTO GetTeamAdmin(int teamId)
+        {
+            UserDTO user = null;
+
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = 
+                    "SELECT Users.* FROM Users " +
+                    "INNER JOIN TeamMembers " +
+                    "ON TeamMembers.User_Id = Users.Id " +
+                    "WHERE TeamMembers.Is_Team_Admin = 1";
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    user = new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
+                }
+            }
+            finally
+            {
+                CloseCon();
+            }
+
+            return user;
         }
     }
 }

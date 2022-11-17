@@ -1,13 +1,8 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿$(document).ready(function () {
+    var date = new Date().toLocaleString();
+    $("#DateSelectorInput").val(date);
 
-// Write your JavaScript code.
-
-$(document).ready(function () {
-    var date = new Date();
-
-    var currentDateFormat = date.toISOString().substring(0, 10) + " " + date.toLocaleString().substring(12, 17);
-    $("#DateSelectorInput").val(currentDateFormat)
+    loadWorkzones(date);
 });
 
 function CheckTeamInput() {
@@ -24,6 +19,44 @@ function CheckTeamInput() {
     }
 }
 
+const staticPopupModals = [
+    {
+        name: 'adHocModal',
+        handler: null
+    },
+
+    {
+        name: 'editTeamModal',
+        handler: async (team) => {
+            if (team != null) {
+                team.users.forEach(user => AddUserToTeam(user.id, user.name, team.owner.id == user.id ? true : false));
+            }
+        }
+    },
+
+    {
+        name: 'viewTeamModal',
+        handler: async (team) => {
+            GenerateTeamModal($('#viewTeamModal'), team);
+        }
+    }
+];
+
+staticPopupModals.forEach(async obj => {
+    $(`#${obj.name}`).modal({ backdrop: 'static', keyboard: false }, 'show');
+    if (obj.handler != null) {
+        const teamId = $('.team-modal-hidden-id').val();
+        if (teamId != null) {
+            const team = await getTeamInfo($('.team-modal-hidden-id').val());
+            obj.handler(team);
+        }
+    }
+});
+
+$("#DateSelectorInput").on('change', function (event) {
+    loadWorkzones(new Date(Date.parse(event.target.value)).toLocaleString());
+});
+
 $('#TeamSelectedModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
     var teamid = button.data('teamid') // Extract info from data-teamid attributes
@@ -35,36 +68,32 @@ $('#TeamSelectedModal').on('show.bs.modal', function (event) {
     modal.find('.modal-title').text('Team: ' + teamname)
 
     //fetch users
-    var html = fetch(window.location.origin + "/Team/Getusers/" + teamid).then(resp => resp.text()).then(data => GenerateTeamModal(modal, data));
+    var html = GetUsers(modal, teamid);
     console.log(html);
-})
+});
 
-function GenerateTeamModal(modal, data) {
-
-    let count = data.lastIndexOf("\,");
-    let result = data.substring(0, count) + data.substring(count + 1)
-
-    let userJson = JSON.parse(result.replaceAll("\\", ""))
-    console.log(userJson);
-    let userHtml = "<div class=\"list-group\">"
-    let users = userJson.Users;
-    for (var i = 0; i < Object.keys(users).length; i++) {
-        console.log(users[i])
-        userHtml +=
-            "<div class=\"list-group-item\"><div class=\"ml-3\">"
-            + "<input type=\"checkbox\" checked=\"true\" class=\"UserCheckBox form-check-input\" name=\"UserCheckBox"
-            + users[i].Id
-            + "\"><label class=\"form-check-label\" for=\"UserCheckBox"
-            + users[i].Id
-            + "\">"
-            + users[i].Name
-            + "</label></div></div>"
-    }
-    console.log(userHtml)
-    modal.find('.modal-body').html(userHtml)
+function GetUsers(modal, teamId) {
+    return fetch(window.location.origin + "/Team/Users/" + teamId).then(resp => resp.text()).then(data => GenerateTeamModal(modal, data));
 }
 
+function GenerateTeamModal(modal, data) {
+    let rawHtml = "<div class=\"list-group\">";
 
+    if (data != null) {
+        data.users.forEach(user => {
+            var name = user.id == data.owner.id ? "(Admin) " + user.name : user.name
+            rawHtml +=
+                "<div class=\"list-group-item\"><label>"
+                + name
+                + "</label></div>"
+        });
+    } else {
+        rawHtml += "Geen gegevens beschikbaar";
+    }
+
+    rawHtml += "</div>";
+    modal.find('.team-modal-members').html(rawHtml);
+}
 
 $('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
@@ -85,11 +114,11 @@ $('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
         "min": time
     })
 })
-var userbtns = $(".add-user-btn")
 
-$("#FilterUserInput").on("change", () => {
+$("#FilterUserInput").on("keyup", () => {
+    var userbtns = $(".add-user-btn")
     var input = $("#FilterUserInput");
-    var ft = fetch(window.location.origin + "/User/GetFilteredUsers?filterstr=" + input.val())
+    var ft = fetch(window.location.origin + "/User/Filter?str=" + input.val())
         .then((response) => response.text())
         .then((data) => {
             $("#FilteredUserList").html(data)
@@ -97,118 +126,84 @@ $("#FilterUserInput").on("change", () => {
         });
 })
 
-function AddUserToTeam(id, name) {
+function AddUserToTeam(id, name, isAdmin) {
     var list = $("#TeamAddedUsers")
     var input = $("#AddedUserIds")
     var ids = $("#AddedUserIds")
 
-    if (ids.val().indexOf(id) != -1) return
-    if (input.val() != "") input.val(input.val() + ", " + id)
+    if (ids.val()?.indexOf(id) != -1) return
+    if (input.val() != "") input.val(input.val() + "," + id)
     else input.val(id)
-    if (list.html() == "") list.html(CreateUserAddedHtml(id, name))
+    if (list.html() == "") list.html(CreateUserAddedHtml(id, name, isAdmin))
     else {
-        list.html(list.html() + CreateUserAddedHtml(id, name))
+        list.html(list.html() + CreateUserAddedHtml(id, name, isAdmin))
     }
 }
 
-function CreateUserAddedHtml(id, name) {
-    var namediv = $("<span>").html("" + name)
+function CreateUserAddedHtml(id, name, isAdmin) {
+    var namediv;
     var button = $("<button>").text("-")
     var listItem = $("<div>")
     var returnlist = $("<div>")
 
+    if (!isAdmin) {
+        namediv = $("<span>").html("" + name)
+        button.attr("type", "button")
+        button.attr("onclick", "RemoveUser(" + id + ")")
+        button.addClass("btn")
+        button.addClass("btn-danger")
+        button.addClass("w-auto")
+        button.onclick = "RemoveUser(" + id + ")"
+        listItem.addClass("p-1")
+
+        listItem.append(button)
+    } else {
+        namediv = $("<span>").html("(Admin) " + name)
+        listItem.addClass("p-2")
+    }
+
     namediv.addClass("ml-2")
 
-    button.attr("type", "button")
-    button.attr("onclick", "RemoveUser(" + id + ")")
-    button.addClass("btn")
-    button.addClass("btn-danger")
-    button.addClass("w-auto")
-    button.onclick = "RemoveUser(" + id + ")"
-
-    listItem.append(button)
     listItem.append(namediv)
     listItem.attr("id", "AddedUser" + id)
     listItem.addClass("mt-1")
     listItem.addClass("list-group-item")
-    listItem.addClass("p-1")
     returnlist.append(listItem)
     return returnlist.html()
 }
 
 function RemoveUser(id) {
-    //AddedUser3
-    $("#AddedUser" + id).remove()
-    var ids = $("#AddedUserIds")
-    if (ids.val().indexOf(", " + id) == -1) {
-        if (ids.val().indexOf(id) == 0) {
-            ids.val("")
-        }
-    } else {
-        ids.val(ids.val().substring(0, ids.val().indexOf(", " + id)) + ids.val().substring(ids.val().indexOf(", " + id) + 3))
+    let userIds = $("#AddedUserIds").val()?.split(",");
+    if (userIds == null) return;
+
+    $("#AddedUser" + id)?.remove();
+    if (userIds.find(x => x == id) != null) {
+        $("#AddedUserIds").val(userIds.filter(x => x != id))
     }
-    console.log()
 }
 
-function FloorSelectChange() {
-    loadWorkzones();
-    LoadImage();
+async function getTeamInfo(id) {
+    const response = await fetch(window.location.origin + `/Team/Info/${id}`);
+    const object = await response.json();
+
+    return object;
 }
 
-function loadWorkzones() {
-    fetch(window.location.origin + "/Workzone/GetFloor", {
-        method: "POST",
-        body: JSON.stringify({
-            floorId: $('#FloorSelectorSelect').val()
-        }),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        }
+function loadWorkzones(date) {
+    if (date == null) {
+        date = new Date().toLocaleString();
+    }
+
+    let floorId = $('#FloorSelectorSelect').val();
+
+    fetch(window.location.origin + `/Workzone/Floor/${floorId}?date=${date}`, {
+        method: "GET"
     })
-        .then(resp => resp.text())
-        .then(data => $("#WorkSpotSelectList").html(data))
-}
-
-//Image overlay
-LoadImage();
-
-function LoadImage() {
-    console.log("test")
-    var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions", {
-        method: "POST",
-        body: JSON.stringify({
-            floorId: $('#FloorSelectorSelect').val()
-        }),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        }
+    .then(resp => resp.text())
+    .then(data => {
+        $("#WorkSpotSelectList").html(data)
     })
-        .then(resp => resp.json())
-        .then(data => GenerateImagePoints(data))
+    .catch(err => {
+        console.log(err);
+    })
 }
-
-function GenerateImagePoints(data) {
-    const overlay = document.querySelector('.image-overlay');
-    const image = document.querySelector('#FloorImage');
-
-    data.forEach((point) => {
-        console.log("image height = " + image.height)
-        console.log("scale = " + image.height / 225)
-        let scale = (image.height / 225)
-        let maxMinScale = 1 - scale
-        let properYPos = 1 - maxMinScale / 2
-        let y = ((image.height * (point.ypos / 100)) * properYPos)
-        let img = document.createElement('img');
-        img.style.left = (point.xpos + "%");
-        img.style.top =  y + "px";
-        img.title = point.name;
-        img.className = 'overlay-image';
-        img.style.scale = scale;
-        img.src = "/images/Workspace.svg"
-        overlay.appendChild(img);
-        //img.data = point.data;
-        //img.addEventListener('mouseenter', handleMouseEnter);
-        //img.addEventListener('mouseleave', handleMouseLeave);
-    });
-}
-

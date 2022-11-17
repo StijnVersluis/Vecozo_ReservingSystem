@@ -2,7 +2,9 @@
 using IntefaceLayer.DTO;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Net;
 using System.Xml.Linq;
 
@@ -17,15 +19,23 @@ namespace DataLayer
         //Done
         public List<UserDTO> GetAll()
         {
-            OpenCon();
             List<UserDTO> list = new List<UserDTO>();
-            DbCom.CommandText = "SELECT * FROM Users";
-            reader = DbCom.ExecuteReader();
 
-            while(reader.Read())
+            try
             {
-                list.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                OpenCon();
+                DbCom.CommandText = "SELECT * FROM Users";
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    list.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                }
+            } finally
+            {
+                CloseCon();
             }
+
             return list;
         }
         //Done
@@ -48,28 +58,47 @@ namespace DataLayer
         //Done
         public UserDTO FindUserByEmail(string email)
         {
-            DBConnection.Open();
-            DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE Email = @name";
-            DbCom.Parameters.AddWithValue("@name", email);
-            reader = DbCom.ExecuteReader();
             UserDTO user = null;
-            while (reader.Read())
+
+            try
             {
-                user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
+                OpenCon();
+                DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE Email = @email";
+                DbCom.Parameters.AddWithValue("@email", email);
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
+                    user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
+                }
+            } catch (Exception e)
+            {
+                Debug.WriteLine(e.Message); 
             }
-            DBConnection.Close();
+            finally
+            {
+                CloseCon();
+            }
+
             return user;
         }
         //Done
         public string GetUserPassword(UserDTO user)
         {
-            DBConnection.Open();
-            DbCom.CommandText = "SELECT Password FROM Users WHERE Id = @id";
-            DbCom.Parameters.AddWithValue("@id", user.Id);
-            reader = DbCom.ExecuteReader();
             string password = String.Empty;
-            while (reader.Read()) { password = (string)reader["Password"]; }
-            DBConnection.Close();
+
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = "SELECT Password FROM Users WHERE Id = @id";
+                DbCom.Parameters.AddWithValue("@id", user.Id);
+                reader = DbCom.ExecuteReader();
+                while (reader.Read()) { password = (string)reader["Password"]; }
+            }
+            finally
+            {
+                CloseCon();
+            }
+
             return password;
         }
         //Done
@@ -92,39 +121,70 @@ namespace DataLayer
                 return hash;
             }
         }
-        //Done
-        public UserDTO GetLoggedInUser()
-        {
-            return GlobalVariables.LoggedInUser;
-        }
-        //Done
-        public bool IsLoggedIn()
-        {
-            return GlobalVariables.LoggedInUser != null;
-        }
-        //Done
-        public void Logout()
-        {
-            GlobalVariables.LoggedInUser = null;
-        }
 
         public List<UserDTO> GetFilteredUsers(string filterStr)
         {
             List<UserDTO> users = new List<UserDTO>();
-            OpenCon();
+            var str = !String.IsNullOrEmpty(filterStr) ? filterStr : "DONT SELECT ALL";
 
-            DbCom.CommandText = "SELECT * FROM Users WHERE Name LIKE @str";
-            var str = "%" + filterStr + "%";
-            DbCom.Parameters.AddWithValue("str", str);
-
-            reader = DbCom.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                users.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                OpenCon();
+
+                DbCom.CommandText = "SELECT * FROM Users WHERE Name LIKE @name";
+                var name = "%" + str + "%";
+                DbCom.Parameters.AddWithValue("name", name);
+
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
+                    users.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                }
+            }
+            finally
+            {
+                CloseCon();
             }
 
-            CloseCon();
             return users;
+        }
+
+        public UserDTO GetUserById(int id)
+        {
+            UserDTO user = null;
+
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE Id = @id";
+                DbCom.Parameters.AddWithValue("@id", id);
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
+                    user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
+                }
+            }
+            finally
+            {
+                CloseCon();
+            }
+
+            return user;
+        }
+
+        public bool IsLoggedIn()
+        {
+            return GlobalVariables.LoggedInUser != null;
+        }
+
+        public UserDTO GetLoggedInUser()
+        {
+            return GlobalVariables.LoggedInUser;
+        }
+
+        public void Logout()
+        {
+            GlobalVariables.LoggedInUser = null;
         }
         #endregion
 

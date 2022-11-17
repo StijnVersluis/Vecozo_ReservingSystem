@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class GlobalVariables
+    public static class GlobalVariables
     {
         internal static UserDTO LoggedInUser = null;
     }

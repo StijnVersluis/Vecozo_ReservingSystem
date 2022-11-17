@@ -24,6 +24,7 @@ namespace BusinessLayer
             DateTime_Arriving = dateTime_Arriving;
             DateTime_Leaving = dateTime_Leaving;
         }
+
         public Reservation(int user_id, int workzone_id, DateTime dateTime_Arriving, DateTime dateTime_Leaving)
         {
             User_id = user_id;
@@ -40,13 +41,15 @@ namespace BusinessLayer
             this.DateTime_Arriving = reservationDTO.DateTime_Arriving;
             this.DateTime_Leaving = reservationDTO.DateTime_Leaving;
         }
+
         public ReservationDTO ToDTO()
         {
             return new ReservationDTO(id, User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving);
         }
+
         public ReservationDTO ToDTOWithoutId()
         {
             return new ReservationDTO(User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving);
-        }        
+        }
     }
 }
