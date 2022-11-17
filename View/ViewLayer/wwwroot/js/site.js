@@ -207,3 +207,46 @@ function loadWorkzones(date) {
         console.log(err);
     })
 }
+
+
+//Image overlay
+LoadImage();
+
+function LoadImage() {
+    var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions", {
+        method: "POST",
+        body: JSON.stringify({
+            floorId: $('#FloorSelectorSelect').val()
+        }),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(resp => resp.json())
+        .then(data => GenerateImagePoints(data))
+}
+
+function GenerateImagePoints(data) {
+    const overlay = document.querySelector('.image-overlay');
+    const image = document.querySelector('#FloorImage');
+
+    data.forEach((point) => {
+        console.log("image height = " + image.height)
+        console.log("scale = " + image.height / 225)
+        let scale = (image.height / 225)
+        let maxMinScale = 1 - scale
+        let properYPos = 1 - maxMinScale / 2
+        let y = ((image.height * (point.ypos / 100)) * properYPos)
+        let img = document.createElement('img');
+        img.style.left = (point.xpos + "%");
+        img.style.top = y + "px";
+        img.title = point.name;
+        img.className = 'overlay-image';
+        img.style.scale = scale;
+        img.src = "/images/Workspace.svg"
+        overlay.appendChild(img);
+        //img.data = point.data;
+        //img.addEventListener('mouseenter', handleMouseEnter);
+        //img.addEventListener('mouseleave', handleMouseLeave);
+    });
+}

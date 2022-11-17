@@ -82,8 +82,17 @@ namespace ViewLayer.Controllers
                 formatted_date = date.ToString("yyyy-MM-dd HH:mm");
             }
 
-            var workzones = workzoneContainer.GetAllFromFloor(id, formatted_date).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            var workzones = workzoneContainer.GetAllFromFloorWithDate(id, formatted_date).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             return View(workzones);
         }
+        public JsonResult GetWorkzonePositions([FromBody] FloorJson collection)
+        {
+            var workzones = workzoneContainer.GetAllFromFloor(collection.floorId).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            return new JsonResult(workzones);
+        }
+    }
+    public class FloorJson
+    {
+        public int floorId;
     }
 }

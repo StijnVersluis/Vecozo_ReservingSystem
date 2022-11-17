@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
+using System;
 
 namespace DataLayer
 {
@@ -202,9 +203,14 @@ namespace DataLayer
             return workzones;
         }
 
-        public List<WorkzoneDTO> GetAllFromFloor(int id, string date)
+        public List<WorkzoneDTO> GetAllFromFloorWithDate(int id, string date)
         {
             return GetAvailableWorkzones(date, id);
+        }
+
+        public List<WorkzoneDTO> GetAllFromFloor(int id)
+        {
+            return GetAll().Where(workzone => workzone.Floor == id).ToList();
         }
     }
 }

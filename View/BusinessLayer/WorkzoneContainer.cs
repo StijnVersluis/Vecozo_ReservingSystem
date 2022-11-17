@@ -43,9 +43,13 @@ namespace BusinessLayer
         {
             return workzoneContainer.GetAll().ConvertAll(x => new Workzone(x));
         }
-        public List<Workzone> GetAllFromFloor(int id, string date)
+        public List<Workzone> GetAllFromFloor(int id)
         {
-            return workzoneContainer.GetAllFromFloor(id, date).ConvertAll(x => new Workzone(x));
+            return workzoneContainer.GetAllFromFloor(id).ConvertAll(x => new Workzone(x));
+        }
+        public List<Workzone> GetAllFromFloorWithDate(int id, string date)
+        {
+            return workzoneContainer.GetAllFromFloorWithDate(id, date).ConvertAll(x => new Workzone(x));
         }
     }
 }
