@@ -237,6 +237,7 @@ function GenerateImagePoints(data) {
     const image = document.querySelector('#FloorImage');
 
     data.forEach((point) => {
+        if (point.ypos == "" || point.xpos == "") { return };
         let scale = (image.height / 225)
         let maxMinScale = 1 - scale
         let properYPos = 1 - maxMinScale / 2
