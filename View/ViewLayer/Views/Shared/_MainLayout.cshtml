@@ -41,7 +41,9 @@
                                         @if (roleContainer.GetRole(userContainer.GetLoggedInUser().Role).Name == "Administrator")
                                         {
                                             <a asp-action="Index" asp-controller="Admin" class="dropdown-item">Beheerder</a>
+                                           
                                         }
+                                        
 
                                         <a class="dropdown-item" asp-action="Logout" asp-controller="Auth">
                                             Uitloggen

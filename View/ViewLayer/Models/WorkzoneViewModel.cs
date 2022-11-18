@@ -1,14 +1,19 @@
 ﻿using BusinessLayer;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ViewLayer.Models
 {
     public class WorkzoneViewModel
     {
-        public int Id { get; private set; }
-        public string Name { get; private set; }
-        public int Workspaces { get; private set; }
-        public int Floor { get; private set; }
-        public bool TeamOnly { get; private set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Workspaces { get; set; }
+        public int Floor { get; set; }
+        public int FloorId { get; set; }    
+        public bool TeamOnly { get; set; }
+        [DisplayName("Verdiepingen")]
+        public List<FloorViewModel> Floors { get; set; }
 
         public WorkzoneViewModel(Workzone workzone)
         {
@@ -17,6 +22,10 @@ namespace ViewLayer.Models
             Workspaces = workzone.Workspaces;
             Floor = workzone.Floor;
             TeamOnly = workzone.TeamOnly;
+        }
+
+        public WorkzoneViewModel()
+        {
         }
     }
 }

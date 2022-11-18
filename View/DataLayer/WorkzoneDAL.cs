@@ -212,5 +212,29 @@ namespace DataLayer
         {
             return GetAll().Where(workzone => workzone.Floor == id).ToList();
         }
+        public bool Updateworkspace(WorkzoneDTO workzoneDTO)
+        {
+            try
+            {
+                OpenCon();
+                var command = "update Workzones set Workspaces=@Workspaces Where Id=@Id";
+                DbCom.CommandText = command;
+                DbCom.Parameters.AddWithValue("@Id", workzoneDTO.Id);
+                DbCom.Parameters.AddWithValue("@Workspaces",workzoneDTO.Workspaces);
+                return DbCom.ExecuteNonQuery() > 0;
+              
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+
+                CloseCon();
+            }
+            
+        }
     }
 }

@@ -9,9 +9,9 @@ namespace BusinessLayer
 {
     public class Workzone
     {
-        public int Id { get; private set; }
+        public int Id { get;  set; }
         public string Name { get; private set; }
-        public int Workspaces { get; private set; }
+        public int Workspaces { get;  set; }
         public int Floor { get; private set; }
         public bool TeamOnly { get; private set; }
 
@@ -30,6 +30,10 @@ namespace BusinessLayer
             Workspaces = workzone.Workspaces;
             Floor = workzone.Floor;
             TeamOnly = workzone.TeamOnly;
+        }
+
+        public Workzone()
+        {
         }
     }
 }
