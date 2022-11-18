@@ -2,7 +2,10 @@
     var date = new Date().toLocaleString();
     $("#DateSelectorInput").val(date);
 
-    if (window.location.pathname == "/") loadWorkzones();
+    if (window.location.pathname == "/") {
+        loadWorkzones();
+        LoadImage();
+    }
 });
 
 function CheckTeamInput() {
@@ -210,18 +213,8 @@ function loadWorkzones(date) {
 
 
 //Image overlay
-LoadImage();
-
 function LoadImage() {
-    var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions", {
-        method: "POST",
-        body: JSON.stringify({
-            floorId: $('#FloorSelectorSelect').val()
-        }),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        }
-    })
+    var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
         .then(resp => resp.json())
         .then(data => GenerateImagePoints(data))
 }
@@ -238,12 +231,15 @@ function GenerateImagePoints(data) {
         let properYPos = 1 - maxMinScale / 2
         let y = ((image.height * (point.ypos / 100)) * properYPos)
         let img = document.createElement('img');
+        console.log("y = " + y)
+        console.log(point)
         img.style.left = (point.xpos + "%");
         img.style.top = y + "px";
         img.title = point.name;
         img.className = 'overlay-image';
         img.style.scale = scale;
         img.src = "/images/Workspace.svg"
+        console.log(img)
         overlay.appendChild(img);
         //img.data = point.data;
         //img.addEventListener('mouseenter', handleMouseEnter);

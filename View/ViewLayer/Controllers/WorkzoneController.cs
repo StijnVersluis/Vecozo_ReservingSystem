@@ -23,9 +23,9 @@ namespace ViewLayer.Controllers
                 return NotFound();
             }
 
-            return View(new WorkzoneReservationViewModel 
+            return View(new WorkzoneReservationViewModel
             {
-                Workzone_Name = result.Name, 
+                Workzone_Name = result.Name,
                 Workzone_id = result.Id,
                 Workspaces = result.Workspaces
             });
@@ -53,7 +53,8 @@ namespace ViewLayer.Controllers
                         messages.ForEach(x => ModelState.AddModelError(String.Empty, x));
                         return View("Index", model);
                     }
-                } else
+                }
+                else
                 {
                     ModelState.AddModelError(String.Empty, $"{workzone.Name} kan niet gereserveerd worden, probeer het later nog eens.");
                 }
@@ -85,9 +86,10 @@ namespace ViewLayer.Controllers
             var workzones = workzoneContainer.GetAllFromFloorWithDate(id, formatted_date).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             return View(workzones);
         }
-        public JsonResult GetWorkzonePositions([FromBody] FloorJson collection)
+
+        public JsonResult GetWorkzonePositions(int id)
         {
-            var workzones = workzoneContainer.GetAllFromFloor(collection.floorId).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            var workzones = workzoneContainer.GetAllFromFloor(id).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             return new JsonResult(workzones);
         }
     }
