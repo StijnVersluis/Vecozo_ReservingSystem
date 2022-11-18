@@ -3,6 +3,7 @@ for details on configuring this project to bundle and minify static web assets. 
 
 :root {
     --c-light: #f8f9fa;
+    --color-vec-primary: #1b6ec2;
 }
 
 *, html {
@@ -275,4 +276,11 @@ html {
         position: fixed;
         width: 100%;
     }
+}
+
+.team-list-item.active {
+    background: var(--color-vec-primary);
+}
+.team-list-item.active:hover {
+    background: var(--color-vec-primary);
 }

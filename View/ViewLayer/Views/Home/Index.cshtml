@@ -89,10 +89,10 @@
                     </div>
                     <a asp-action="Create" asp-controller="Team" class="btn btn-primary font-weight-bold">+</a>
                 </div>
-                <div id="TeamList" class="list-group team-list d-none height-150 scrollable-div">
+                <div id="TeamList" class="list-group team-list d-none height-150 scrollable-div mt-2">
                     @foreach (var team in teams)
                     {
-                        <a asp-action="Details" asp-controller="Team" asp-route-id="@team.Id" class="list-group-item team-list-item mr-1">@Html.Encode(team.Name)</a>
+                        <a onclick="SelectTeam(@team.Id)" class="list-group-item team-list-item mr-1">@Html.Encode(team.Name)</a>
                     }
                 </div>
                 <hr style="height: 0.5px; background-color: #4525F2;" />
