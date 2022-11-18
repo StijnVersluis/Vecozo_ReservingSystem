@@ -57,6 +57,11 @@ namespace BusinessLayer
             WorkzoneDTO workzoneDTO = new WorkzoneDTO();
             workzoneDTO.Workspaces = workzone.Workspaces;
             workzoneDTO.Id = workzone.Id;   
+            workzoneDTO.PositionX = workzone.PositionX;
+            workzoneDTO.PositionY = workzone.PositionY;
+            workzoneDTO.Floor=workzone.Floor;
+            workzoneDTO.Name=workzone.Name;
+            workzoneDTO.TeamOnly=workzone.TeamOnly;
             return workzoneContainer.Updateworkspace(workzoneDTO);
         }
     }

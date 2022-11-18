@@ -29,7 +29,7 @@ namespace DataLayer
 
                 while (reader.Read())
                 {
-                    workzone = new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"]);
+                    workzone = new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"],(string)reader["PositionX"],(string)reader["PositionY"] );
                 }
             }
             finally
@@ -217,10 +217,16 @@ namespace DataLayer
             try
             {
                 OpenCon();
-                var command = "update Workzones set Workspaces=@Workspaces Where Id=@Id";
+                var command = "update Workzones set Workspaces=@Workspaces, Name=@Name,PositionX=@PositionX,PositionY=@PositionY,Floor=@Floor,TeamOnly=@TeamOnly Where Id=@Id";
                 DbCom.CommandText = command;
                 DbCom.Parameters.AddWithValue("@Id", workzoneDTO.Id);
-                DbCom.Parameters.AddWithValue("@Workspaces",workzoneDTO.Workspaces);
+                DbCom.Parameters.AddWithValue("@Name",workzoneDTO.Name);
+                DbCom.Parameters.AddWithValue("@Floor", workzoneDTO.Floor);
+                DbCom.Parameters.AddWithValue("@PositionX", workzoneDTO.PositionX);
+                DbCom.Parameters.AddWithValue("@PositionY", workzoneDTO.PositionY);
+                DbCom.Parameters.AddWithValue("@TeamOnly", workzoneDTO.TeamOnly);
+                DbCom.Parameters.AddWithValue("@Workspaces", workzoneDTO.Workspaces);
+
                 return DbCom.ExecuteNonQuery() > 0;
               
             }

@@ -22,6 +22,13 @@
             <th>
                 @Html.DisplayNameFor(model => model.TeamOnly)
             </th>
+             <th>
+                @Html.DisplayNameFor(model => model.PositionX)
+            </th>
+              <th>
+                @Html.DisplayNameFor(model => model.PositionY)
+            </th>
+            
             <th>
                 Operations
             </th>
@@ -41,6 +48,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.TeamOnly)
+            </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.PositionX)
+            </td>
+              <td>
+                @Html.DisplayFor(modelItem => item.PositionY)
             </td>
             <td>
                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">Update Werkblok</a>

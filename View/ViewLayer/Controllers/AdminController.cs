@@ -41,11 +41,17 @@ namespace ViewLayer.Controllers
                 Workzone workzone = new Workzone();
                 workzone.Id = workzoneViewModel.Id;
                 workzone.Workspaces = workzoneViewModel.Workspaces;
+                workzone.PositionX = workzoneViewModel.PositionX;
+                workzone.PositionY = workzoneViewModel.PositionY;
+                workzone.Name = workzoneViewModel.Name;
+                workzone.TeamOnly=workzoneViewModel.TeamOnly;
+                workzone.Floor = workzoneViewModel.Floor;
+
                 var resut = workzoneContainer.Updateworkspace(workzone);
                 if (resut)
                 {
 
-                    return RedirectToAction("GetWorkspace", "Workzone");
+                    return RedirectToAction("Edit", workzoneViewModel.Id);
                 }
                 else
                 {

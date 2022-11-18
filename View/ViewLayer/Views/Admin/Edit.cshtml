@@ -20,30 +20,45 @@
             </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input disabled asp-for="Name" class="form-control" />
+                <input  asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+         @*   <div class="form-group">
                 <label asp-for="Floor" class="control-label"></label>
                 <input asp-for="Floor" class="form-control" />
                 <span asp-validation-for="Floor" class="text-danger"></span>
-            </div>
+            </div>*@
 
             <div class="form-group">
                 <label asp-for="Workspaces" class="control-label"></label>
                 <input asp-for="Workspaces" class="form-control" />
                 <span asp-validation-for="Workspaces" class="text-danger"></span>
             </div>
+             <div class="form-group">
+                <label asp-for="PositionX" class="control-label"></label>
+                <input asp-for="PositionX" class="form-control" />
+                <span asp-validation-for="PositionX" class="text-danger"></span>
+            </div>
+              <div class="form-group">
+                <label asp-for="PositionY" class="control-label"></label>
+                <input asp-for="PositionY" class="form-control" />
+                <span asp-validation-for="PositionY" class="text-danger"></span>
+            </div>
+             <div class="form-group">
+                <label asp-for="TeamOnly" class="control-label"></label>
+                <input type="checkbox" asp-for="TeamOnly" class="form-control" />
+                <span asp-validation-for="TeamOnly" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Floors" class="control-label"></label>
-                <select asp asp-for="FloorId" class="form-control" asp-items='@new SelectList(Model.Floors, "Id", "Name")'>
+                <select  asp-for="Floor" class="form-control" asp-items='@new SelectList(Model.Floors, "Id", "Name")'>
                 </select>
             </div>
 
 
             <div class="form-group">
-                <input type="submit" asp-action="Edit" asp-controller="Workzone" value="Save" class="btn btn-success" />
+                <input type="submit"  value="Update" class="btn btn-success" />
             </div>
         </form>
     </div>
