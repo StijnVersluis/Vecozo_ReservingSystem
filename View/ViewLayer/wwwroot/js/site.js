@@ -192,6 +192,11 @@ async function getTeamInfo(id) {
     return object;
 }
 
+function FloorSelectChange() {
+    loadWorkzones();
+    LoadImage();
+}
+
 function loadWorkzones(date) {
     if (date == null) {
         date = new Date().toLocaleString();
@@ -214,32 +219,36 @@ function loadWorkzones(date) {
 
 //Image overlay
 function LoadImage() {
+    GenerateNewImage()
     var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
         .then(resp => resp.json())
         .then(data => GenerateImagePoints(data))
 }
 
+function GenerateNewImage() {
+    const image = document.querySelector('#FloorImage');
+    image.src = "/images/Verdieping-" + $("#FloorSelectorSelect").val() + ".jpg"
+    $("#ImageOverlay").html("")
+}
+
 function GenerateImagePoints(data) {
+    console.log(data)
     const overlay = document.querySelector('.image-overlay');
     const image = document.querySelector('#FloorImage');
 
     data.forEach((point) => {
-        console.log("image height = " + image.height)
-        console.log("scale = " + image.height / 225)
+        if (point.ypos == "" || point.xpos == "") { return };
         let scale = (image.height / 225)
         let maxMinScale = 1 - scale
         let properYPos = 1 - maxMinScale / 2
         let y = ((image.height * (point.ypos / 100)) * properYPos)
         let img = document.createElement('img');
-        console.log("y = " + y)
-        console.log(point)
         img.style.left = (point.xpos + "%");
         img.style.top = y + "px";
         img.title = point.name;
         img.className = 'overlay-image';
         img.style.scale = scale;
         img.src = "/images/Workspace.svg"
-        console.log(img)
         overlay.appendChild(img);
         //img.data = point.data;
         //img.addEventListener('mouseenter', handleMouseEnter);

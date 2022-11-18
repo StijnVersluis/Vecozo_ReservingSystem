@@ -51,7 +51,7 @@
                 <div id="FloorSelector" class="select-menu-item">
                     @if (floors.Count != 0)
                     {
-                        <select id="FloorSelectorSelect" class="form-control" onchange="loadWorkzones()">
+                        <select id="FloorSelectorSelect" class="form-control" onchange="FloorSelectChange()">
                             @foreach (var floor in floors)
                             {
                                 <option value="@floor.Id">@Html.Encode(floor.Name)</option>
@@ -132,7 +132,7 @@
         </div>
         <div id="WorkspaceHotspots" class="col-md-9 d-none d-md-block">
             <div class="imagemap">
-                <div class="image-overlay"></div>
+                <div id="ImageOverlay" class="image-overlay"></div>
                 <div class="image-wrapper">
                     <img id="FloorImage" src="~/images/Verdieping-1.jpg" width="100%"/>
                 </div>
