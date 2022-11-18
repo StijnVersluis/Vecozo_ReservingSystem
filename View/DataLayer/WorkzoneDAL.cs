@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using System;
+using System.Reflection.Metadata.Ecma335;
 
 namespace DataLayer
 {
@@ -210,7 +211,21 @@ namespace DataLayer
 
         public List<WorkzoneDTO> GetAllFromFloor(int id)
         {
-            return GetAll().Where(workzone => workzone.Floor == id).ToList();
+            var workzones = new List<WorkzoneDTO>();
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = "SELECT * FROM Workzones WHERE Floor = @floor";
+                DbCom.Parameters.AddWithValue("floor", id);
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
+                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (string)reader["PositionX"], (string)reader["PositionY"]));
+                }
+            }
+            catch (Exception e) { }
+            finally { CloseCon(); }
+            return workzones;
         }
     }
 }
