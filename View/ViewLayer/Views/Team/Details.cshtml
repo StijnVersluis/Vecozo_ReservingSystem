@@ -17,18 +17,18 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label asp-for="Name">Team Naam</label>
+                            <label asp-for="Name">Teamnaam:</label>
                             <input asp-for="Name" class="form-control" autocomplete="off" />
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-6">
-                                <label>Hudige Leden</label>
+                                <label>Huidige Leden:</label>
                                 <div id="TeamAddedUsers" class="list-group"></div>
                                 <input asp-for="AddedUserIds"/>
                             </div>
                             <div class="col-6">
-                                <label for="FilterUserInput">Medewerkers Zoeken</label>
+                                <label for="FilterUserInput">Medewerkers zoeken:</label>
                                 <input id="FilterUserInput" type="text" class="form-control" autocomplete="off" />
                                 <div class="list-group scrollable-div height-400" id="FilteredUserList"></div>
                             </div>
@@ -36,7 +36,8 @@
                     </div>
                     <div class="modal-footer">
                         <input asp-for="Id" class="team-modal-hidden-id" />
-                        <button type="submit" class="btn btn-secondary">Wijzigen</button>
+                        <button type="submit" class="btn btn-secondary">Wijzigen</button>                       
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Archiveren</a>                            
                         <a asp-action="Index" class="ml-2">Sluiten</a>
                     </div>
                 </form>

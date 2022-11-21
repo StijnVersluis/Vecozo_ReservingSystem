@@ -187,5 +187,10 @@ namespace ViewLayer.Controllers
                 Users = new Team(id).GetUsers(new TeamDAL())
             });
         }
+        public ActionResult Delete(int id)
+        {
+            teamContainer.DeleteTeam(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

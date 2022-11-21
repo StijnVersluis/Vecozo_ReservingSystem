@@ -6,8 +6,8 @@ namespace ViewLayer.Models
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Het invoeren van je e-mailadres is verplicht!")]
-        [DisplayName("E-mailadres")]
+        [Required(ErrorMessage = "Het invoeren van je e-mail is verplicht!")]
+        [DisplayName("E-mail")]
         [EmailAddress]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }

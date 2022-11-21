@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 
 namespace ViewLayer.Controllers
 {
-    [AllowAnonymous]
+    
     public class WorkzoneController : Controller
     {
         private readonly WorkzoneContainer workzoneContainer = new(new WorkzoneDAL());
