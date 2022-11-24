@@ -19,6 +19,10 @@ namespace BusinessLayer
         {
             return iTeam.GetTeams().ConvertAll(x => new Team(x));
         }
+        public Team GetTeam(int id)
+        {
+            return new Team(iTeam.GetTeam(id));
+        }
         public List<Team> GetTeamsOfUser(int userId)
         {
             return iTeam.GetTeamsOfUser(userId).ConvertAll(x => new Team(x));

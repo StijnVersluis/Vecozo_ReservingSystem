@@ -99,3 +99,9 @@ body {
     background: var(--c-light);
     cursor: pointer;
 }
+
+#WorkSpotSelectList {
+    max-height: 150px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

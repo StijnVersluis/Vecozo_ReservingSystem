@@ -3,10 +3,12 @@ using DataLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ViewLayer.Models;
 
@@ -15,7 +17,10 @@ namespace ViewLayer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private UserContainer uCont = new UserContainer(new UserDAL());
+        private UserContainer uCont = new(new UserDAL());
+        private TeamContainer tCont = new(new TeamDAL());
+        private ReservationContainer rCont = new(new ReservationDAL());
+        private WorkzoneContainer wCont = new(new WorkzoneDAL());
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -24,7 +29,13 @@ namespace ViewLayer.Controllers
 
         public IActionResult Index()
         {
-            if (uCont.IsLoggedIn()) { ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name; return View(); }
+            if (uCont.IsLoggedIn()) {
+                ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id);
+                ViewData["AllWorkzones"] = wCont.GetAll();
+                ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id);
+                ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
+                return View(); 
+            }
             else { return RedirectToAction("Login"); }
         }
 
@@ -57,6 +68,28 @@ namespace ViewLayer.Controllers
                 {
                     return RedirectToAction("Login");
                 }
+            }
+            catch (Exception e)
+            {
+                ViewData["error"] = e.ToString();
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Reserve(IFormCollection collection)
+        {
+            try
+            {
+                var dtStart = (string)collection["datetime-start"];
+                var tleave = (string)collection["datetime-leaving"];
+                var dtleave = Regex.Replace((string)collection["datetime-start"], @"T[0-9]{1,2}\:[0-9]{1,2}", "T" + tleave);
+                var workzone = (string)collection["workzone-id"];
+                DateTime start = DateTime.Parse(dtStart);
+                DateTime leave = DateTime.Parse(dtleave);
+                int workzone_id = Int32.Parse(workzone);
+                rCont.CreateReservation(new Reservation(uCont.GetLoggedInUser().Id, workzone_id, start, leave));
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception e)
             {

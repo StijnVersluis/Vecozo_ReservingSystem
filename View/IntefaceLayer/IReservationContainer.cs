@@ -10,6 +10,9 @@ namespace IntefaceLayer
     public  interface IReservationContainer
     {
         bool CreateReservation(ReservationDTO reservationDTO);
-        List<ReservationDTO> Getallreservations();
+        bool CancelReservation(int id);
+        List<ReservationDTO> GetAllReservations();
+        public List<ReservationDTO> GetDateReservationsFromUser(int id, DateTime dateTime);
+        public List<ReservationDTO> GetReservationsFromUser(int id);
     }
 }

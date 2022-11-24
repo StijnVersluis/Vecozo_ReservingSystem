@@ -12,56 +12,108 @@ namespace DataLayer
 {
     public class ReservationDAL : SqlConnect, IReservationContainer
     {
+        private SqlDataReader reader;
+        public ReservationDAL()
+        {
+            InitializeDB();
+        }
+
         public bool CreateReservation(ReservationDTO reservationDTO)
         {
             try
             {
-                SqlCommand sqlCommand = new SqlCommand("INSERT INTO Reservations(User_id, Workzone_id, DateTime_Arriving, DateTime_Leaving) VALUES(Reservations(@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)", DBConnection);
-                DBConnection.Open();
-                sqlCommand.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
-                sqlCommand.Parameters.AddWithValue("@Workzone_id", reservationDTO.User_id);
-                sqlCommand.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.User_id);
-                sqlCommand.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.User_id);
+                OpenCon();
 
+                DbCom.CommandText = "SELECT Workspaces FROM Workzones WHERE Id = @id";
+                DbCom.Parameters.AddWithValue("@id", reservationDTO.Workzone_id);
 
-                sqlCommand.ExecuteNonQuery();
-                return true;
+                reader = DbCom.ExecuteReader();
+                int workzonePlaces = 0;
+                while (reader.Read())
+                {
+                    workzonePlaces = (int)reader["Workspaces"];
+                }
+
+                CloseCon();
+                OpenCon();
+
+                DbCom.CommandText = "SELECT * FROM Reservations WHERE Workzone_Id = @workzone_id and @datetime BETWEEN DateTime_Arriving and DateTime_Leaving";
+                DbCom.Parameters.AddWithValue("@workzone_id", reservationDTO.Workzone_id);
+                DbCom.Parameters.AddWithValue("@datetime", reservationDTO.DateTime_Arriving);
+
+                List<ReservationDTO> ExistingReservations = new List<ReservationDTO>();
+
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    ExistingReservations.Add(new((int)reader["User_Id"], (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
+                }
+
+                CloseCon();
+
+                bool IsReserved = false;
+                foreach (ReservationDTO reservation in ExistingReservations)
+                {
+                    if (reservation.User_id == reservationDTO.User_id)
+                    {
+                        IsReserved = true;
+                        break;
+                    }
+                }
+                if (!IsReserved && ExistingReservations.Count < workzonePlaces)
+                {
+                    OpenCon();
+                    DbCom.CommandText = "INSERT INTO Reservations (User_Id, Workzone_Id, DateTime_Arriving, DateTime_Leaving) VALUES (@User_id, @Workzone_id, @DateTime_Arriving, @DateTime_Leaving)";
+
+                    DbCom.Parameters.AddWithValue("@User_id", reservationDTO.User_id);
+                    DbCom.Parameters.AddWithValue("@Workzone_id", reservationDTO.Workzone_id);
+                    DbCom.Parameters.AddWithValue("@DateTime_Arriving", reservationDTO.DateTime_Arriving);
+                    DbCom.Parameters.AddWithValue("@DateTime_Leaving ", reservationDTO.DateTime_Leaving);
+
+                    DbCom.ExecuteNonQuery();
+                    CloseCon();
+                    return true;
+                }
+                else return false;
             }
 
             catch (Exception exception)
             {
-                throw exception;
-            } 
+                Console.WriteLine(exception);
+                return false;
+            }
             finally
             {
-                DBConnection.Close();
+                CloseCon();
             }
-            
+
         }
 
-        public List<ReservationDTO> Getallreservations()
+        public bool CancelReservation(int id)
+        {
+            OpenCon();
+
+            DbCom.CommandText = "DELETE FROM Reservations WHERE id = @id";
+            DbCom.Parameters.AddWithValue("id", id);
+
+            if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
+        }
+
+        public List<ReservationDTO> GetAllReservations()
         {
             try
             {
+                OpenCon();
                 List<ReservationDTO> reservationlist = new List<ReservationDTO>();
 
-                SqlCommand comand = new SqlCommand("select * from [Book] where Visibility='True'", DBConnection);
-                if (comand.Connection.State != ConnectionState.Open)
-                {
-                    comand.Connection.Open();
-                }
+                DbCom.CommandText = "select * from Reservations";
 
-                SqlDataReader reader = comand.ExecuteReader();
+                reader = DbCom.ExecuteReader();
+
                 while (reader.Read())
                 {
-
-                    ReservationDTO reservationDTO = new ReservationDTO();
-                    reservationDTO.Id = Convert.ToInt32(reader["ID"]);
-                    reservationDTO.User_id = Convert.ToInt32(reader["User_id"]);
-                    reservationDTO.Workzone_id = Convert.ToInt32(reader["Workzone_id"]);
-                    reservationDTO.DateTime_Arriving = Convert.ToDateTime(reader["DateTime_Arriving"]);
-                    reservationDTO.DateTime_Leaving = Convert.ToDateTime(reader["DateTime_Leaving"]);
-                    reservationlist.Add(reservationDTO);
+                    reservationlist.Add(new ReservationDTO((int)reader["Id"], (int)reader["User_Id"], (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
                 }
                 reader.Close();
 
@@ -73,8 +125,52 @@ namespace DataLayer
                 throw ex;
             }
             finally
+            { CloseCon(); }
+        }
 
-            { DBConnection.Close(); }
+        public List<ReservationDTO> GetDateReservationsFromUser(int id, DateTime dateTime)
+        {
+            OpenCon();
+            List<ReservationDTO> reservations = new List<ReservationDTO>();
+            DbCom.CommandText = "SELECT * FROM Reservations WHERE User_Id = @id";
+
+            DbCom.Parameters.AddWithValue("id", id);
+
+            reader = DbCom.ExecuteReader();
+
+            while (reader.Read())
+            {
+                DateTime reservationDate = (DateTime)reader["DateTime_Arriving"];
+
+                if (DateTime.Compare(reservationDate.Date, dateTime.Date) == 0)
+                {
+                    reservations.Add(new ReservationDTO((int)reader["Id"], id, (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
+                }
+            }
+
+            CloseCon();
+
+            return reservations;
+        }
+
+        public List<ReservationDTO> GetReservationsFromUser(int id)
+        {
+            OpenCon();
+            List<ReservationDTO> reservations = new List<ReservationDTO>();
+            DbCom.CommandText = "SELECT * FROM Reservations WHERE User_Id = @id";
+
+            DbCom.Parameters.AddWithValue("id", id);
+
+            reader = DbCom.ExecuteReader();
+
+            while (reader.Read())
+            {
+                reservations.Add(new ReservationDTO((int)reader["Id"], id, (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
+            }
+
+            CloseCon();
+
+            return reservations;
         }
     }
 }
