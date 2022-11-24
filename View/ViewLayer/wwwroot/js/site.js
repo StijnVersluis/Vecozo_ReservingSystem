@@ -1,10 +1,15 @@
 ﻿$(document).ready(function () {
-    var date = new Date().toLocaleString();
+    var date = new Date();
+    date.setMilliseconds(null);
+    date.setSeconds(null);
+    date = date.toISOString().replace("T", " ").replace(":00.000Z", "")
     $("#DateSelectorInput").val(date);
 
-    if (window.location.pathname == "/") {
+    if (window.location.pathname == "/" && window.innerWidth > 576) {
         loadWorkzones();
         LoadImage();
+    } else {
+        $('#LoadingVisualWorkspots').alert('close')
     }
 });
 
@@ -214,13 +219,13 @@ function loadWorkzones(date) {
     fetch(window.location.origin + `/Workzone/Floor/${floorId}?date=${date}`, {
         method: "GET"
     })
-    .then(resp => resp.text())
-    .then(data => {
-        $("#WorkSpotSelectList").html(data)
-    })
-    .catch(err => {
-        console.log(err);
-    })
+        .then(resp => resp.text())
+        .then(data => {
+            $("#WorkSpotSelectList").html(data)
+        })
+        .catch(err => {
+            console.log(err);
+        })
 }
 
 
@@ -229,7 +234,10 @@ function LoadImage() {
     GenerateNewImage()
     var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
         .then(resp => resp.json())
-        .then(data => GenerateImagePoints(data))
+        .then(data => {
+            GenerateImagePoints(data)
+            $('#LoadingVisualWorkspots').alert('close')
+        })
 }
 
 function GenerateNewImage() {
@@ -245,7 +253,7 @@ function GenerateImagePoints(data) {
 
     data.forEach((point) => {
         if (point.ypos == "" || point.xpos == "") { return };
-        let scale = (image.height / 225)
+        let scale = (image.height / 300)
         let maxMinScale = 1 - scale
         let properYPos = 1 - maxMinScale / 2
         let y = ((image.height * (point.ypos / 100)) * properYPos)
@@ -253,12 +261,14 @@ function GenerateImagePoints(data) {
         img.style.left = (point.xpos + "%");
         img.style.top = y + "px";
         img.title = point.name;
+        img.id = "DataPoint" + point.id
+        img.dataset.toggle = "modal"
+        img.dataset.target = "#WorkzoneSelectedModal"
+        img.dataset.workzoneId = point.id
+        img.dataset.workzoneName = point.name
         img.className = 'overlay-image';
         img.style.scale = scale;
         img.src = "/images/Workspace.svg"
         overlay.appendChild(img);
-        //img.data = point.data;
-        //img.addEventListener('mouseenter', handleMouseEnter);
-        //img.addEventListener('mouseleave', handleMouseLeave);
     });
 }
