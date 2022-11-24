@@ -224,7 +224,6 @@ function loadWorkzones(date) {
 
 //Image overlay
 function LoadImage() {
-    SetVisualLoading()
     GenerateNewImage()
     var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
         .then(resp => resp.json())
