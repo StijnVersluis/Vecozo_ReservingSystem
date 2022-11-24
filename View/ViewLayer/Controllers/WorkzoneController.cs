@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ViewLayer.Models;
 using System;
-//using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
+using System.Collections.Generic;
+using ViewLayer.Util;
 
 namespace ViewLayer.Controllers
 {
@@ -92,9 +93,26 @@ namespace ViewLayer.Controllers
             var workzones = workzoneContainer.GetAllFromFloor(id).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             return new JsonResult(workzones);
         }
-    }
-    public class FloorJson
-    {
-        public int floorId;
+
+        [HttpGet]
+        public IActionResult GetWorkspace()
+        {
+            List<WorkzoneViewModel> workzoneViewModels = new List<WorkzoneViewModel>();
+            List<Workzone> workzones = workzoneContainer.GetAll();
+            foreach (Workzone w in workzones)
+            {
+
+                workzoneViewModels.Add(new WorkzoneViewModel(w));
+            }
+
+            return View(workzoneViewModels);
+
+
+        }
+
+        public class FloorJson
+        {
+            public int floorId;
+        }
     }
 }

@@ -1,1 +1,51 @@
-﻿<h3>Beheer Pagina</h3>
+﻿@model IEnumerable<ViewLayer.Models.WorkzoneViewModel>
+
+@{
+    ViewData["Title"] = "GetWorkspace";
+}
+
+<h1>List Of Workspaces</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Workspaces)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Floor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TeamOnly)
+            </th>
+            <th>
+                Operations
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Workspaces)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Floor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamOnly)
+            </td>
+            <td>
+               <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">Update Werkblok</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -11,5 +11,6 @@ namespace IntefaceLayer
         public List<WorkzoneDTO> GetAll();
         public List<WorkzoneDTO> GetAllFromFloor(int id);
         public List<WorkzoneDTO> GetAllFromFloorWithDate(int id, string date);
+        public bool Updateworkspace(WorkzoneDTO workzoneDTO);  
     }
 }

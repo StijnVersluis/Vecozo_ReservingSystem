@@ -8,7 +8,7 @@ namespace IntefaceLayer.DTO
 {
     public class WorkzoneDTO
     {
-        public int Id { get; private set; }
+        public int Id { get;  set; }
         public string Name { get; private set; }
         public int Workspaces { get; set; }
         public int Floor { get; private set; }
@@ -25,6 +25,10 @@ namespace IntefaceLayer.DTO
             TeamOnly = teamOnly;
             Xpos = xpos;
             Ypos = ypos;
+        }
+
+        public WorkzoneDTO()
+        {
         }
     }
 }
