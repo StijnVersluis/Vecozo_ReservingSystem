@@ -1,0 +1,12 @@
+﻿@{
+    Layout = "";
+    int i = 0;
+    <text>{\"Users\": {</text>
+    foreach (var item in ViewData["TeamUsers"] as List<BusinessLayer.User>)
+    {
+        <text>\"@i\": {\"Id\": @item.Id, \"Name\": \"@Html.Encode(item.Name)\"},</text>
+        i++;
+    }
+    <text>}}</text>
+}
+

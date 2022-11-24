@@ -17,8 +17,16 @@ namespace BusinessLayer
             Id = id;
             Name = name;
         }
+
+        public Team(int id)
+        {
+            Id = id;
+        }
+
         public Team(TeamDTO team)
         {
+            if (team == null) return;
+
             this.Id = team.Id;
             this.Name = team.Name;
         }

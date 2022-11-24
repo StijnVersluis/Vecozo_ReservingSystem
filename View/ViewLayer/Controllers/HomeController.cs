@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ViewLayer.Models;
+using ViewLayer.Util;
 
 namespace ViewLayer.Controllers
 {
@@ -22,11 +23,7 @@ namespace ViewLayer.Controllers
         private ReservationContainer rCont = new(new ReservationDAL());
         private WorkzoneContainer wCont = new(new WorkzoneDAL());
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
+        [HttpGet]
         public IActionResult Index()
         {
             if (uCont.IsLoggedIn()) {
@@ -39,42 +36,36 @@ namespace ViewLayer.Controllers
             else { return RedirectToAction("Login"); }
         }
 
-        public ActionResult Login()
-        {
-            if (uCont.IsLoggedIn()) return RedirectToAction(nameof(Index));
+            ViewData["TeamsOfUser"] = teamContainer.GetTeamsOfUser(userContainer.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
+            ViewData["Floors"] = floorContainer.GetAll().ConvertAll(x => new FloorViewModel(x));
+
+            this.GetResponse();
+
             return View();
         }
 
-        public ActionResult Logout()
+        [HttpGet]
+        public IActionResult Privacy()
         {
-            uCont.Logout();
-            return RedirectToAction("Login");
+            return View();
         }
 
-        [HttpPost]
-        public ActionResult Login(IFormCollection collection)
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [HttpGet("/Error")]
+        public IActionResult Error(int statuscode)
         {
-            try
-            {
-                string name = (string)collection["name"];
-                string pass = (string)collection["password"];
-                if (name == "" || pass == "") { ViewData["error"] = "Please enter Name and Password!"; return RedirectToAction(""); }
+            int result;
 
-                if (uCont.AttemptLogin(name, pass))
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return RedirectToAction("Login");
-                }
-            }
-            catch (Exception e)
+            switch (statuscode)
             {
-                ViewData["error"] = e.ToString();
-                return RedirectToAction("Index");
+                case 401:
+                    result = 404;
+                    break;
+
+                default:
+                    result = 404;
+                    break;
             }
-        }
 
         [HttpPost]
         public IActionResult Reserve(IFormCollection collection)
@@ -101,12 +92,6 @@ namespace ViewLayer.Controllers
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

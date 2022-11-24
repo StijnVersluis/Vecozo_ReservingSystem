@@ -1,168 +1,142 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
-    var teams = ViewData["TeamsOfUser"] as List<BusinessLayer.Team>;
-    var workzones = ViewData["AllWorkzones"] as List<BusinessLayer.Workzone>;
-    var reservations = ViewData["AllUserReservations"] as List<BusinessLayer.Reservation>;
-    var currentDateReservations = new List<BusinessLayer.Reservation>();
-    reservations.ForEach(reser =>
-    {
-        if (DateTime.Compare(reser.DateTime_Arriving.Date, DateTime.Now.Date) == 0)
-        {
-            currentDateReservations.Add(reser);
-        }
-    });
+    ViewData["Title"] = "Dashboard";
+
+    var teams = ViewData["TeamsOfUser"] as List<TeamViewModel>;
+    var reservations = ViewData["UserReservations"] as List<ReservationViewModel>;
+    var floors = ViewData["Floors"] as List<FloorViewModel>;
+
+    var responseModel = ViewData["ResponseModel"] as ResponseViewModel;
 }
 
-<div class="modal" id="TeamSelectedModal" tabindex="-1" role="form">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="modal" id="WorkzoneSelectedModal" tabindex="-1" role="form">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-                <form asp-action="Reserve" method="post">
-            <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-6">Start:</div>
-                    <div class="col-6" id="DateAndTimeReservation"></div>
-                    <div class="col-6">Tot en met:</div>
-                    <div class="col-6">
-                    <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control"/> 
+            <form asp-action="Reserve" asp-controller="Reservation" asp-antiforgery="true">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">Start:</div>
+                        <div class="col-6" id="DateAndTimeReservation"></div>
+                        <div class="col-6">Tot en met:</div>
+                        <div class="col-6">
+                            <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control" />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                    <input type="hidden" name="workzone-id" id="WorkzoneIdForm"/> 
-                    <input type="hidden" name="datetime-start" id="WorkzoneArrivingForm"/> 
+                <div class="modal-footer">
+                    <input type="hidden" name="workzone-id" id="WorkzoneIdForm" />
+                    <input type="hidden" name="datetime-start" id="WorkzoneArrivingForm" />
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Reserveren</button>
-            </div>
-                </form>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<partial name="_ResponseModalPartial" model="@responseModel" />
 
 <div class="text-left">
-    <h1 class="display-4">Welkom @ViewData["LoggedInUserName"]</h1>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-lg-3 col-12">
             <div id="LeftForm" class="">
-                <div id="DateSelector" class="select-menu-item"><input id="DateSelectorInput" class="form-control" type="datetime-local"></div>
+                <div id="DateSelector" class="select-menu-item">
+                    <input id="DateSelectorInput" class="form-control" type="datetime-local">
+                </div>
                 <div id="FloorSelector" class="select-menu-item">
-                    <select id="FloorSelectorSelect" class="form-control" onchange="loadWorkzones()">
-                        <option value="1">Verdieping 1</option>
-                        <option value="2">Verdieping 2</option>
-                        <option value="3">Verdieping 3</option>
-                        <option value="4">Verdieping 4</option>
-                    </select>
-                </div>
-                <hr style="height: 2px; background-color: #4525F2;" />
-                <div id="TeamSelector" class="select-menu-item">
-                    <input class="form-check-input d-none" type="checkbox" id="TeamCheckBox" onchange="CheckTeamInput()" />
-                    <label class="form-check-label" for="TeamCheckBox">
-                        Team
-                        <span id="TeamCheckBoxOff" class="teamcheckboxOff">
-                            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
-                                 class="bi bi-toggle-off" fill="black"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4h3zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5z" />
-                            </svg>
-                        </span>
-                        <span id="TeamCheckBoxOn" class="teamcheckboxOn d-none">
-                            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
-                                 class="bi bi-toggle-on" fill="#4525F2"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
-                            </svg>
-                        </span>
-                    </label>
-                </div>
-                <div id="TeamList" class="list-group team-list d-none">
-                    @foreach (var team in teams)
-                        {
-                            <a data-teamid="@team.Id" data-teamname="@team.Name" data-toggle="modal" data-target="#TeamSelectedModal" class="list-group-item team-list-item">@team.Name</a>
-                        }
-                </div>
-                <hr style="height: 2px; background-color: #4525F2;" />
-                <div id="WorkSpotSelect" class="select-menu-item">
-                    <h3>Werkplekken: </h3>
-                    <div id="WorkSpotSelectList" class="list-group">
-                    </div>
-                </div>
-                <div id="ReserverdWorkSpotSelect" class="select-menu-item">
-                    <h3>Vandaag gereserveerd: </h3>
-                    <div class="list-group">
-                        @foreach (var reservation in currentDateReservations)
+                    @if (floors.Count != 0)
+                    {
+                        <select id="FloorSelectorSelect" class="form-control" onchange="FloorSelectChange()">
+                            @foreach (var floor in floors)
                             {
-                            <text>
-                                <div class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-4">@reservation.DateTime_Arriving.TimeOfDay</div>
-                                        <div class="col-4">@reservation.Workzone_id</div>
-                                        <div class="col-4">@reservation.DateTime_Leaving.TimeOfDay</div>
-                                        <div class="col-12">
-                                            <a asp-action="Cancel" asp-controller="Reservation" asp-route-id="@reservation.id">Cancel</a>
+                                <option value="@floor.Id">@Html.Encode(floor.Name)</option>
+                            }
+                        </select>
+                    } else {
+                        <div class="alert alert-warning">
+                            Er zijn geen <span class="alert-heading font-weight-bold">verdiepingen</span>
+                        </div>
+                    }
+                </div>
+                <hr style="height: 0.5px; background-color: #4525F2;" />
+                <div class="container d-inline-flex justify-content-between p-0">
+                    <div id="TeamSelector" class="select-menu-item">
+                        <input class="form-check-input d-none" type="checkbox" id="TeamCheckBox" onchange="CheckTeamInput()" />
+                        <label class="form-check-label" for="TeamCheckBox">
+                            Team
+                            <span id="TeamCheckBoxOff" class="teamcheckboxOff ml-1">
+                                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
+                                     class="bi bi-toggle-off" fill="black"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4h3zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5z" />
+                                </svg>
+                            </span>
+                            <span id="TeamCheckBoxOn" class="teamcheckboxOn d-none ml-1">
+                                <svg width="1.5em" height="1.5em" viewBox="0 0 16 16"
+                                     class="bi bi-toggle-on" fill="#4525F2"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                                </svg>
+                            </span>
+                        </label>
+                    </div>
+                    <a asp-action="Create" asp-controller="Team" class="btn btn-primary font-weight-bold">+</a>
+                </div>
+                <div id="TeamList" class="list-group team-list d-none height-150 scrollable-div">
+                    @foreach (var team in teams)
+                    {
+                        <a asp-action="Details" asp-controller="Team" asp-route-id="@team.Id" class="list-group-item team-list-item mr-1">@Html.Encode(team.Name)</a>
+                    }
+                </div>
+                <hr style="height: 0.5px; background-color: #4525F2;" />
+                <div id="WorkSpotSelectList" class="WorkSpotSelectList"></div>
+                <div id="ReserverdWorkSpotSelect" class="select-menu-item WorkSpotSelectList">
+                    @if (reservations.Count != 0)
+                    {
+                        <h5>Vandaag gereserveerd: </h5>
+                        <div class="list-group">
+                            @foreach (var reservation in reservations)
+                            {
+                                <text>
+                                    <div class="list-group-item mr-1">
+                                        <div class="row">
+                                            <div class="col-12 font-weight-bold" style="font-size: 14px;">@Html.Encode(reservation.Workzone.Name)</div>
+                                            <div class="col-12">
+                                                <small>@reservation.DateTime_Arriving.TimeOfDay - @reservation.DateTime_Leaving.TimeOfDay</small>
+                                            </div>
+                                            <div class="col-12">
+                                                <form asp-action="Cancel" asp-controller="Reservation" asp-antiforgery="true">
+                                                    <input id="Id" name="Id" type="hidden" value="@reservation.Id" />
+                                                    <button type="submit" class="hyperlink__button">Annuleer</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </text>
+                                </text>
                             }
-                    </div>
+                        </div>
+                    } else {
+                        <div class="alert alert-warning">
+                            Er zijn vandaag geen <span class="alert-heading font-weight-bold">reseveringen</span>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-        <div class="col-md-9 bg-white"></div>
+        <div id="WorkspaceHotspots" class="col-md-9 d-none d-md-block">
+            <div class="imagemap">
+                <div id="ImageOverlay" class="image-overlay"></div>
+                <div class="image-wrapper">
+                    <img id="FloorImage" src="~/images/Verdieping-1.jpg" width="100%"/>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<script>
-    var floorSelect = document.getElementById("FloorSelectorSelect")
-    let workzones = [];
-    let workzone = {Id: 0, Name: "null", Workspaces: 0, Floor: 0}
-    @{foreach (var workzone in workzones) { <text>
-    workzone = {Id: 0, Name: "null", Workspaces: 0, Floor: 0}
-    workzone.Id = @workzone.Id;
-    workzone.Name = "@workzone.Name";
-    workzone.Workspaces = @workzone.Workspaces;
-    workzone.Floor = @workzone.Floor;
-    workzones.push(workzone)
-    console.log(@workzone.Id)</text>}}
-
-    var select = document.getElementById("FloorSelectorSelect");
-    var workspotlist = document.getElementById("WorkSpotSelectList");
-
-    loadWorkzones();
-    function loadWorkzones() {
-        workspotlist.innerHTML = ""
-        workzones.forEach(workzone => {
-            if (workzone.Floor == select.options[select.selectedIndex].value) {
-                //TODO add to workzonelist
-                workspotlist.innerHTML += '<a class="list-group-item" data-toggle="modal" data-target="#WorkzoneSelectedModal" data-workzone-id="'+workzone.Id+'" data-workzone-name="'+workzone.Name+'"><div class="row"><div class="col-6">'+workzone.Name+'</div><div class="col-6">'+workzone.Workspaces+'</div></div></a>'
-            }
-        })
-    }
-</script>

@@ -1,0 +1,43 @@
+﻿@model List<ViewLayer.Models.TeamViewModel>
+
+@{
+    var responseModel = ViewData["ResponseModel"] as ViewLayer.Models.ResponseViewModel;
+}
+
+<h1>Uw Teams</h1>
+<p>
+    <a asp-action="Create">Nieuw</a>
+</p>
+
+<partial name="_ResponseModalPartial" model="@responseModel" />
+
+@if (Model.Count != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Team Naam</th>
+                <th>Aantal Leden</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.Encode(item.Name)</td>
+                    <td>@item.Users.Count()</td>
+                    <td>
+                        <div class="container d-inline-flex">
+                            <a asp-action="Details" asp-route-id="@item.Id">Bekijk</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+} else {
+    <div class="alert alert-warning">
+        Er zijn geen <span class="alert-heading font-weight-bold">teams</span>.
+        Maak een <a asp-action="Create">nieuw</a> team aan.
+    </div>
+}

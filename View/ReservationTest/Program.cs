@@ -11,7 +11,6 @@ namespace ReservationTest
     {
         static void Main(string[] args)
         {
-          
         }
     }
 }
