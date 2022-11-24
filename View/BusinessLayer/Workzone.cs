@@ -35,6 +35,17 @@ namespace BusinessLayer
             PositionX = workzone.PositionX;
             PositionY = workzone.PositionY;
         }
+        //public Workzone(int id, string name, int workspaces, int floor, bool teamOnly, string positionX, string positionY)
+        //{
+        //    Id = id;
+        //    Name = name;
+        //    Workspaces = workspaces;
+        //    Floor = floor;
+        //    TeamOnly = teamOnly;
+        //    PositionX = positionX;
+        //    PositionY=positionY;
+        //}
+
         public Workzone()
         {
         }

@@ -19,7 +19,7 @@ namespace ViewLayer.Models
         public string PositionX { get; set; }
         [DisplayName("PositieY")]
         public string PositionY { get; set; }
-
+        [DisplayName("Verdiepingen")]
         public int Floor { get; set; }
 
     [DisplayName("Verdiepingen")]

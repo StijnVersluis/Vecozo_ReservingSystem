@@ -50,8 +50,8 @@ namespace ViewLayer.Controllers
                 var resut = workzoneContainer.Updateworkspace(workzone);
                 if (resut)
                 {
-
-                    return RedirectToAction("Edit", workzoneViewModel.Id);
+                    return RedirectToAction ("index", "Admin");
+                   // return RedirectToAction("Edit", workzoneViewModel.Id);
                 }
                 else
                 {
