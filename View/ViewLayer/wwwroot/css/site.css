@@ -290,8 +290,13 @@ html {
 }
 
     .overlay-image:hover {
+        cursor: pointer;
         opacity: .9;
     }
+#WorkSpotSelect a:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+}
 
 .data {
     position: absolute;
@@ -300,4 +305,14 @@ html {
     width: 200px;
     padding: 40px;
     background: #ccc;
+}
+
+.overlay-image.active {
+    opacity: .9;
+}
+
+#LoadingVisualWorkspots {
+    position: absolute;
+    top: 10%;
+    right: 10%;
 }

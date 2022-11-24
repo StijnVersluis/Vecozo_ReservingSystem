@@ -67,16 +67,16 @@ namespace BusinessLayer
             TimeSpan todayTime = new(DateTime.Now.Hour, DateTime.Now.Minute, 0);
 
             // Check if the arriving date is greater than or equals todays date.
-            if (model.DateTime_Arriving < DateTime.Today)
-            {
-                messages.Add("De aankomst datum moet gelijk of groter zijn dan de datum van vandaag!");
-            }
+            //if (model.DateTime_Arriving < DateTime.Today)
+            //{
+            //    messages.Add("De aankomst datum moet gelijk of groter zijn dan de datum van vandaag!");
+            //}
 
             // Check if arriving time is greater than todays time.
-            if (arrivingTime < todayTime)
-            {
-                messages.Add($"U kunt alleen een ruimte boeken na {todayTime.Hours}:{todayTime.Minutes} uur");
-            }
+            //if (arrivingTime < todayTime)
+            //{
+            //    messages.Add($"U kunt alleen een ruimte boeken na {todayTime.Hours}:{todayTime.Minutes} uur");
+            //}
 
             // Check if the arriving hours is between 8 am and 17 pm.
             if (!(model.DateTime_Arriving.Hour >= 8 && model.DateTime_Arriving.Hour <= 17))
