@@ -24,6 +24,10 @@ namespace BusinessLayer
         {
             return new Team(iTeam.GetTeam(id));
         }
+        public Team GetTeam(int id)
+        {
+            return new Team(iTeam.GetTeam(id));
+        }
         public List<Team> GetTeamsOfUser(int userId)
         {
             return iTeam.GetTeamsOfUser(userId).ConvertAll(teamdto => new Team(teamdto));
@@ -96,6 +100,12 @@ namespace BusinessLayer
             }
 
             return messages;
+        }
+
+        public bool Check_Accessibility(string username)
+        {
+
+            return iTeam.Check_Accessibility(username);
         }
     }
 }

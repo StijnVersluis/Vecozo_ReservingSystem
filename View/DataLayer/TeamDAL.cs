@@ -363,5 +363,45 @@ namespace DataLayer
 
             return user;
         }
+        public bool Check_Accessibility(string username)
+        {
+            bool Is_Team_Admin = false;
+            OpenCon();
+            reader = null;
+            DbCom.CommandText = "select * TeamMembers Where UserName=@username  ";
+            DbCom.Parameters.AddWithValue("username", username);
+            reader = DbCom.ExecuteReader(); 
+            while (reader.Read())
+            {
+                
+                Is_Team_Admin = Convert.ToBoolean(reader["Is_Team_Admin"]);
+
+            }
+            CloseCon();
+            if (Is_Team_Admin == true)
+            {
+                return true;
+            }
+            return false;   
+        
+
+
+
+        }
+
+        public TeamDTO GetTeam(int id)
+        {
+            OpenCon();
+            TeamDTO team = null;
+            DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
+            DbCom.Parameters.AddWithValue("id", id);
+            reader = DbCom.ExecuteReader();
+            while (reader.Read())
+            {
+                team = new TeamDTO((int)reader["Id"], (string)reader["Name"]);
+            }
+            CloseCon();
+            return team;
+        }
     }
 }

@@ -1,0 +1,15 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "";
+    int i = 0;
+    <text>{\"Users\": {</text>
+    foreach (var item in ViewData["TeamUsers"] as List<BusinessLayer.User>)
+    {
+    <text>\"@i\": {\"Id\": @item.Id, \"Name\": \"@item.Name\"},</text>
+        i++;
+    }
+    <text>}}</text>
+}
+

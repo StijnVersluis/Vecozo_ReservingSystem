@@ -8,6 +8,13 @@
     }
 });
 
+$(document).ready(function () {
+    var date = new Date();
+
+    var currentDateFormat = date.toISOString().substring(0, 10) + " " + date.toLocaleString().substring(12, 17);
+    $("#DateSelectorInput").val(currentDateFormat)
+});
+
 function CheckTeamInput() {
     if (document.getElementById("TeamCheckBox").checked) {
         //Teams on

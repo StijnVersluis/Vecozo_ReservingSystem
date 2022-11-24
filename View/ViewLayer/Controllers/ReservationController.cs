@@ -143,5 +143,18 @@ namespace ViewLayer.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        public ActionResult Cancel(int id)
+        {
+            try
+            {
+                _reservationContainer.CancelReservation(id);
+                return RedirectToAction("index", "Home");
+            }
+            catch
+            {
+                return RedirectToAction("index", "home");
+            }
+        }
     }
 }

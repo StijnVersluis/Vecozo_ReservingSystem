@@ -24,6 +24,10 @@ namespace BusinessLayer
             ReservationDTO reservationDTO = reservation.ToDTO();
             return ireservationContainer.CreateReservation(reservationDTO);
         }
+        public bool CancelReservation(int id)
+        {
+            return ireservationContainer.CancelReservation(id);
+        }
 
         public bool CancelReservation(int id)
         {
@@ -67,22 +71,11 @@ namespace BusinessLayer
             TimeSpan todayTime = new(DateTime.Now.Hour, DateTime.Now.Minute, 0);
 
             // Check if the arriving date is greater than or equals todays date.
-            if (model.DateTime_Arriving < DateTime.Today)
-            {
-                messages.Add("De aankomst datum moet gelijk of groter zijn dan de datum van vandaag!");
-            }
-
-            // Check if arriving time is greater than todays time.
-            if (arrivingTime < todayTime)
-            {
-                messages.Add($"U kunt alleen een ruimte boeken na {todayTime.Hours}:{todayTime.Minutes} uur");
-            }
 
             // Check if the arriving hours is between 8 am and 17 pm.
             if (!(model.DateTime_Arriving.Hour >= 8 && model.DateTime_Arriving.Hour <= 17))
             {
                 messages.Add("De aankomsttijd moet gelijk of later dan 08:00 uur zijn.");
-                messages.Add("De aankomsttijd moet gelijk of eerder dan 17:00 uur zijn.");
             }
 
             // Check if the leaving hours is between 9 am and 18 pm.
