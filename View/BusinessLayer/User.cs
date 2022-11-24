@@ -37,20 +37,5 @@ namespace BusinessLayer
         {
             return new UserDTO(Id, Name, Role);
         }
-
-        public bool AttemptLogin(string email, string password)
-        {
-            return IUser.AttemptLogin(email.ToLower(), password);
-        }
-
-        public void Logout()
-        {
-            IUser.Logout();
-        }
-
-        public bool IsLoggedIn()
-        {
-            return IUser.IsLoggedIn();
-        }
     }
 }

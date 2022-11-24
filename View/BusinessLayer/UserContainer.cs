@@ -10,7 +10,6 @@ namespace BusinessLayer
     public class UserContainer
     {
         private IUserContainer uCont;
-        private IUser user;
 
         public UserContainer(IUserContainer iUCont) { uCont = iUCont; }
 
@@ -38,6 +37,20 @@ namespace BusinessLayer
         public List<User> GetFilteredUsers(string filterStr)
         {
             return uCont.GetFilteredUsers(filterStr).ConvertAll(userdto=>new User(userdto));
+        }
+
+        public bool IsLoggedIn()
+        {
+            return uCont.IsLoggedIn();
+        }
+
+        public bool AttemptLogin(string username, string password)
+        {
+            return uCont.AttemptLogin(username, password);
+        }
+        public void Logout()
+        {
+            uCont.Logout();
         }
     }
 }

@@ -76,7 +76,7 @@ namespace ViewLayer.Util
 
             if (!IsAuthenticated(context))
             {
-                user.Logout();
+                userContainer.Logout();
             }
 
             if (!IsAuthenticated(context) && (request.Path != "/Auth/Login"))

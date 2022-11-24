@@ -14,5 +14,8 @@ namespace IntefaceLayer
         public List<UserDTO> GetFilteredUsers(string filterStr);
         public UserDTO FindUserByEmail(string email);
         public UserDTO GetLoggedInUser();
+        public bool AttemptLogin(string email, string password);
+        public bool IsLoggedIn();
+        public void Logout();
     }
 }

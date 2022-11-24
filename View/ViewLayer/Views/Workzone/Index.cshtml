@@ -3,7 +3,7 @@
 
 @model WorkzoneReservationViewModel;
 @{
-    var user = new User(new UserDAL());
+    var userContainer = new UserContainer(new UserDAL());
 }
 
 <div class="modal" id="adHocModal" tabindex="-1" role="dialog">
@@ -21,7 +21,7 @@
                     <div class="row">
                         <div class="col-12">
                             @*Aantal werkplekken meegeven*@
-                            @if (!user.IsLoggedIn())
+                            @if (!userContainer.IsLoggedIn())
                             {
                                 <div class="alert alert-warning">
                                     <strong>Let op!</strong> U moet na het reserveren nog inloggen.

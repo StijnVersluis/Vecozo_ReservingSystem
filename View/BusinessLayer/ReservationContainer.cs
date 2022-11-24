@@ -29,11 +29,6 @@ namespace BusinessLayer
             return ireservationContainer.CancelReservation(id);
         }
 
-        public bool CancelReservation(int id)
-        {
-            return ireservationContainer.CancelReservation(id);
-        }
-
         public List<Reservation> GetAllReservations()
         {             
             return ireservationContainer.GetAllReservations().ConvertAll(x => new Reservation(x));

@@ -13,6 +13,7 @@ namespace ViewLayer.Controllers
     public class AuthController : Controller
     {
         private User user = new User(new UserDAL());
+        private UserContainer userContainer = new UserContainer(new UserDAL());
         private const string AUTH_SESSION_KEY = "VECOZO_AUTH";
 
         [HttpGet("/Auth/Login")]
@@ -33,7 +34,7 @@ namespace ViewLayer.Controllers
                 return View(model);
             }
 
-            if (!user.AttemptLogin(model.Email, model.Password))
+            if (!userContainer.AttemptLogin(model.Email, model.Password))
             {
                 ModelState.AddModelError(String.Empty, "Het e-mailadres of wachtwoord is onjuist.");
                 return View(model);
@@ -61,7 +62,7 @@ namespace ViewLayer.Controllers
 
             try
             {
-                user.Logout();
+                userContainer.Logout();
 
                 HttpContext.Session.Remove(AUTH_SESSION_KEY);
                 await HttpContext.Session.CommitAsync(token);

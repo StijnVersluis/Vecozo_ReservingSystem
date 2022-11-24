@@ -2,7 +2,7 @@
     ViewData["Title"] = "Dashboard";
 
     var teams = ViewData["TeamsOfUser"] as List<TeamViewModel>;
-    var reservations = ViewData["UserReservations"] as List<ReservationViewModel>;
+    var reservations = ViewData["AllUserReservations"] as List<ReservationViewModel>;
     var floors = ViewData["Floors"] as List<FloorViewModel>;
 
     var responseModel = ViewData["ResponseModel"] as ResponseViewModel;

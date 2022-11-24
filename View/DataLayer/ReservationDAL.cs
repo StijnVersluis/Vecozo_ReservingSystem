@@ -114,22 +114,6 @@ namespace DataLayer
             try
             {
                 OpenCon();
-
-                DbCom.CommandText = "DELETE FROM Reservations WHERE id = @id";
-                DbCom.Parameters.AddWithValue("id", id);
-
-                if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
-            } finally
-            {
-                CloseCon();
-            }
-        }
-
-        public List<ReservationDTO> GetAllReservations()
-        {
-            try
-            {
-                OpenCon();
                 List<ReservationDTO> reservationlist = new List<ReservationDTO>();
 
                 DbCom.CommandText = "SELECT * FROM Reservations";
@@ -226,26 +210,6 @@ namespace DataLayer
             }
 
             return reservation;
-        }
-
-        public List<ReservationDTO> GetReservationsFromUser(int id)
-        {
-            OpenCon();
-            List<ReservationDTO> reservations = new List<ReservationDTO>();
-            DbCom.CommandText = "SELECT * FROM Reservations WHERE User_Id = @id";
-
-            DbCom.Parameters.AddWithValue("id", id);
-
-            reader = DbCom.ExecuteReader();
-
-            while (reader.Read())
-            {
-                reservations.Add(new ReservationDTO((int)reader["Id"], id, (int)reader["Workzone_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"]));
-            }
-
-            CloseCon();
-
-            return reservations;
         }
     }
 }

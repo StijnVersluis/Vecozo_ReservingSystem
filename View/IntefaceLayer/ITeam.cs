@@ -16,5 +16,6 @@ namespace IntefaceLayer
         public bool LeaveTeam(int teamId, int userId);
         public bool IsTeamAdmin(int teamId, int userId);
         public UserDTO GetTeamAdmin(int teamId);
+        public bool Check_Accessibility(string username);
     }
 }

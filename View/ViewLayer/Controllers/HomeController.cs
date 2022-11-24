@@ -22,25 +22,17 @@ namespace ViewLayer.Controllers
         private TeamContainer tCont = new(new TeamDAL());
         private ReservationContainer rCont = new(new ReservationDAL());
         private WorkzoneContainer wCont = new(new WorkzoneDAL());
+        private FloorContainer fCont = new(new FloorDAL());
 
         [HttpGet]
         public IActionResult Index()
         {
-            if (uCont.IsLoggedIn()) {
-                ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id);
-                ViewData["AllWorkzones"] = wCont.GetAll();
-                ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id);
-                ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
-                return View(); 
-            }
-            else { return RedirectToAction("Login"); }
-        }
-
-            ViewData["TeamsOfUser"] = teamContainer.GetTeamsOfUser(userContainer.GetLoggedInUser().Id).ConvertAll(x => new TeamViewModel(x));
-            ViewData["Floors"] = floorContainer.GetAll().ConvertAll(x => new FloorViewModel(x));
-
+            ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).ConvertAll(reservation => new ReservationViewModel(reservation));
+            ViewData["AllWorkzones"] = wCont.GetAll().ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(team => new TeamViewModel(team));
+            ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
+            ViewData["Floors"] = fCont.GetAll().ConvertAll(x => new FloorViewModel(x));
             this.GetResponse();
-
             return View();
         }
 
@@ -66,6 +58,8 @@ namespace ViewLayer.Controllers
                     result = 404;
                     break;
             }
+            return View();
+        }
 
         [HttpPost]
         public IActionResult Reserve(IFormCollection collection)
@@ -87,11 +81,6 @@ namespace ViewLayer.Controllers
                 ViewData["error"] = e.ToString();
                 return RedirectToAction("Index");
             }
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
         }
     }
 }

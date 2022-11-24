@@ -11,6 +11,8 @@ namespace ViewLayer.Models
         public int Workspaces { get; set; }
         public int Floor { get; set; }
         public int FloorId { get; set; }    
+        public string Xpos { get; set; }
+        public string Ypos { get; set; }
         public bool TeamOnly { get; set; }
         [DisplayName("Verdiepingen")]
         public List<FloorViewModel> Floors { get; set; }

@@ -388,20 +388,5 @@ namespace DataLayer
 
 
         }
-
-        public TeamDTO GetTeam(int id)
-        {
-            OpenCon();
-            TeamDTO team = null;
-            DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
-            DbCom.Parameters.AddWithValue("id", id);
-            reader = DbCom.ExecuteReader();
-            while (reader.Read())
-            {
-                team = new TeamDTO((int)reader["Id"], (string)reader["Name"]);
-            }
-            CloseCon();
-            return team;
-        }
     }
 }
