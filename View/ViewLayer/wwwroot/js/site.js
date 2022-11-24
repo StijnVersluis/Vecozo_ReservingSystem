@@ -5,9 +5,11 @@
     date = date.toISOString().replace("T", " ").replace(":00.000Z", "")
     $("#DateSelectorInput").val(date);
 
-    if (window.location.pathname == "/") {
+    if (window.location.pathname == "/" && window.innerWidth > 576) {
         loadWorkzones();
         LoadImage();
+    } else {
+        $('#LoadingVisualWorkspots').alert('close')
     }
 });
 
@@ -210,13 +212,13 @@ function loadWorkzones(date) {
     fetch(window.location.origin + `/Workzone/Floor/${floorId}?date=${date}`, {
         method: "GET"
     })
-    .then(resp => resp.text())
-    .then(data => {
-        $("#WorkSpotSelectList").html(data)
-    })
-    .catch(err => {
-        console.log(err);
-    })
+        .then(resp => resp.text())
+        .then(data => {
+            $("#WorkSpotSelectList").html(data)
+        })
+        .catch(err => {
+            console.log(err);
+        })
 }
 
 
@@ -263,8 +265,4 @@ function GenerateImagePoints(data) {
         img.src = "/images/Workspace.svg"
         overlay.appendChild(img);
     });
-}
-
-function SetVisualLoading() {
-    $('#LoadingVisualWorkspots').alert()
 }
