@@ -269,6 +269,7 @@ function GenerateImagePoints(data) {
         img.className = 'overlay-image';
         img.style.scale = scale;
         img.src = "/images/Workspace.svg"
+        img.alt = point.name
         overlay.appendChild(img);
     });
 }
