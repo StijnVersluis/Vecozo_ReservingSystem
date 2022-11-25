@@ -9,13 +9,13 @@ namespace BusinessLayer
 {
     public class Workzone
     {
-        public int Id { get;  set; }
-        public string Name { get; private set; }
-        public int Workspaces { get;  set; }
-        public int Floor { get; private set; }
-        public bool TeamOnly { get; private set; }
-        public string Xpos { get; private set; }
-        public string Ypos { get; private set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Workspaces { get; set; }
+        public int Floor { get; set; }
+        public bool TeamOnly { get; set; }
+        public int Xpos { get; set; }
+        public int Ypos { get; set; }
 
         public Workzone(int id, string name, int workspaces, int floor, bool teamOnly)
         {
@@ -25,7 +25,7 @@ namespace BusinessLayer
             Floor = floor;
             TeamOnly = teamOnly;
         }
-        public Workzone(int id, string name, int workspaces, int floor, bool teamOnly, string xpos, string ypos)
+        public Workzone(int id, string name, int workspaces, int floor, bool teamOnly, int xpos, int ypos)
         {
             Id = id;
             Name = name;

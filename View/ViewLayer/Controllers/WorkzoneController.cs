@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using ViewLayer.Util;
 using System.Linq;
+using InterfaceLayer;
 
 namespace ViewLayer.Controllers
 {
@@ -15,6 +16,7 @@ namespace ViewLayer.Controllers
     {
         private readonly WorkzoneContainer workzoneContainer = new(new WorkzoneDAL());
         private readonly ReservationContainer reservationContainer = new(new ReservationDAL());
+        FloorContainer floorContainer = new FloorContainer(new FloorDAL());
 
         [HttpGet("/AdHoc/{id}")]
         public ActionResult Index(int id)
@@ -106,6 +108,50 @@ namespace ViewLayer.Controllers
             return View(workzoneViewModels);
 
 
+        }
+
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+            var workzone = workzoneContainer.GetById(id);
+            var model = new WorkzoneViewModel(workzone);
+            model.Floors = floorContainer.GetAll().ConvertAll(x => new FloorViewModel(x));
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(WorkzoneViewModel workzoneViewModel)
+        {
+            if (workzoneViewModel != null)
+            {
+                if (workzoneViewModel.Workspaces < 0)
+                {
+                    ModelState.AddModelError(String.Empty, "Het aantal werplekken moet groter zijn dan 0");
+                    return View(workzoneViewModel);
+                }
+
+                Workzone workzone = new Workzone();
+                workzone.Id = workzoneViewModel.Id;
+                workzone.Name = workzoneViewModel.Name;
+                workzone.Xpos = workzoneViewModel.Xpos;
+                workzone.Ypos = workzoneViewModel.Ypos;
+                workzone.Workspaces = workzoneViewModel.Workspaces;
+
+                var result = workzoneContainer.Edit(workzone);
+                if (result)
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    ModelState.AddModelError(String.Empty, "Het aantal werkplekken zijn niet gewijzigd.");
+                    return RedirectToAction("Edit", "Admin", new { id = workzoneViewModel.Id });
+                }
+            }
+
+            return RedirectToAction("Edit", "Admin", new { id = workzoneViewModel.Id });
         }
 
         public class FloorJson

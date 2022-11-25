@@ -51,13 +51,16 @@ namespace BusinessLayer
         {
             return workzoneContainer.GetAllFromFloorWithDate(id, date).ConvertAll(x => new Workzone(x));
         }
-        public bool Updateworkspace(Workzone workzone)
-
+        public bool Edit(Workzone workzone)
         {
             WorkzoneDTO workzoneDTO = new WorkzoneDTO();
+            workzoneDTO.TeamOnly = workzone.TeamOnly;
+            workzoneDTO.Name = workzone.Name;
+            workzoneDTO.Xpos = workzone.Xpos;
+            workzoneDTO.Ypos = workzone.Ypos;
             workzoneDTO.Workspaces = workzone.Workspaces;
-            workzoneDTO.Id = workzone.Id;   
-            return workzoneContainer.Updateworkspace(workzoneDTO);
+            workzoneDTO.Id = workzone.Id;
+            return workzoneContainer.Edit(workzoneDTO);
         }
     }
 }

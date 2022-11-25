@@ -11,6 +11,9 @@
     } else {
         $('#LoadingVisualWorkspots').alert('close')
     }
+    if (window.location.pathname.indexOf("/Workzone/Edit/") == 0) {
+        LoadXYImage()
+    }
 });
 
 $(document).ready(function () {
@@ -272,4 +275,24 @@ function GenerateImagePoints(data) {
         img.alt = point.name
         overlay.appendChild(img);
     });
+}
+
+function LoadXYImage() {
+    let xValue = $("#XPosistionInput").val()
+    let yValue = $("#YPosistionInput").val()
+    const overlay = document.querySelector('.image-overlay');
+    const image = document.querySelector('#FloorImage');
+
+    let scale = (image.height / 300)
+    let maxMinScale = 1 - scale
+    let properYPos = 1 - maxMinScale / 2
+    let y = ((image.height * (yValue / 100)) * properYPos)
+    let img = document.createElement('img');
+    img.style.left = (xValue + "%");
+    img.style.top = y + "px";
+    img.className = 'overlay-image';
+    img.style.scale = scale;
+    img.src = "/images/Workspace.svg"
+    overlay.innerHTML = "";
+    overlay.appendChild(img);
 }
