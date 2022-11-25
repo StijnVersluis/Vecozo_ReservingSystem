@@ -248,7 +248,7 @@ function GenerateNewImage() {
 
 function GenerateImagePoints(data) {
     console.log(data)
-    const overlay = document.querySelector('.image-overlay');
+    const overlay = document.querySelector('.image-overlay'); 
     const image = document.querySelector('#FloorImage');
 
     data.forEach((point) => {
