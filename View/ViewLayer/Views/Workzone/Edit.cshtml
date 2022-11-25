@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Werkblokken Wijzigen";
+    var FloorImg = $"/images/Verdieping-{Model.Floor}.jpg";
 }
 
 <partial name="_ModelStateModalPartial" />
@@ -30,6 +31,7 @@
                 <select asp asp-for="FloorId" class="form-control" asp-items='@new SelectList(Model.Floors, "Id", "Name")'>
                 </select>
             </div>
+            <div>Positie op plattegrond.</div>
             <div class="form-group input-group">
                 <div class="input-group-prepend">
                     <label asp-for="Xpos" class="control-label input-group-text"></label>
@@ -61,7 +63,7 @@
         <div class="imagemap">
             <div id="ImageOverlay" class="image-overlay"></div>
             <div class="image-wrapper">
-                <img id="FloorImage" src="~/images/Verdieping-1.jpg" width="100%" />
+                <img id="FloorImage" src="@FloorImg" width="100%" />
             </div>
         </div>
     </div>

@@ -2,6 +2,7 @@
 using DataLayer;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using ViewLayer.Models;
 using ViewLayer.Util;
 
@@ -17,7 +18,7 @@ namespace ViewLayer.Controllers
         {
             this.GetResponse();
 
-            return View(workzoneContainer.GetAll().ConvertAll(x => new WorkzoneViewModel(x)));
+            return View(workzoneContainer.GetAll().ConvertAll(x => new WorkzoneViewModel(x)).OrderBy(workzone=> workzone.Floor));
         }
 
     }
