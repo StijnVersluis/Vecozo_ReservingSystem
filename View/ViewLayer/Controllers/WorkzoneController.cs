@@ -6,6 +6,7 @@ using ViewLayer.Models;
 using System;
 using System.Collections.Generic;
 using ViewLayer.Util;
+using System.Linq;
 
 namespace ViewLayer.Controllers
 {
@@ -48,7 +49,7 @@ namespace ViewLayer.Controllers
                 // There are still workspaces left and the workzone is not only for teams.
                 if (workzone.Workspaces != 0 && !workzone.TeamOnly)
                 {
-                    var messages = reservationContainer.CheckGeneralRules(new Reservation(0, 0, model.DateTime_Arriving, model.DateTime_Leaving));
+                    var messages = reservationContainer.CheckReservationRules(new Reservation(0, 0, model.DateTime_Arriving, model.DateTime_Leaving), workzone);
                     if (messages.Count != 0)
                     {
                         messages.ForEach(x => ModelState.AddModelError(String.Empty, x));
@@ -65,13 +66,10 @@ namespace ViewLayer.Controllers
         }
 
         [HttpGet("/Workzone/Floor/{id}")]
-        public ActionResult Floor(int id, DateTime date)
+        public ActionResult Floor(int id, DateTime date, bool teamOnly = false)
         {
             // Always return the first floor
-            if (id == 0)
-            {
-                id = 1;
-            }
+            if (id == 0) id = 1;
 
             var formatted_date = string.Empty;
             var hasDefaultDate = date == default(DateTime);
@@ -84,7 +82,7 @@ namespace ViewLayer.Controllers
                 formatted_date = date.ToString("yyyy-MM-dd HH:mm");
             }
 
-            var workzones = workzoneContainer.GetAllFromFloorWithDate(id, formatted_date).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            var workzones = workzoneContainer.GetAllFromFloorWithDate(id, formatted_date).Where(workzone => workzone.TeamOnly == teamOnly).ToList().ConvertAll(workzone => new WorkzoneViewModel(workzone));
             return View(workzones);
         }
 

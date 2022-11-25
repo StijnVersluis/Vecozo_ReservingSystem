@@ -12,8 +12,9 @@ namespace IntefaceLayer
         bool CreateReservation(ReservationDTO reservationDTO);
         bool CancelReservation(int id);
         List<ReservationDTO> GetAllReservations();
-        public List<ReservationDTO> GetTodayReservationsFromUser(int id);
         public List<ReservationDTO> GetReservationsFromUser(int id);
+        public List<ReservationDTO> GetReservationsFromWorkzone(int id);
+        public List<ReservationDTO> GetReservationsWithinTimeFrame(DateTime timeFrameStart, DateTime timeFrameEnd);
         public ReservationDTO GetById(int id);
     }
 }

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using ViewLayer.Util;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace ViewLayer.Controllers
 {
@@ -16,7 +17,7 @@ namespace ViewLayer.Controllers
     {
         private ReservationContainer reservationContainer = new ReservationContainer(new ReservationDAL());
         private WorkzoneContainer workzoneContainer = new WorkzoneContainer(new WorkzoneDAL());
-        private UserContainer userContainer = new (new UserDAL());
+        private UserContainer userContainer = new(new UserDAL());
 
         private const string AUTH_SESSION_STATE_KEY = "VECOZO_AUTH_STATE";
 
@@ -46,7 +47,7 @@ namespace ViewLayer.Controllers
             this.SendResponse(
                 result,
                 "Reservering",
-                result ? 
+                result ?
                 $"is succesvol geannuleerd om {DateTime.Now.ToString("dd/MM/yyyy HH:mm")}" :
                 "kan niet worden geannuleerd, probeer het later nog eens."
             );
@@ -54,64 +55,68 @@ namespace ViewLayer.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Try to reserve a workzone with certain parameters.
+        /// </summary>
+        /// <param name="collection">The necessary parameters (workzone-id, datetime-arriving and datetime-leaving).</param>
+        /// <returns>The index with or success message or error message.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Reserve(IFormCollection collection)
         {
-            ActionResult result = null;
+            ActionResult result = null; //The view to return to
             bool success = false;
             string message = String.Empty;
 
             try
             {
-                var dtStart = (string)collection["datetime-start"];
-                var tleave = (string)collection["datetime-leaving"];
+                //Get parameters from form/collection
+                var filledInStart = collection["datetime-start"];
+                var filledInEnd = collection["datetime-leaving"];
+                int workzone_id = Int32.Parse(collection["workzone-id"]); //Is dynamicly set, so is always filled in.
 
-                if (!String.IsNullOrEmpty(dtStart) && !String.IsNullOrEmpty(tleave))
-                {
-                    var dtleave = Regex.Replace((string)collection["datetime-start"], @"T[0-9]{1,2}\:[0-9]{1,2}", "T" + tleave);
-                    DateTime start = DateTime.Parse(dtStart);
-                    DateTime leave = DateTime.Parse(dtleave);
-                    int workzone_id = Int32.Parse((string)collection["workzone-id"]);
+                //Check if everything is filled in.
+                if (String.IsNullOrEmpty(filledInStart) ||
+                    String.IsNullOrEmpty(filledInEnd))
+                    throw new Exception("Zorg ervoor dat de data en tijden correct zijn ingevoerd!");
 
-                    Workzone workzone = workzoneContainer.GetById(workzone_id);
-                    if (workzone != null)
-                    {
-                        // There are still workspaces left and the workzone is not only for teams.
-                        if (workzone.Workspaces != 0 && !workzone.TeamOnly)
-                        {
-                            var checks = reservationContainer.CheckGeneralRules(new Reservation(0, 0, start, leave));
-                            if (checks.Count != 0)
-                            {
-                                message = String.Join(',', checks);
-                            }
-                            else
-                            {
-                                success = reservationContainer.CreateReservation(new Reservation(userContainer.GetLoggedInUser().Id, workzone_id, start, leave));
-                                message = success ?
-                                    $"{workzone.Name} is succesvol gereserveerd om {start.ToString("dd/MM/yyyy HH:mm")} tot {leave.ToString("HH:mm")}" :
-                                    $"{workzone.Name} kan niet gereserveerd worden, probeer het later nog eens.";
-                            }
-                        } else
-                        {
-                            message = $"{workzone.Name} kan niet gereserveerd worden, probeer het later nog eens.";
-                        }
-                    }
-                } else
+                //Set the datetime-leaving to a datetime to easily get the time
+                DateTime dtFilledInLeave = DateTime.Parse(filledInEnd);
+
+                //Create the starting datetime and ending datetime
+                DateTime start = DateTime.Parse(filledInStart);
+                DateTime leave = new DateTime(start.Year, start.Month, start.Day,
+                    dtFilledInLeave.Hour, dtFilledInLeave.Minute, dtFilledInLeave.Second);
+                
+                //Get the workzone that the reservation is corresponding to
+                Workzone workzone = workzoneContainer.GetById(workzone_id);
+
+                //Go through the checks required for a reservation
+                var checks = reservationContainer.CheckReservationRules(new Reservation(userContainer.GetLoggedInUser().Id, workzone.Id, start, leave), workzone);
+
+                //If any checks fail checks contains errormessages
+                if (checks.Count > 0) message = String.Join(',', checks);
+                else
                 {
-                    message = "Zorg ervoor dat de datums en tijden correct zijn ingevoerd!";
+                    //Else create the reservation
+                    success = reservationContainer.CreateReservation(new Reservation(userContainer.GetLoggedInUser().Id, workzone.Id, start, leave));
+                    message = success ?
+                        $"{workzone.Name} is succesvol gereserveerd om {start.ToString("dd/MM/yyyy HH:mm")} tot {leave.ToString("HH:mm")}" :
+                        $"{workzone.Name} kan niet gereserveerd worden, probeer het later nog eens.";
                 }
-
-                this.SendResponse(
-                    success,
-                    "Reservering",
-                    message
-                );
-            } finally
+            }
+            catch (Exception e) { message = e.Message; }
+            finally
             {
                 result = RedirectToAction("Index", "Home");
             }
 
+
+            this.SendResponse(
+                    success,
+                    "Reservering",
+                    message
+                );
             return result;
         }
 

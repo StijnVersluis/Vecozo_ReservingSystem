@@ -27,7 +27,7 @@ namespace ViewLayer.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).ConvertAll(reservation => new ReservationViewModel(reservation));
+            ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).Where(reservation=>reservation.DateTime_Arriving.Date == DateTime.Now.Date).ToList().ConvertAll(reservation => new ReservationViewModel(reservation));
             ViewData["AllWorkzones"] = wCont.GetAll().ConvertAll(workzone => new WorkzoneViewModel(workzone));
             ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(team => new TeamViewModel(team));
             ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
