@@ -56,7 +56,9 @@
                                 <option value="@floor.Id">@Html.Encode(floor.Name)</option>
                             }
                         </select>
-                    } else {
+                    }
+                    else
+                    {
                         <div class="alert alert-warning">
                             Er zijn geen <span class="alert-heading font-weight-bold">verdiepingen</span>
                         </div>
@@ -95,11 +97,15 @@
                     }
                 </div>
                 <hr style="height: 0.5px; background-color: #4525F2;" />
-                <div id="WorkSpotSelectList" class="WorkSpotSelectList"></div>
+                <div id="WorkSpotSelect" class="select-menu-item">
+                    <h5>Werkplekken: </h5>
+                    <div id="WorkSpotSelectList" class="WorkSpotSelectList">
+                    </div>
+                </div>
+                <h5>Vandaag gereserveerd: </h5>
                 <div id="ReserverdWorkSpotSelect" class="select-menu-item WorkSpotSelectList">
                     @if (reservations.Count != 0)
                     {
-                        <h5>Vandaag gereserveerd: </h5>
                         <div class="list-group">
                             @foreach (var reservation in reservations)
                             {
@@ -121,7 +127,9 @@
                                 </text>
                             }
                         </div>
-                    } else {
+                    }
+                    else
+                    {
                         <div class="alert alert-warning">
                             Er zijn vandaag geen <span class="alert-heading font-weight-bold">reseveringen</span>
                         </div>
@@ -133,7 +141,7 @@
             <div class="imagemap">
                 <div id="ImageOverlay" class="image-overlay"></div>
                 <div class="image-wrapper">
-                    <img id="FloorImage" src="~/images/Verdieping-1.jpg" width="100%"/>
+                    <img id="FloorImage" src="~/images/Verdieping-1.jpg" width="100%" />
                 </div>
             </div>
         </div>

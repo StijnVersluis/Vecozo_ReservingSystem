@@ -3,10 +3,8 @@
     Layout = null;
 }
 
-<div id="WorkSpotSelect" class="select-menu-item">
     @if (Model != null && Model.Count != 0)
     {
-        <h5>Werkplekken: </h5>
         <div class="list-group">
             @foreach (var workzone in Model)
             {
@@ -36,4 +34,3 @@
             Er zijn geen <span class="alert-heading font-weight-bold">werkplekken</span>
         </div>
     }
-</div>
