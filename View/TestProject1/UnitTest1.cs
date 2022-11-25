@@ -1,6 +1,7 @@
 
 using DataLayer;
 using System.Data;
+using System.Resources;
 
 namespace TestProject1
 {
@@ -13,9 +14,9 @@ namespace TestProject1
         {
             DateTime arriving = new DateTime(2022, 11, 25, 12, 0, 0);
             DateTime leaving = new DateTime(2022, 11, 25, 14, 0, 0);
-            var reservations = rCont.GetReservationsWithinTimeFrameFromWorkzone(1, arriving, leaving);
+            var reservations = rCont.GetReservationsWithinTimeFrame(arriving, leaving).Where(reservation => reservation.Workzone_id == 1).ToList();
             Assert.IsNotNull(reservations);
-            Assert.AreEqual(4, reservations.Count);
+            Assert.AreEqual(0, reservations.Count);
         }
     }
 }

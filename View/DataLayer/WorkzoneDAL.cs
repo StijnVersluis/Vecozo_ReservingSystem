@@ -30,7 +30,7 @@ namespace DataLayer
 
                 while (reader.Read())
                 {
-                    workzone = new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (string)reader["PositionX"], (string)reader["PositionY"]);
+                    workzone = new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]);
                 }
             }
             finally
@@ -60,9 +60,10 @@ namespace DataLayer
 
                 while (reader.Read())
                 {
-                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (string)reader["PositionX"], (string)reader["PositionY"]));
+                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
                 }
-            } finally
+            }
+            finally
             {
                 CloseCon();
             }
@@ -74,15 +75,16 @@ namespace DataLayer
         {
             bool result = false;
             string query = string.Empty;
-            
+
             if (string.IsNullOrEmpty(date))
             {
-                query = 
+                query =
                     "SELECT a.* FROM Workzones a " +
                     "INNER JOIN Reservations b " +
                     "ON b.Workzone_Id = a.Id " +
                     "WHERE a.Id = @id";
-            } else
+            }
+            else
             {
                 query =
                     "SELECT * FROM Workzones a " +
@@ -114,7 +116,8 @@ namespace DataLayer
                 DbCom.Parameters.Clear();
 
                 result = reader.HasRows ? true : false;
-            } finally
+            }
+            finally
             {
                 if (DbCom.Connection.State == ConnectionState.Open)
                 {
@@ -155,9 +158,10 @@ namespace DataLayer
 
                 while (reader.Read())
                 {
-                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (string)reader["PositionX"], (string)reader["PositionY"]));
+                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
                 }
-            } finally
+            }
+            finally
             {
                 if (DbCom.Connection.State == ConnectionState.Open)
                 {
@@ -199,7 +203,7 @@ namespace DataLayer
 
                     workzones.Add(workzone);
                 }
-        });
+            });
 
             return workzones;
         }
@@ -220,28 +224,31 @@ namespace DataLayer
                 reader = DbCom.ExecuteReader();
                 while (reader.Read())
                 {
-                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (string)reader["PositionX"], (string)reader["PositionY"]));
+                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
                 }
             }
             catch (Exception e) { }
             finally { CloseCon(); }
             return workzones;
         }
-        public bool Updateworkspace(WorkzoneDTO workzoneDTO)
+        public bool Edit(WorkzoneDTO workzoneDTO)
         {
             try
             {
                 OpenCon();
-                var command = "update Workzones set Workspaces=@Workspaces Where Id=@Id";
+                DbCom.Parameters.Clear();
+                var command = "UPDATE Workzones SET Name = @name, Workspaces = @workspaces, TeamOnly = @teamonly, PositionX = @xpos, PositionY = @ypos WHERE Id = @id";
                 DbCom.CommandText = command;
-                DbCom.Parameters.AddWithValue("@Id", workzoneDTO.Id);
-                DbCom.Parameters.AddWithValue("@Workspaces",workzoneDTO.Workspaces);
+                DbCom.Parameters.AddWithValue("name", workzoneDTO.Name);
+                DbCom.Parameters.AddWithValue("Workspaces", workzoneDTO.Workspaces);
+                DbCom.Parameters.AddWithValue("teamonly", workzoneDTO.TeamOnly);
+                DbCom.Parameters.AddWithValue("xpos", workzoneDTO.Xpos);
+                DbCom.Parameters.AddWithValue("ypos", workzoneDTO.Ypos);
+                DbCom.Parameters.AddWithValue("id", workzoneDTO.Id);
                 return DbCom.ExecuteNonQuery() > 0;
-              
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
             finally
@@ -249,7 +256,7 @@ namespace DataLayer
 
                 CloseCon();
             }
-            
+
         }
     }
 }

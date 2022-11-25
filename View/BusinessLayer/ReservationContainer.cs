@@ -88,9 +88,6 @@ namespace BusinessLayer
             //If workzone is TeamOnly
             if (workzone.TeamOnly) { messages.Add($"{workzone.Name} kan niet gereserveerd worden, het is alleen voor een team bedoeld."); return messages; }
 
-
-            //if (GetReservationsFromUser(newReservation.User_id).Any(reservation => DateTimeBetweenTimeFrame(reservation, ))) ;
-
             List<Reservation> existingReservationsInTimeFrame = GetReservationsWithinTimeFrame(newReservation.DateTime_Arriving, newReservation.DateTime_Leaving);
 
             if(existingReservationsInTimeFrame.Any(reservation => reservation.User_id == newReservation.User_id))

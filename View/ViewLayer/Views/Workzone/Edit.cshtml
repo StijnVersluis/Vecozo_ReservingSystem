@@ -1,0 +1,78 @@
+﻿@model ViewLayer.Models.WorkzoneViewModel
+
+@{
+    ViewData["Title"] = "Werkblokken Wijzigen";
+}
+
+<partial name="_ModelStateModalPartial" />
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" asp-controller="Workzone" asp-antiforgery="true">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input asp-for="Id" hidden class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Workspaces" class="control-label"></label>
+                <input asp-for="Workspaces" class="form-control" />
+                <span asp-validation-for="Workspaces" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Floors" class="control-label"></label>
+                <select asp asp-for="FloorId" class="form-control" asp-items='@new SelectList(Model.Floors, "Id", "Name")'>
+                </select>
+            </div>
+            <div class="form-group input-group">
+                <div class="input-group-prepend">
+                    <label asp-for="Xpos" class="control-label input-group-text"></label>
+                </div>
+                <input asp-for="Xpos" id="XPosistionInput" class="form-control" onchange="LoadXYImage()" />
+                <span asp-validation-for="Xpos" class="text-danger"></span>
+                <div class="input-group-append">
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+            <div class="form-group input-group">
+                <div class="input-group-prepend">
+                    <label asp-for="Ypos" class="control-label input-group-text"></label>
+                </div>
+                <input asp-for="Ypos" id="YPosistionInput" class="form-control" onchange="LoadXYImage()"/>
+                <span asp-validation-for="Ypos" class="text-danger"></span>
+                <div class="input-group-append">
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-info">Wijzigen</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="WorkspaceHotspots" class="col-md-8 d-none d-md-block">
+        <div class="imagemap">
+            <div id="ImageOverlay" class="image-overlay"></div>
+            <div class="image-wrapper">
+                <img id="FloorImage" src="~/images/Verdieping-1.jpg" width="100%" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-controller="Admin">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
