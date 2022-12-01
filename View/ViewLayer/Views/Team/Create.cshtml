@@ -6,7 +6,7 @@
 }
 <h4>Nieuw Team</h4>
 <p>
-    <a asp-action="Index">Overzicht</a>
+    <a class=" auth__submit mt-3 aDisable" asp-action="Index">Overzicht</a>
 </p>
 <hr />
 <div class="row">
@@ -20,7 +20,7 @@
     <div class="col-md-4">
         <form asp-action="Create" asp-antiforgery="true">
             <div class="form-group">
-                <label asp-for="Name"></label>
+                <label asp-for="Name">Teamnaam:</label>
                 <input asp-for="Name" class="form-control" autocomplete="off" />
             </div>
             <div id="TeamAddedUsers" class="list-group"></div>
@@ -31,7 +31,7 @@
         </form>
     </div>
     <div class="col-md-8">
-        <label for="FilterUserInput">Medewerkers Zoeken</label>
+        <label for="FilterUserInput">Medewerkers zoeken:</label>
         <input id="FilterUserInput" type="text" class="form-control" autocomplete="off" />
         <div class="list-group scrollable-div height-400" id="FilteredUserList">
         </div>

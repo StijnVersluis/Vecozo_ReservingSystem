@@ -211,7 +211,7 @@ namespace DataLayer
                 {
                     OpenCon();
                     reader = null;
-                    DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id";
+                    DbCom.CommandText = "SELECT * FROM Teams WHERE Id = @id AND Deleted_At IS null";
                     DbCom.Parameters.Clear();
                     DbCom.Parameters.AddWithValue("id", teamId);
 
@@ -238,10 +238,9 @@ namespace DataLayer
             {
                 OpenCon();
                 DbCom.Parameters.Clear();
-                DbCom.CommandText =
-                    "DELETE FROM TeamMembers WHERE Team_Id = @id " +
-                    "DELETE FROM Teams WHERE Id = @id";
+                DbCom.CommandText = "UPDATE Teams SET Deleted_At = @now WHERE Id = @id";
                 DbCom.Parameters.AddWithValue("id", id);
+                DbCom.Parameters.AddWithValue("now", DateTime.Now);
 
                 result = DbCom.ExecuteNonQuery() > 0 ? true : false;
             }

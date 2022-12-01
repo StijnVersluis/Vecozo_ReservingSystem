@@ -30,7 +30,7 @@
                 <div class="modal-footer">
                     <input type="hidden" name="workzone-id" id="WorkzoneIdForm" />
                     <input type="hidden" name="datetime-start" id="WorkzoneArrivingForm" />
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluiten</button>
                     <button type="submit" class="btn btn-primary">Reserveren</button>
                 </div>
             </form>
@@ -45,9 +45,11 @@
         <div class="col-lg-3 col-12">
             <div id="LeftForm" class="">
                 <div id="DateSelector" class="select-menu-item">
-                    <input id="DateSelectorInput" class="form-control" type="datetime-local" value="">
+                    <label for="DateSelectorInput">Reserveer:</label>
+                    <input id="DateSelectorInput" class="form-control" type="datetime-local">
                 </div>
                 <div id="FloorSelector" class="select-menu-item">
+                <label for="FloorSelector">Verdieping:</label>
                     @if (floors.Count != 0)
                     {
                         <select id="FloorSelectorSelect" class="form-control" onchange="FloorSelectChange()">
@@ -63,6 +65,7 @@
                             Er zijn geen <span class="alert-heading font-weight-bold">verdiepingen</span>
                         </div>
                     }
+                    
                 </div>
                 <hr style="height: 0.5px; background-color: #4525F2;" />
                 <div class="container d-inline-flex justify-content-between p-0">
