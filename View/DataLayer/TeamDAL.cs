@@ -57,8 +57,9 @@ namespace DataLayer
                     CloseCon();
                 });
             }
-            catch (Exception e) { 
-                Debug.WriteLine(e.Message); 
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
 
             return users;
@@ -78,7 +79,8 @@ namespace DataLayer
                 DbCom.Parameters.AddWithValue("uId", user.Id);
 
                 success = DbCom.ExecuteNonQuery() > 0;
-            } finally
+            }
+            finally
             {
                 CloseCon();
             }
@@ -100,7 +102,8 @@ namespace DataLayer
                 DbCom.Parameters.AddWithValue("uId", user.Id);
 
                 success = DbCom.ExecuteNonQuery() > 0;
-            } finally
+            }
+            finally
             {
                 CloseCon();
             }
@@ -138,11 +141,13 @@ namespace DataLayer
                 });
 
                 return true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
                 return false;
-            } finally
+            }
+            finally
             {
                 CloseCon();
             }
@@ -177,8 +182,8 @@ namespace DataLayer
 
                 return true;
             }
-            catch (Exception e) 
-            { 
+            catch (Exception e)
+            {
                 Debug.WriteLine(e.Message);
                 return false;
             }
@@ -224,7 +229,8 @@ namespace DataLayer
                     CloseCon();
                 });
                 CloseCon();
-            } catch(Exception e) { Debug.WriteLine(e.Message); }
+            }
+            catch (Exception e) { Debug.WriteLine(e.Message); }
 
 
             return teams;
@@ -267,7 +273,8 @@ namespace DataLayer
                 {
                     team = new TeamDTO((int)reader["Id"], (string)reader["Name"]);
                 }
-            } finally
+            }
+            finally
             {
                 CloseCon();
             }
@@ -288,25 +295,14 @@ namespace DataLayer
                 DbCom.Parameters.AddWithValue("UserId", userId);
                 int rowsAffected = DbCom.ExecuteNonQuery();
 
-                result =  rowsAffected > 0;
-                if (result)
-                {
-                    // The team admin is the only one left.
-                    var users = GetUsers(teamId);
-                    if (users.Count == 1)
-                    {
-                        // The team has to get deleted.
-                        CloseCon();
-                        result = DeleteTeam(teamId);
-                    }
-                }
-            } 
+                result = rowsAffected > 0;
+            }catch(Exception e)
+            {
+                throw new Exception(e.Message, e);
+            }
             finally
             {
-                if (DbCom.Connection.State == ConnectionState.Open)
-                {
-                    CloseCon();
-                }
+                CloseCon();
             }
 
             return result;
@@ -343,7 +339,7 @@ namespace DataLayer
             try
             {
                 OpenCon();
-                DbCom.CommandText = 
+                DbCom.CommandText =
                     "SELECT Users.* FROM Users " +
                     "INNER JOIN TeamMembers " +
                     "ON TeamMembers.User_Id = Users.Id " +
@@ -369,10 +365,10 @@ namespace DataLayer
             reader = null;
             DbCom.CommandText = "select * TeamMembers Where UserName=@username  ";
             DbCom.Parameters.AddWithValue("username", username);
-            reader = DbCom.ExecuteReader(); 
+            reader = DbCom.ExecuteReader();
             while (reader.Read())
             {
-                
+
                 Is_Team_Admin = Convert.ToBoolean(reader["Is_Team_Admin"]);
 
             }
@@ -381,8 +377,8 @@ namespace DataLayer
             {
                 return true;
             }
-            return false;   
-        
+            return false;
+
 
 
 

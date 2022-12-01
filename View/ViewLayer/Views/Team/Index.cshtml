@@ -11,7 +11,7 @@
 <body>
     <h1>Uw Teams</h1>
     <p>
-        <a class=" auth__submit mt-3 aDisable" asp-action="Create">Nieuw</a>
+        <a class="btn btn-success py-1" asp-action="Create">Nieuw</a>
     </p>
 
     <partial name="_ResponseModalPartial" model="@responseModel" />
@@ -33,7 +33,7 @@
                         <td>@item.Users.Count()</td>
                         <td>
                             <div class="container d-inline-flex">
-                                <a asp-action="Details" asp-route-id="@item.Id">Bekijk</a>
+                                <a class="btn btn-info py-0" asp-action="Details" asp-route-id="@item.Id">Bekijken</a>
                             </div>
                         </td>
                     </tr>

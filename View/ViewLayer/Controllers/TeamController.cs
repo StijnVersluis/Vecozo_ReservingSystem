@@ -11,7 +11,8 @@ namespace ViewLayer.Controllers
 {
     public class TeamController : Controller
     {
-        private TeamContainer teamContainer = new(new TeamDAL());
+        private static TeamDAL tDAL = new TeamDAL();
+        private TeamContainer teamContainer = new(tDAL);
         private UserContainer userContainer = new(new UserDAL());
         private RoleContainer roleContainer = new(new RoleDAL());
 
@@ -40,7 +41,8 @@ namespace ViewLayer.Controllers
             }
             return View(new TeamViewModel(team)
             {
-                Owner = teamContainer.GetTeamAdmin(team.Id)
+                Owner = teamContainer.GetTeamAdmin(team.Id),
+                Users = team.GetUsers(tDAL)
             });
         }
 
@@ -189,8 +191,12 @@ namespace ViewLayer.Controllers
         }
         public ActionResult Delete(int id)
         {
-            teamContainer.DeleteTeam(id);
-            return RedirectToAction(nameof(Index));
+            if (teamContainer.GetTeam(id).GetUsers(tDAL).Count == 1)
+            {
+                teamContainer.DeleteTeam(id);
+                return RedirectToAction(nameof(Index));
+            }
+            else return RedirectToAction(nameof(Details), new { id = id });
         }
     }
 }

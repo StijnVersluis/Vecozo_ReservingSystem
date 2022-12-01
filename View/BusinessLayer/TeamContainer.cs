@@ -89,12 +89,6 @@ namespace BusinessLayer
                 messages.Add("Het team kan niet leeg zijn!");
             }
 
-            // Check of er minimaal een werknemer in het team bevindt.
-            if (membersIds.Count == 1 && membersIds.First() == adminId)
-            {
-                messages.Add("U moet minimaal een werknemer toevoegen aan het team!");
-            }
-
             return messages;
         }
 

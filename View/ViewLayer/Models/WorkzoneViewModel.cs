@@ -7,12 +7,15 @@ namespace ViewLayer.Models
     public class WorkzoneViewModel
     {
         public int Id { get; set; }
+        [DisplayName("Werkblok")]
         public string Name { get; set; }
+        [DisplayName("Aantal werkplekken")]
         public int Workspaces { get; set; }
+        [DisplayName("Verdieping")]
         public int Floor { get; set; }
-        public int FloorId { get; set; }    
         public int Xpos { get; set; }
         public int Ypos { get; set; }
+        [DisplayName("Teamblok")]
         public bool TeamOnly { get; set; }
         [DisplayName("Verdiepingen")]
         public List<FloorViewModel> Floors { get; set; }
