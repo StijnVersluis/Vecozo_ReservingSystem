@@ -256,7 +256,7 @@ function GenerateImagePoints(data) {
 
     data.forEach((point) => {
         if (point.ypos == "" || point.xpos == "") { return };
-        let scale = (image.height / 300)
+        let scale = (image.height / 350)
         let maxMinScale = 1 - scale
         let properYPos = 1 - maxMinScale / 2
         let y = ((image.height * (point.ypos / 100)) * properYPos)
@@ -283,7 +283,7 @@ function LoadXYImage() {
     const overlay = document.querySelector('.image-overlay');
     const image = document.querySelector('#FloorImage');
 
-    let scale = (image.height / 300)
+    let scale = (image.height / 350)
     let maxMinScale = 1 - scale
     let properYPos = 1 - maxMinScale / 2
     let y = ((image.height * (yValue / 100)) * properYPos)
