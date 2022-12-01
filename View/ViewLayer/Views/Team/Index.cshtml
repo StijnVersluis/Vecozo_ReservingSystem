@@ -4,40 +4,50 @@
     var responseModel = ViewData["ResponseModel"] as ViewLayer.Models.ResponseViewModel;
 }
 
-<h1>Uw Teams</h1>
-<p>
-    <a asp-action="Create">Nieuw</a>
-</p>
+<html>
+<head>
+    <link ref="stylesheet" href="~/css/site.css" /> 
+</head>
+<body>
+    <h1>Uw Teams</h1>
+    <p>
+        <a class=" auth__submit mt-3 aDisable" asp-action="Create">Nieuw</a>
+    </p>
 
-<partial name="_ResponseModalPartial" model="@responseModel" />
+    <partial name="_ResponseModalPartial" model="@responseModel" />
 
-@if (Model.Count != 0)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Teamnaam:</th>
-                <th>Aantal Leden</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    @if (Model.Count != 0)
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@Html.Encode(item.Name)</td>
-                    <td>@item.Users.Count()</td>
-                    <td>
-                        <div class="container d-inline-flex">
-                            <a asp-action="Details" asp-route-id="@item.Id">Bekijk</a>
-                        </div>
-                    </td>
+                    <th>Teamnaam:</th>
+                    <th>Aantal Leden</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-} else {
-    <div class="alert alert-warning">
-        Er zijn geen <span class="alert-heading font-weight-bold">teams</span>.
-        Maak een <a asp-action="Create">nieuw</a> team aan.
-    </div>
-}
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.Encode(item.Name)</td>
+                        <td>@item.Users.Count()</td>
+                        <td>
+                            <div class="container d-inline-flex">
+                                <a asp-action="Details" asp-route-id="@item.Id">Bekijk</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Er zijn geen <span class="alert-heading font-weight-bold">teams</span>.
+            Maak een <a asp-action="Create">nieuw</a> team aan.
+        </div>
+    }
+
+</body>
+</html>
