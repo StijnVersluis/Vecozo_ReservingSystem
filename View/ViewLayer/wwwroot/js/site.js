@@ -89,7 +89,6 @@ $('#TeamSelectedModal').on('show.bs.modal', function (event) {
 
     //fetch users
     var html = GetUsers(modal, teamid);
-    console.log(html);
 });
 
 function GetUsers(modal, teamId) {
@@ -228,7 +227,6 @@ function loadWorkzones(date) {
     if (!teamonly) {
         teamonlystring = `&teamOnly=${teamonly}`
     }
-    console.log(teamonlystring)
 
     fetch(window.location.origin + `/Workzone/Floor/${floorId}?` + datestring + teamonlystring, {
         method: "GET"
@@ -236,6 +234,10 @@ function loadWorkzones(date) {
         .then(resp => resp.text())
         .then(data => {
             $("#WorkSpotSelectList").html(data)
+        })
+        .then(e => {
+            let listItems = document.querySelectorAll("#WorkSpotSelectList .list-group .list-group-item")
+            $("#WorkspotCount").html(listItems.length)
         })
         .catch(err => {
             console.log(err);
