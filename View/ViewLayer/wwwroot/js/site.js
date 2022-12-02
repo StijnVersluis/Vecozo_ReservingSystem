@@ -35,6 +35,8 @@ function CheckTeamInput() {
         document.getElementById("TeamCheckBoxOn").classList.add("d-none")
         document.getElementById("TeamList").classList.add("d-none")
     }
+    SwitchTeamWorkzonesImages();
+    loadWorkzones();
 }
 
 const staticPopupModals = [
@@ -211,15 +213,24 @@ function FloorSelectChange() {
     loadWorkzones();
     LoadImage();
 }
-
 function loadWorkzones(date) {
     if (date == null) {
         date = new Date().toLocaleString();
     }
 
     let floorId = $('#FloorSelectorSelect').val();
+    let teamonly = $("#TeamCheckBox").prop('checked')
+    let teamonlystring = ``;
+    let datestring = ""
+    if (date != null) {
+        datestring = "date=" + date
+    }
+    if (!teamonly) {
+        teamonlystring = `&teamOnly=${teamonly}`
+    }
+    console.log(teamonlystring)
 
-    fetch(window.location.origin + `/Workzone/Floor/${floorId}?date=${date}`, {
+    fetch(window.location.origin + `/Workzone/Floor/${floorId}?` + datestring + teamonlystring, {
         method: "GET"
     })
         .then(resp => resp.text())
@@ -249,31 +260,36 @@ function GenerateNewImage() {
     $("#ImageOverlay").html("")
 }
 
+let floorImages = null;
+
 function GenerateImagePoints(data) {
-    console.log(data)
-    const overlay = document.querySelector('.image-overlay'); 
+    floorImages = data;
+    const overlay = document.querySelector('.image-overlay');
     const image = document.querySelector('#FloorImage');
 
     data.forEach((point) => {
+        let teamonly = $("#TeamCheckBox").prop('checked')
         if (point.ypos == "" || point.xpos == "") { return };
-        let scale = (image.height / 350)
-        let maxMinScale = 1 - scale
-        let properYPos = 1 - maxMinScale / 2
-        let y = ((image.height * (point.ypos / 100)) * properYPos)
-        let img = document.createElement('img');
-        img.style.left = (point.xpos + "%");
-        img.style.top = y + "px";
-        img.title = point.name;
-        img.id = "DataPoint" + point.id
-        img.dataset.toggle = "modal"
-        img.dataset.target = "#WorkzoneSelectedModal"
-        img.dataset.workzoneId = point.id
-        img.dataset.workzoneName = point.name
-        img.className = 'overlay-image';
-        img.style.scale = scale;
-        img.src = "/images/Workspace.svg"
-        img.alt = point.name
-        overlay.appendChild(img);
+        if ((!teamonly && point.teamOnly == teamonly) || teamonly) {
+            let scale = (image.height / 350)
+            let maxMinScale = 1 - scale
+            let properYPos = 1 - maxMinScale / 2
+            let y = ((image.height * (point.ypos / 100)) * properYPos)
+            let img = document.createElement('img');
+            img.style.left = (point.xpos + "%");
+            img.style.top = y + "px";
+            img.title = point.name;
+            img.id = "DataPoint" + point.id
+            img.dataset.toggle = "modal"
+            img.dataset.target = "#WorkzoneSelectedModal"
+            img.dataset.workzoneId = point.id
+            img.dataset.workzoneName = point.name
+            img.className = 'overlay-image';
+            img.style.scale = scale;
+            img.src = "/images/Workspace.svg"
+            img.alt = point.name
+            overlay.appendChild(img);
+        }
     });
 }
 
@@ -295,4 +311,35 @@ function LoadXYImage() {
     img.src = "/images/Workspace.svg"
     overlay.innerHTML = "";
     overlay.appendChild(img);
+}
+
+function SwitchTeamWorkzonesImages() {
+    let teamonly = $("#TeamCheckBox").prop('checked')
+    const overlay = document.querySelector('.image-overlay');
+    const image = document.querySelector('#FloorImage');
+    $("#ImageOverlay").html("")
+    let data = floorImages;
+    data.forEach((point) => {
+        if (point.ypos == "" || point.xpos == "") { return };
+        if ((!teamonly && point.teamOnly == teamonly) || teamonly) {
+            let scale = (image.height / 350)
+            let maxMinScale = 1 - scale
+            let properYPos = 1 - maxMinScale / 2
+            let y = ((image.height * (point.ypos / 100)) * properYPos)
+            let img = document.createElement('img');
+            img.style.left = (point.xpos + "%");
+            img.style.top = y + "px";
+            img.title = point.name;
+            img.id = "DataPoint" + point.id
+            img.dataset.toggle = "modal"
+            img.dataset.target = "#WorkzoneSelectedModal"
+            img.dataset.workzoneId = point.id
+            img.dataset.workzoneName = point.name
+            img.className = 'overlay-image';
+            img.style.scale = scale;
+            img.src = "/images/Workspace.svg"
+            img.alt = point.name
+            overlay.appendChild(img);
+        }
+    });
 }

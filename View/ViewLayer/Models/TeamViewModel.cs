@@ -13,7 +13,6 @@ namespace ViewLayer.Models
 
         [HiddenInput]
         public string AddedUserIds { get; set; }
-
         public string Name { get; set; }
 
         public User Owner { get; set; }

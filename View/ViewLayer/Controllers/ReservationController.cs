@@ -52,7 +52,7 @@ namespace ViewLayer.Controllers
                 "kan niet worden geannuleerd, probeer het later nog eens."
             );
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Reservation");
         }
 
         /// <summary>

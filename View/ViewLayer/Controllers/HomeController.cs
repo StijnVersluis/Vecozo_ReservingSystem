@@ -29,6 +29,7 @@ namespace ViewLayer.Controllers
         {
             ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).Where(reservation=>reservation.DateTime_Arriving.Date == DateTime.Now.Date).ToList().ConvertAll(reservation => new ReservationViewModel(reservation));
             ViewData["AllWorkzones"] = wCont.GetAll().ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            ViewData["AllWorkzonesFromfloow"] = wCont.GetAllFromFloor(1).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(team => new TeamViewModel(team));
             ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
             ViewData["Floors"] = fCont.GetAll().ConvertAll(x => new FloorViewModel(x));

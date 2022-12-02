@@ -13,7 +13,9 @@ namespace ViewLayer.Models
         public int Workspaces { get; set; }
         [DisplayName("Verdieping")]
         public int Floor { get; set; }
+        [DisplayName("Horizontaal")]
         public int Xpos { get; set; }
+        [DisplayName("Vertikaal")]
         public int Ypos { get; set; }
         [DisplayName("Teamblok")]
         public bool TeamOnly { get; set; }

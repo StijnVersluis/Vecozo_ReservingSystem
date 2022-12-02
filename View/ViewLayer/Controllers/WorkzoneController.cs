@@ -11,7 +11,7 @@ using InterfaceLayer;
 
 namespace ViewLayer.Controllers
 {
-    
+
     public class WorkzoneController : Controller
     {
         private readonly WorkzoneContainer workzoneContainer = new(new WorkzoneDAL());
@@ -68,7 +68,7 @@ namespace ViewLayer.Controllers
         }
 
         [HttpGet("/Workzone/Floor/{id}")]
-        public ActionResult Floor(int id, DateTime date, bool teamOnly = false)
+        public ActionResult Floor(int id, DateTime date, bool teamOnly)
         {
             // Always return the first floor
             if (id == 0) id = 1;
@@ -84,8 +84,13 @@ namespace ViewLayer.Controllers
                 formatted_date = date.ToString("yyyy-MM-dd HH:mm");
             }
 
-            var workzones = workzoneContainer.GetAllFromFloorWithDate(id, formatted_date).Where(workzone => workzone.TeamOnly == teamOnly).ToList().ConvertAll(workzone => new WorkzoneViewModel(workzone));
-            return View(workzones);
+            var workzones = workzoneContainer.GetAllFromFloorWithDate(id, formatted_date);
+            if (!teamOnly)
+            {
+                workzones = workzones.Where(workzone => workzone.TeamOnly == teamOnly).ToList();
+            }
+            var workzonesVMs = workzones.ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            return View(workzonesVMs);
         }
 
         public JsonResult GetWorkzonePositions(int id)
