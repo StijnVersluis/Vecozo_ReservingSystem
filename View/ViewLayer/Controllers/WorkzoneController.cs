@@ -140,6 +140,8 @@ namespace ViewLayer.Controllers
                 Workzone workzone = new Workzone();
                 workzone.Id = workzoneViewModel.Id;
                 workzone.Name = workzoneViewModel.Name;
+                workzone.Floor = workzoneViewModel.Floor;
+                workzone.TeamOnly = workzoneViewModel.TeamOnly;
                 workzone.Xpos = workzoneViewModel.Xpos;
                 workzone.Ypos = workzoneViewModel.Ypos;
                 workzone.Workspaces = workzoneViewModel.Workspaces;

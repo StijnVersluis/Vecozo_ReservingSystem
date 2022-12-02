@@ -49,5 +49,9 @@ namespace BusinessLayer
         public Workzone()
         {
         }
+        public WorkzoneDTO toDTO()
+        {
+            return new WorkzoneDTO(Id, Name, Workspaces, Floor, TeamOnly, Xpos, Ypos);
+        }
     }
 }

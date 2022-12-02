@@ -53,14 +53,7 @@ namespace BusinessLayer
         }
         public bool Edit(Workzone workzone)
         {
-            WorkzoneDTO workzoneDTO = new WorkzoneDTO();
-            workzoneDTO.TeamOnly = workzone.TeamOnly;
-            workzoneDTO.Name = workzone.Name;
-            workzoneDTO.Xpos = workzone.Xpos;
-            workzoneDTO.Ypos = workzone.Ypos;
-            workzoneDTO.Workspaces = workzone.Workspaces;
-            workzoneDTO.Id = workzone.Id;
-            return workzoneContainer.Edit(workzoneDTO);
+            return workzoneContainer.Edit(workzone.toDTO());
         }
     }
 }

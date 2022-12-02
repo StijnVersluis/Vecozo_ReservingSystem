@@ -237,11 +237,12 @@ namespace DataLayer
             {
                 OpenCon();
                 DbCom.Parameters.Clear();
-                var command = "UPDATE Workzones SET Name = @name, Workspaces = @workspaces, TeamOnly = @teamonly, PositionX = @xpos, PositionY = @ypos WHERE Id = @id";
+                var command = "UPDATE Workzones SET Name = @name, Workspaces = @workspaces, Floor = @floor, TeamOnly = @teamonly, PositionX = @xpos, PositionY = @ypos WHERE Id = @id";
                 DbCom.CommandText = command;
                 DbCom.Parameters.AddWithValue("name", workzoneDTO.Name);
                 DbCom.Parameters.AddWithValue("Workspaces", workzoneDTO.Workspaces);
                 DbCom.Parameters.AddWithValue("teamonly", workzoneDTO.TeamOnly);
+                DbCom.Parameters.AddWithValue("floor", workzoneDTO.Floor);
                 DbCom.Parameters.AddWithValue("xpos", workzoneDTO.Xpos);
                 DbCom.Parameters.AddWithValue("ypos", workzoneDTO.Ypos);
                 DbCom.Parameters.AddWithValue("id", workzoneDTO.Id);
