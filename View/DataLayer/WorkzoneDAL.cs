@@ -9,7 +9,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace DataLayer
 {
-    public class WorkzoneDAL : SqlConnect, IWorkzoneContainer
+    public class WorkzoneDAL : SqlConnect, IWorkzoneContainer, IWorkzone
     {
         private SqlDataReader reader;
         public WorkzoneDAL()
@@ -17,6 +17,7 @@ namespace DataLayer
             InitializeDB();
         }
 
+        #region WorkzoneContainer
         public WorkzoneDTO GetById(int id)
         {
             WorkzoneDTO workzone = null;
@@ -227,21 +228,26 @@ namespace DataLayer
                     workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
                 }
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message, e);
+            }
             finally { CloseCon(); }
             return workzones;
         }
+
         public bool Edit(WorkzoneDTO workzoneDTO)
         {
             try
             {
                 OpenCon();
                 DbCom.Parameters.Clear();
-                var command = "UPDATE Workzones SET Name = @name, Workspaces = @workspaces, TeamOnly = @teamonly, PositionX = @xpos, PositionY = @ypos WHERE Id = @id";
+                var command = "UPDATE Workzones SET Name = @name, Workspaces = @workspaces, Floor = @floor, TeamOnly = @teamonly, PositionX = @xpos, PositionY = @ypos WHERE Id = @id";
                 DbCom.CommandText = command;
                 DbCom.Parameters.AddWithValue("name", workzoneDTO.Name);
                 DbCom.Parameters.AddWithValue("Workspaces", workzoneDTO.Workspaces);
                 DbCom.Parameters.AddWithValue("teamonly", workzoneDTO.TeamOnly);
+                DbCom.Parameters.AddWithValue("floor", workzoneDTO.Floor);
                 DbCom.Parameters.AddWithValue("xpos", workzoneDTO.Xpos);
                 DbCom.Parameters.AddWithValue("ypos", workzoneDTO.Ypos);
                 DbCom.Parameters.AddWithValue("id", workzoneDTO.Id);
@@ -258,5 +264,35 @@ namespace DataLayer
             }
 
         }
+        #endregion
+
+        #region Workzone 
+        public int GetAvailableWorkspaces(int id, DateTime datetime)
+        {
+            int availableWorkspaces = 0;
+            try
+            {
+                var workzone = GetById(id);
+                int reservationsCount = 0;
+
+                OpenCon();
+                DbCom.CommandText = "SELECT Id, User_Id, Workzone_Id, DateTime_Arriving, DateTime_Leaving FROM Reservations WHERE " +
+                    "@datetime BETWEEN DateTime_Arriving and DateTime_Leaving AND " +
+                    "Workzone_Id = @workzone_id";
+                DbCom.Parameters.AddWithValue("datetime", datetime);
+                DbCom.Parameters.AddWithValue("workzone_id", id);
+                var reservationReader = DbCom.ExecuteReader();
+                while (reservationReader.Read())
+                {
+                    reservationsCount++;
+                }
+
+                availableWorkspaces = workzone.Workspaces - reservationsCount;
+
+            } catch (Exception e) { }
+            finally { CloseCon(); }
+            return availableWorkspaces;
+        }
+        #endregion
     }
 }

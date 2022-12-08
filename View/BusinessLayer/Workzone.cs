@@ -1,4 +1,5 @@
-﻿using IntefaceLayer.DTO;
+﻿using IntefaceLayer;
+using IntefaceLayer.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,14 @@ namespace BusinessLayer
 
         public Workzone()
         {
+        }
+        public WorkzoneDTO toDTO()
+        {
+            return new WorkzoneDTO(Id, Name, Workspaces, Floor, TeamOnly, Xpos, Ypos);
+        }
+        public int GetAvailableWorkspaces(DateTime datetime, IWorkzone iworkzone)
+        {
+            return iworkzone.GetAvailableWorkspaces(this.Id, datetime);
         }
     }
 }

@@ -115,7 +115,7 @@ html {
 
 .WorkSpotSelectList {
     max-height: 200px;
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
 }
 
@@ -289,8 +289,18 @@ html {
     width: 50px;
     height: 50px;
     position: absolute;
-    opacity: .5;
+/*    opacity: .5;*/
 }
+
+    .overlay-image.green {
+        filter: hue-rotate(80deg) saturate(0.5) brightness(100%) saturate(2);
+    }
+    .overlay-image.orange {
+        filter: hue-rotate(33deg) saturate(0.5) brightness(390%) saturate(6.5);
+    }
+    .overlay-image.red {
+        filter: hue-rotate(0deg) saturate(0.5) brightness(390%) saturate(4);
+    }
 
     .overlay-image:hover {
         cursor: pointer;

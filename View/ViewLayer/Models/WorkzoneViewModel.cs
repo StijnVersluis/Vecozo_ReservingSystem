@@ -11,6 +11,8 @@ namespace ViewLayer.Models
         public string Name { get; set; }
         [DisplayName("Aantal werkplekken")]
         public int Workspaces { get; set; }
+        [DisplayName("Beschikbare werkplekken")]
+        public int AvailableWorkspaces { get; set; }
         [DisplayName("Verdieping")]
         public int Floor { get; set; }
         [DisplayName("Horizontaal")]
@@ -32,6 +34,18 @@ namespace ViewLayer.Models
             Xpos = workzone.Xpos;
             Ypos = workzone.Ypos;
         }
+        public WorkzoneViewModel(Workzone workzone, int availableWorkspaces)
+        {
+            Id = workzone.Id;
+            Name = workzone.Name;
+            Workspaces = workzone.Workspaces;
+            AvailableWorkspaces = availableWorkspaces;
+            Floor = workzone.Floor;
+            TeamOnly = workzone.TeamOnly;
+            Xpos = workzone.Xpos;
+            Ypos = workzone.Ypos;
+        }
+
 
         public WorkzoneViewModel()
         {

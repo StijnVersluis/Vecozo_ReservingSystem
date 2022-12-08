@@ -89,7 +89,6 @@ $('#TeamSelectedModal').on('show.bs.modal', function (event) {
 
     //fetch users
     var html = GetUsers(modal, teamid);
-    console.log(html);
 });
 
 function GetUsers(modal, teamId) {
@@ -213,33 +212,29 @@ function FloorSelectChange() {
     loadWorkzones();
     LoadImage();
 }
-function loadWorkzones(date) {
+
+async function loadWorkzones(date) {
     if (date == null) {
         date = new Date().toLocaleString();
     }
 
     let floorId = $('#FloorSelectorSelect').val();
     let teamonly = $("#TeamCheckBox").prop('checked')
-    let teamonlystring = ``;
-    let datestring = ""
-    if (date != null) {
-        datestring = "date=" + date
-    }
-    if (!teamonly) {
-        teamonlystring = `&teamOnly=${teamonly}`
-    }
-    console.log(teamonlystring)
 
-    fetch(window.location.origin + `/Workzone/Floor/${floorId}?` + datestring + teamonlystring, {
-        method: "GET"
+    $(".workzone-list-item").each(function () {
+        workzone = $(this)
+        if (workzone.data("floor") == floorId) {
+            workzone.removeClass("d-none")
+        } else {
+            if (!workzone.hasClass("d-none")) workzone.addClass("d-none")
+        }
+
+        if (!teamonly) {
+            if (workzone.data("teamOnly") == "True" && !workzone.hasClass("d-none")) {
+                workzone.addClass("d-none")
+            }
+        }
     })
-        .then(resp => resp.text())
-        .then(data => {
-            $("#WorkSpotSelectList").html(data)
-        })
-        .catch(err => {
-            console.log(err);
-        })
 }
 
 
@@ -284,7 +279,13 @@ function GenerateImagePoints(data) {
             img.dataset.target = "#WorkzoneSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
-            img.className = 'overlay-image';
+
+            let percentage = (point.availableWorkspaces / point.workspaces) * 100
+            let color = "green"
+            if (percentage <= 50) color = "orange"
+            if (percentage <= 0) color = "red"
+
+            img.className = 'overlay-image ' + color;
             img.style.scale = scale;
             img.src = "/images/Workspace.svg"
             img.alt = point.name
@@ -327,6 +328,13 @@ function SwitchTeamWorkzonesImages() {
             let properYPos = 1 - maxMinScale / 2
             let y = ((image.height * (point.ypos / 100)) * properYPos)
             let img = document.createElement('img');
+
+            let percentage = (point.availableWorkspaces / point.workspaces) * 100
+            let color = "green"
+            if (percentage <= 50) color = "orange"
+            if (percentage <= 0) color = "red"
+            if (point.teamOnly && percentage < 100) color = "red"
+
             img.style.left = (point.xpos + "%");
             img.style.top = y + "px";
             img.title = point.name;
@@ -335,7 +343,7 @@ function SwitchTeamWorkzonesImages() {
             img.dataset.target = "#WorkzoneSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
-            img.className = 'overlay-image';
+            img.className = 'overlay-image ' + color;
             img.style.scale = scale;
             img.src = "/images/Workspace.svg"
             img.alt = point.name

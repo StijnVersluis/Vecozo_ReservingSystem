@@ -8,13 +8,15 @@ using System.Collections.Generic;
 using ViewLayer.Util;
 using System.Linq;
 using InterfaceLayer;
+using System.Threading.Tasks;
 
 namespace ViewLayer.Controllers
 {
 
     public class WorkzoneController : Controller
     {
-        private readonly WorkzoneContainer workzoneContainer = new(new WorkzoneDAL());
+        private static readonly WorkzoneDAL wDAL = new WorkzoneDAL();
+        private readonly WorkzoneContainer workzoneContainer = new(wDAL);
         private readonly ReservationContainer reservationContainer = new(new ReservationDAL());
         FloorContainer floorContainer = new FloorContainer(new FloorDAL());
 
@@ -67,35 +69,9 @@ namespace ViewLayer.Controllers
             return RedirectToAction("Reserve", "Reservation", model);
         }
 
-        [HttpGet("/Workzone/Floor/{id}")]
-        public ActionResult Floor(int id, DateTime date, bool teamOnly)
-        {
-            // Always return the first floor
-            if (id == 0) id = 1;
-
-            var formatted_date = string.Empty;
-            var hasDefaultDate = date == default(DateTime);
-            if (hasDefaultDate)
-            {
-                formatted_date = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-            }
-            else
-            {
-                formatted_date = date.ToString("yyyy-MM-dd HH:mm");
-            }
-
-            var workzones = workzoneContainer.GetAllFromFloorWithDate(id, formatted_date);
-            if (!teamOnly)
-            {
-                workzones = workzones.Where(workzone => workzone.TeamOnly == teamOnly).ToList();
-            }
-            var workzonesVMs = workzones.ConvertAll(workzone => new WorkzoneViewModel(workzone));
-            return View(workzonesVMs);
-        }
-
         public JsonResult GetWorkzonePositions(int id)
         {
-            var workzones = workzoneContainer.GetAllFromFloor(id).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            var workzones = workzoneContainer.GetAllFromFloor(id).ConvertAll(workzone => new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, wDAL)));
             return new JsonResult(workzones);
         }
 
@@ -140,6 +116,8 @@ namespace ViewLayer.Controllers
                 Workzone workzone = new Workzone();
                 workzone.Id = workzoneViewModel.Id;
                 workzone.Name = workzoneViewModel.Name;
+                workzone.Floor = workzoneViewModel.Floor;
+                workzone.TeamOnly = workzoneViewModel.TeamOnly;
                 workzone.Xpos = workzoneViewModel.Xpos;
                 workzone.Ypos = workzoneViewModel.Ypos;
                 workzone.Workspaces = workzoneViewModel.Workspaces;

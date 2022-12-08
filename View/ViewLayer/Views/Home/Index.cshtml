@@ -4,6 +4,7 @@
     var teams = ViewData["TeamsOfUser"] as List<TeamViewModel>;
     var reservations = ViewData["AllUserReservations"] as List<ReservationViewModel>;
     var floors = ViewData["Floors"] as List<FloorViewModel>;
+    var workzones = ViewData["Workzones"] as List<WorkzoneViewModel>;
     DateTime now = DateTime.Now;
     var twentyFourHoursTime = now.ToString("HH:mm");
 
@@ -112,8 +113,51 @@
                 </div>
                 <hr style="height: 0.5px; background-color: #4525F2;" />
                 <div id="WorkSpotSelect" class="select-menu-item">
-                    <h5>Werkplekken: </h5>
+                    <h5><span id="WorkspotCount"></span> Werkplekken: </h5>
                     <div id="WorkSpotSelectList" class="WorkSpotSelectList">
+                        @if (workzones != null && workzones.Count != 0)
+                        {
+                            <div class="list-group">
+                                @foreach (var workzone in workzones)
+                                {
+                                    <a class="list-group-item workzone-list-item" data-toggle="modal" data-target="#WorkzoneSelectedModal" data-floor="@workzone.Floor" data-team-only="@workzone.TeamOnly" data-workzone-id="@workzone.Id" data-workzone-name="@workzone.Name">
+                                        <div class="container px-0 d-inline-flex justify-content-between align-items-center">
+                                            <p class="m-0">@Html.Encode(workzone.Name)</p>
+
+                                            @if (workzone.TeamOnly)
+                                            {
+                                                <span class="badge">Team Only</span>
+                                            }
+
+                                            @if (workzone.Workspaces != 0)
+                                            {
+                                                @if (@workzone.AvailableWorkspaces > 0){
+                                                    <span class="badge badge-primary">
+                                                        @workzone.AvailableWorkspaces
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">
+                                                        <text>vol</text>
+                                                    </span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-danger">VOL</span>
+                                            }
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning mb-0">
+                                Er zijn geen <span class="alert-heading font-weight-bold">werkplekken</span>
+                            </div>
+                        }
                     </div>
                 </div>
                 <h5>Vandaag gereserveerd: </h5>
