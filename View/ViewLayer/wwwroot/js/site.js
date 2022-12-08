@@ -279,7 +279,15 @@ function GenerateImagePoints(data) {
             img.dataset.target = "#WorkzoneSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
-            img.className = 'overlay-image';
+
+            let percentage = (point.availableWorkspaces / point.workspaces) * 100
+            let color = "green"
+            if (percentage <= 75) color = "yellow-green"
+            if (percentage <= 50) color = "yellow"
+            if (percentage <= 25) color = "orange"
+            if (percentage <= 0) color = "red"
+
+            img.className = 'overlay-image ' + color;
             img.style.scale = scale;
             img.src = "/images/Workspace.svg"
             img.alt = point.name
@@ -322,6 +330,11 @@ function SwitchTeamWorkzonesImages() {
             let properYPos = 1 - maxMinScale / 2
             let y = ((image.height * (point.ypos / 100)) * properYPos)
             let img = document.createElement('img');
+
+            let percentage = (point.availableWorkspaces / point.workspaces) * 100
+            let color = "green"
+            if (percentage < 100) color = "red"
+
             img.style.left = (point.xpos + "%");
             img.style.top = y + "px";
             img.title = point.name;
@@ -330,7 +343,7 @@ function SwitchTeamWorkzonesImages() {
             img.dataset.target = "#WorkzoneSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
-            img.className = 'overlay-image';
+            img.className = 'overlay-image ' + color;
             img.style.scale = scale;
             img.src = "/images/Workspace.svg"
             img.alt = point.name

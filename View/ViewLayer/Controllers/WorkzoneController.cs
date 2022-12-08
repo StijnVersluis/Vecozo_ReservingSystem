@@ -69,26 +69,9 @@ namespace ViewLayer.Controllers
             return RedirectToAction("Reserve", "Reservation", model);
         }
 
-        [HttpGet("/Workzone/Floor/{id}")]
-        public ActionResult Floor(int id, DateTime date, bool teamOnly)
-        {
-            var workzones = new List<Workzone>();
-            if (!teamOnly)
-            {
-                workzones = workzoneContainer.GetAllFromFloor(1).Where(workzone => workzone.TeamOnly == false).ToList();
-            }
-            List<WorkzoneViewModel> workzoneViewModels = new();
-            workzones.ForEach(workzone =>
-            {
-                workzoneViewModels.Add(new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, new WorkzoneDAL())));
-            });
-
-            return View(workzoneViewModels);
-        }
-
         public JsonResult GetWorkzonePositions(int id)
         {
-            var workzones = workzoneContainer.GetAllFromFloor(id).ConvertAll(workzone => new WorkzoneViewModel(workzone));
+            var workzones = workzoneContainer.GetAllFromFloor(id).ConvertAll(workzone => new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, wDAL)));
             return new JsonResult(workzones);
         }
 

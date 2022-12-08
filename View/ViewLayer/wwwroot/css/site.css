@@ -289,8 +289,24 @@ html {
     width: 50px;
     height: 50px;
     position: absolute;
-    opacity: .5;
+/*    opacity: .5;*/
 }
+
+    .overlay-image.green {
+        filter: hue-rotate(120deg) saturate(0.5) brightness(150%) saturate(2);
+    }
+    .overlay-image.yellow-green {
+        filter: hue-rotate(80deg) saturate(0.5) brightness(100%) saturate(2);
+    }
+    .overlay-image.yellow {
+        filter: hue-rotate(40deg) saturate(0.5) brightness(390%) saturate(4);
+    }
+    .overlay-image.orange {
+        filter: hue-rotate(33deg) saturate(0.5) brightness(390%) saturate(4);
+    }
+    .overlay-image.red {
+        filter: hue-rotate(0deg) saturate(0.5) brightness(390%) saturate(4);
+    }
 
     .overlay-image:hover {
         cursor: pointer;
