@@ -212,36 +212,29 @@ function FloorSelectChange() {
     loadWorkzones();
     LoadImage();
 }
-function loadWorkzones(date) {
+
+async function loadWorkzones(date) {
     if (date == null) {
         date = new Date().toLocaleString();
     }
 
     let floorId = $('#FloorSelectorSelect').val();
     let teamonly = $("#TeamCheckBox").prop('checked')
-    let teamonlystring = ``;
-    let datestring = ""
-    if (date != null) {
-        datestring = "date=" + date
-    }
-    if (!teamonly) {
-        teamonlystring = `&teamOnly=${teamonly}`
-    }
 
-    fetch(window.location.origin + `/Workzone/Floor/${floorId}?` + datestring + teamonlystring, {
-        method: "GET"
+    $(".workzone-list-item").each(function () {
+        workzone = $(this)
+        if (workzone.data("floor") == floorId) {
+            workzone.removeClass("d-none")
+        } else {
+            if (!workzone.hasClass("d-none")) workzone.addClass("d-none")
+        }
+
+        if (!teamonly) {
+            if (workzone.data("teamOnly") == "True" && !workzone.hasClass("d-none")) {
+                workzone.addClass("d-none")
+            }
+        }
     })
-        .then(resp => resp.text())
-        .then(data => {
-            $("#WorkSpotSelectList").html(data)
-        })
-        .then(e => {
-            let listItems = document.querySelectorAll("#WorkSpotSelectList .list-group .list-group-item")
-            $("#WorkspotCount").html(listItems.length)
-        })
-        .catch(err => {
-            console.log(err);
-        })
 }
 
 

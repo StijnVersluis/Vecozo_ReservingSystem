@@ -28,11 +28,16 @@ namespace ViewLayer.Controllers
         public IActionResult Index()
         {
             ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).Where(reservation=>reservation.DateTime_Arriving.Date == DateTime.Now.Date).ToList().ConvertAll(reservation => new ReservationViewModel(reservation));
-            ViewData["AllWorkzones"] = wCont.GetAll().ConvertAll(workzone => new WorkzoneViewModel(workzone));
-            ViewData["AllWorkzonesFromfloow"] = wCont.GetAllFromFloor(1).ConvertAll(workzone => new WorkzoneViewModel(workzone));
             ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(team => new TeamViewModel(team));
             ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
             ViewData["Floors"] = fCont.GetAll().ConvertAll(x => new FloorViewModel(x));
+            var workzones = wCont.GetAll();
+            List<WorkzoneViewModel> workzoneViewModels = new();
+            workzones.ForEach(workzone =>
+            {
+                workzoneViewModels.Add(new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, new WorkzoneDAL())));
+            });
+            ViewData["Workzones"] = workzoneViewModels;
             this.GetResponse();
             return View();
         }

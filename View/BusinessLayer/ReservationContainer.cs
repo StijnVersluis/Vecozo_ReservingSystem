@@ -91,7 +91,8 @@ namespace BusinessLayer
             List<Reservation> existingReservationsInTimeFrame = GetReservationsWithinTimeFrame(newReservation.DateTime_Arriving, newReservation.DateTime_Leaving);
 
             if(existingReservationsInTimeFrame.Any(reservation => reservation.User_id == newReservation.User_id))
-            { messages.Add($"U heeft al een reservering op {workzone.Name} binnen dit timeframe."); return messages; }
+            { messages.Add($"U heeft al een reservering op een ander werkblok binnen dit timeframe."); return messages; }
+
             if (workzone.Workspaces <= existingReservationsInTimeFrame.Where(reservation => reservation.Workzone_id == workzone.Id).Count())
             { messages.Add($"Er zijn geen werkplekken meer beschikbaar op {workzone.Name}."); return messages; }
 
