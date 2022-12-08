@@ -4,6 +4,11 @@
     var teams = ViewData["TeamsOfUser"] as List<TeamViewModel>;
     var reservations = ViewData["AllUserReservations"] as List<ReservationViewModel>;
     var floors = ViewData["Floors"] as List<FloorViewModel>;
+    DateTime now = DateTime.Now;
+    var twentyFourHoursTime = now.ToString("HH:mm");
+
+
+
 
     var responseModel = ViewData["ResponseModel"] as ResponseViewModel;
 }
@@ -20,8 +25,14 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-6">Start:</div>
-                        <div class="col-6" id="DateAndTimeReservation"></div>
-                        <div class="col-6">Tot en met:</div>
+                        <div class="col-6">
+                            <input type="time" value="@twentyFourHoursTime" name="datetime-coming" class="form-control" />
+
+                        </div>
+
+
+
+                        <div class="col-6">Tot en met:</divmodal-dialog
                         <div class="col-6">
                             <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control" />
                         </div>
@@ -49,7 +60,7 @@
                     <input id="DateSelectorInput" class="form-control" type="datetime-local">
                 </div>
                 <div id="FloorSelector" class="select-menu-item">
-                <label for="FloorSelector">Verdieping:</label>
+                    <label for="FloorSelector">Verdieping:</label>
                     @if (floors.Count != 0)
                     {
                         <select id="FloorSelectorSelect" class="form-control" onchange="FloorSelectChange()">
@@ -65,7 +76,7 @@
                             Er zijn geen <span class="alert-heading font-weight-bold">verdiepingen</span>
                         </div>
                     }
-                    
+
                 </div>
                 <hr style="height: 0.5px; background-color: #4525F2;" />
                 <div class="container d-inline-flex justify-content-between p-0">

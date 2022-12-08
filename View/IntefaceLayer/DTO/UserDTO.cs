@@ -18,5 +18,9 @@ namespace IntefaceLayer.DTO
             Name = name;
             Role = role;
         }
+
+        public UserDTO()
+        {
+        }
     }
 }
