@@ -17,10 +17,6 @@ a.navbar-brand {
     word-break: break-all;
 }
 
-.WorkSpotSelectList::-webkit-scrollbar, ::-webkit-scrollbar {
-    display: none;
-}
-
 .aDisable {
     text-decoration: none !important;
 }
