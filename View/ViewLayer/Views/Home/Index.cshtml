@@ -7,10 +7,6 @@
     var workzones = ViewData["Workzones"] as List<WorkzoneViewModel>;
     DateTime now = DateTime.Now;
     var twentyFourHoursTime = now.ToString("HH:mm");
-
-
-
-
     var responseModel = ViewData["ResponseModel"] as ResponseViewModel;
 }
 <div class="modal" id="WorkzoneSelectedModal" tabindex="-1" role="form">
@@ -28,14 +24,12 @@
                         <div class="col-6">Start:</div>
                         <div class="col-6">
                             <input type="time" value="@twentyFourHoursTime" name="datetime-coming" class="form-control" />
-
                         </div>
-
-
-
-                        <div class="col-6">Tot en met:</divmodal-dialog
                         <div class="col-6">
-                            <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control" />
+                            Tot en met:
+                            <div class="col-6">
+                                <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -131,7 +125,8 @@
 
                                             @if (workzone.Workspaces != 0)
                                             {
-                                                @if (@workzone.AvailableWorkspaces > 0){
+                                                @if (@workzone.AvailableWorkspaces > 0)
+                                                {
                                                     <span class="badge badge-primary">
                                                         @workzone.AvailableWorkspaces
                                                     </span>
