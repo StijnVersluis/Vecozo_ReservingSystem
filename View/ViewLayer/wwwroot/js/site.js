@@ -333,7 +333,11 @@ function SwitchTeamWorkzonesImages() {
 
             let percentage = (point.availableWorkspaces / point.workspaces) * 100
             let color = "green"
-            if (percentage < 100) color = "red"
+            if (percentage <= 75) color = "yellow-green"
+            if (percentage <= 50) color = "yellow"
+            if (percentage <= 25) color = "orange"
+            if (percentage <= 0) color = "red"
+            if (point.teamOnly && percentage < 100) color = "red"
 
             img.style.left = (point.xpos + "%");
             img.style.top = y + "px";
