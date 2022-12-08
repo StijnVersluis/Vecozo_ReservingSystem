@@ -120,7 +120,17 @@
 
                                             @if (workzone.Workspaces != 0)
                                             {
-                                                <span class="badge badge-primary">@workzone.AvailableWorkspaces</span>
+                                                @if (@workzone.AvailableWorkspaces > 0){
+                                                    <span class="badge badge-primary">
+                                                        @workzone.AvailableWorkspaces
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">
+                                                        <text>vol</text>
+                                                    </span>
+                                                }
                                             }
                                             else
                                             {
