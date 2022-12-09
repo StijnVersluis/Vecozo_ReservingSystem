@@ -2,6 +2,7 @@
 @using BusinessLayer;
 @using DataLayer;
 @{
+    ViewData["Title"] = "Team " + Model.Name;
     UserContainer userContainer = new UserContainer(new UserDAL());
 }
 

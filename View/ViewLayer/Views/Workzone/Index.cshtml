@@ -3,6 +3,7 @@
 
 @model WorkzoneReservationViewModel;
 @{
+    ViewData["Title"] = Model.Workzone_Name + " Reserveren";
     var userContainer = new UserContainer(new UserDAL());
       DateTime now = DateTime.Now;
     var twentyFourHoursTime = now.ToString("yyyy-MM-ddTHH:mm");
