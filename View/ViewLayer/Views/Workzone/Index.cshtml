@@ -5,7 +5,7 @@
 @{
     var userContainer = new UserContainer(new UserDAL());
       DateTime now = DateTime.Now;
-    var twentyFourHoursTime = now.ToString("HH:mm");
+    var twentyFourHoursTime = now.ToString("yyyy-MM-ddTHH:mm");
 }
 
 <div class="modal" id="adHocModal" tabindex="-1" role="dialog">
@@ -22,13 +22,6 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-12">
-                            @*Aantal werkplekken meegeven*@
-                            @if (!userContainer.IsLoggedIn())
-                            {
-                                <div class="alert alert-warning">
-                                    <strong>Let op!</strong> U moet na het reserveren nog inloggen.
-                                </div>
-                            }
                             <div class="form-group">
                                 <label asp-for="DateTime_Arriving"></label>
                                 <input asp-for="DateTime_Arriving" value="@twentyFourHoursTime" class="form-control" />
