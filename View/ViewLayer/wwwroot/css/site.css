@@ -11,6 +11,19 @@ for details on configuring this project to bundle and minify static web assets. 
     box-sizing: border-box;
 }
 
+h1 {
+    font-size: 2rem;
+}
+h2 {
+    font-size: 1.7rem;
+}
+h3 {
+    font-size: 1.5rem;
+}
+h4 {
+    font-size: 1.2rem;
+}
+
 a.navbar-brand {
     white-space: normal;
     text-align: center;
