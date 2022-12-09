@@ -9,14 +9,16 @@ namespace BusinessLayer
         public int Id { private set; get; } = 0;
         public string Name { private set; get; }
         public int Role { private set; get; }
+        public bool IsBhv { private set; get; }
 
         public IUser IUser { get; private set; }
 
-        public User(int id, string name, int role)
+        public User(int id, string name, int role, bool isBhv)
         {
             Id = id;
             Name = name;
             Role = role;
+            IsBhv = isBhv;
         }
 
         public User(UserDTO user)
@@ -26,6 +28,7 @@ namespace BusinessLayer
             Id = user.Id;
             Name = user.Name;
             Role = user.Role;
+            IsBhv = user.IsBhv;
         }
 
         public User(IUser iuser)
@@ -35,7 +38,12 @@ namespace BusinessLayer
 
         public UserDTO ToDTO()
         {
-            return new UserDTO(Id, Name, Role);
+            return new UserDTO(Id, Name, Role, IsBhv);
+        }
+
+        public bool IsPresent(DateTime datetime, IUser iuser)
+        {
+            return iuser.IsPresent(this.Id, datetime);
         }
     }
 }

@@ -51,7 +51,7 @@ namespace DataLayer
 
                     while (reader.Read())
                     {
-                        users.Add(new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                        users.Add(new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]));
                     }
 
                     CloseCon();
@@ -348,7 +348,7 @@ namespace DataLayer
 
                 while (reader.Read())
                 {
-                    user = new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
+                    user = new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]);
                 }
             }
             finally

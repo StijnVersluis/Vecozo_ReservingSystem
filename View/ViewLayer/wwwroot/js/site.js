@@ -14,6 +14,15 @@
     if (window.location.pathname.indexOf("/Workzone/Edit/") == 0) {
         LoadXYImage()
     }
+    if ($("#BhvRegisterDateTimeInput").length) {
+        var date = new Date()
+        var month = date.getMonth().toString().length == 2 ? date.getMonth() : "0" + date.getMonth()
+        var day = date.getDate().toString().length == 2 ? date.getDate() : "0" + date.getDate()
+        var hour = date.getHours().toString().length == 2 ? date.getHours() : "0" + date.getHours()
+        var minutes = date.getMinutes().toString().length == 2 ? date.getMinutes() : "0" + date.getMinutes()
+        var datestring = date.getFullYear() + "-" + month + "-" + day + "T" + hour + ":" + minutes
+        //$("#BhvRegisterDateTimeInput").val(datestring)
+    }
 });
 
 $(document).ready(function () {
@@ -350,4 +359,10 @@ function SwitchTeamWorkzonesImages() {
             overlay.appendChild(img);
         }
     });
+}
+
+function SearchForBhv() {
+    let datetime = $("#BhvRegisterDateTimeInput").val()
+    window.location.search = "?datetime=" + datetime
+    console.log(window.location)
 }

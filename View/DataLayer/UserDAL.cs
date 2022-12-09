@@ -29,7 +29,7 @@ namespace DataLayer
 
                 while (reader.Read())
                 {
-                    list.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                    list.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]));
                 }
             } finally
             {
@@ -63,12 +63,12 @@ namespace DataLayer
             try
             {
                 OpenCon();
-                DbCom.CommandText = "SELECT Id, Name, Role FROM Users WHERE Email = @email";
+                DbCom.CommandText = "SELECT Id, Name, Role, IsBHV FROM Users WHERE Email = @email";
                 DbCom.Parameters.AddWithValue("@email", email);
                 reader = DbCom.ExecuteReader();
                 while (reader.Read())
                 {
-                    user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
+                    user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]);
                 }
             } catch (Exception e)
             {
@@ -138,7 +138,7 @@ namespace DataLayer
                 reader = DbCom.ExecuteReader();
                 while (reader.Read())
                 {
-                    users.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]));
+                    users.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]));
                 }
             }
             finally
@@ -161,7 +161,7 @@ namespace DataLayer
                 reader = DbCom.ExecuteReader();
                 while (reader.Read())
                 {
-                    user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"]);
+                    user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]);
                 }
             }
             finally
@@ -185,6 +185,33 @@ namespace DataLayer
         public void Logout()
         {
             GlobalVariables.LoggedInUser = null;
+        }
+
+        #endregion
+
+        #region IUser functions
+        public bool IsPresent(int id, DateTime datetime)
+        {
+            bool isPresent = false;
+            DateTime sqlDatetime = new DateTime(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, 0);
+            try
+            {
+                OpenCon();
+                DbCom.CommandText = "SELECT User_Id, DateTime_Arriving, DateTime_Leaving FROM Reservations WHERE " +
+                    "@datetime BETWEEN DateTime_Arriving AND DateTime_Leaving AND " +
+                    "User_Id = @id";
+                DbCom.Parameters.AddWithValue("@datetime", sqlDatetime);
+                DbCom.Parameters.AddWithValue("@id", id);
+
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
+                    isPresent = true;
+                }
+
+            } catch(Exception e) { throw new Exception(e.Message, e); }
+            finally { CloseCon(); }
+            return isPresent;
         }
         #endregion
 

@@ -17,8 +17,8 @@ namespace TestProject1
 
         public UserContainerMock()
         {
-            UserDTO user1= new UserDTO(5, "Tim", 1);
-            UserDTO user2 = new UserDTO(6, "Jack", 0);
+            UserDTO user1= new UserDTO(5, "Tim", 1, false);
+            UserDTO user2 = new UserDTO(6, "Jack", 0, false);
           
              users.Add(user1);  
              users.Add(user2);
@@ -70,6 +70,11 @@ namespace TestProject1
         }
 
         public bool IsLoggedIn()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsPresent(int id, DateTime datetime)
         {
             throw new NotImplementedException();
         }
