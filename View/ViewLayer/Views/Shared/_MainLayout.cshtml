@@ -2,7 +2,6 @@
 @using DataLayer;
 
 @{
-    ViewData["Title"] = "Reserveringen";
     User user = new User(new UserDAL());
     UserContainer userContainer = new UserContainer(new UserDAL());
     RoleContainer roleContainer = new RoleContainer(new RoleDAL());
@@ -40,11 +39,12 @@
                                         <a asp-action="Index" asp-controller="Home" class="dropdown-item">Home</a>
                                         <a asp-action="Index" asp-controller="Team" class="dropdown-item">Teams</a>
                                         <a asp-action="Index" asp-controller="Reservation" class="dropdown-item">Reserveringen</a>
+                                        <a asp-action="BhvRegister" asp-controller="Home" asp-route-datetime="@DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")" class="dropdown-item">BHV registratie</a>
+
                                         @if (roleContainer.GetRole(userContainer.GetLoggedInUser().Role).Name == "Administrator")
                                         {
                                             <a asp-action="Index" asp-controller="Admin" class="dropdown-item">Beheerder</a>
                                         }
-                                        
 
                                         <a class="dropdown-item" asp-action="Logout" asp-controller="Auth">
                                             Uitloggen

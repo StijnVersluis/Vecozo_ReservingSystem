@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ViewLayer.Models.BhvRegisterViewModel>
+
+@{
+    var datetimeQuery = ViewData["DateTime"] as string;
+    DateTime dt = DateTime.Parse(datetimeQuery);
+
+    ViewData["Title"] = "Bhv Registratie";
+    int availablecount = 0;
+    foreach (BhvRegisterViewModel item in Model) {
+        if (item.IsAvailable) availablecount++;
+    }
+}
+
+<h1>Bhv registratie op @datetimeQuery</h1>
+<div class="w-100 row">
+    @{
+        <text>
+            <input type="datetime-local" class="form-control col-12 col-sm-8 col-md-6 col-lg-3" value="@dt.ToString("yyyy-MM-ddThh:mm")" id="BhvRegisterDateTimeInput" />
+            <button class="btn btn-success col-auto" onclick="SearchForBhv()">Datum bekijken</button>
+        </text>
+    }
+</div>
+
+<div class="row mt-4">
+    <div class="col-4 col-sm-2 font-weight-bold text-table-header">
+        @availablecount @Html.DisplayNameFor(model => model.IsAvailable)
+    </div>
+    <div class="col-8 col-sm-5 font-weight-bold text-table-header">
+        @Html.DisplayNameFor(model => model.Name)
+    </div>
+</div>
+<hr style="margin: 10px 0;" />
+@foreach (var item in Model)
+{
+    <div class="row mb-2">
+        <div class="col-4 col-sm-2">
+            @if (item.IsAvailable)
+            {
+                <text>
+                    <div class="badge badge-success p-2">
+                        Aanwezig
+                    </div>
+                </text>
+            }
+            else
+            {
+                <text>
+                    <div class="badge badge-danger p-2">
+                        Afwezig
+                    </div>
+                </text>
+            }
+        </div>
+        <div class="col-8 col-sm-5">
+            @Html.DisplayFor(modelItem => item.Name)
+        </div>
+    </div>
+}

@@ -325,3 +325,7 @@ html {
     top: 10%;
     right: 10%;
 }
+
+.text-table-header {
+    font-size: 1.2rem;
+}

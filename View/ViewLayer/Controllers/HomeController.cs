@@ -42,10 +42,21 @@ namespace ViewLayer.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Privacy()
+        [HttpGet("Home/BhvRegister")]
+        public ActionResult BhvRegister(DateTime datetime)
         {
-            return View();
+            if (datetime == null || datetime.ToString() == "01/01/0001 00:00:00") datetime = DateTime.Now;
+            var users = uCont.GetAll().Where(user => user.IsBhv).ToList();
+
+            var uDal = new UserDAL();
+            var bhvUsers = new List<BhvRegisterViewModel>();
+            users.ForEach(user =>
+            {
+                bhvUsers.Add(new BhvRegisterViewModel(user, user.IsPresent(datetime, uDal)));
+            });
+            bhvUsers = bhvUsers.OrderBy(user => !user.IsAvailable).ToList();
+            ViewData["DateTime"] = datetime.ToString();
+            return View(bhvUsers);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

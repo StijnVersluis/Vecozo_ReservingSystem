@@ -18,5 +18,13 @@ namespace TestProject1
             Assert.IsNotNull(reservations);
             Assert.AreEqual(0, reservations.Count);
         }
+
+        [TestMethod]
+        public void TestUserAvailable()
+        {
+            string datetimeString = "08/12/2022 11:20:00";
+            DateTime datetime = DateTime.Parse(datetimeString);
+
+        }
     }
 }
