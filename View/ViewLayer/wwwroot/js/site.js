@@ -32,7 +32,20 @@ $(document).ready(function () {
     $("#DateSelectorInput").val(currentDateFormat)
 });
 
+function StringIsEmpty(str) {
+    return (str?.trim()?.length || 0) === 0;
+}
+
 function CheckTeamInput() {
+    date = null;
+    if (StringIsEmpty($("#DateSelectorInput").val())) {
+        date = new Date().toLocaleString();
+    } else {
+        date = new Date(Date.parse($("#DateSelectorInput").val())).toLocaleString();
+    }
+
+    loadWorkzones(null, document.getElementById("TeamCheckBox").checked)
+
     if (document.getElementById("TeamCheckBox").checked) {
         //Teams on
         document.getElementById("TeamCheckBoxOff").classList.add("d-none")
@@ -83,7 +96,8 @@ staticPopupModals.forEach(async obj => {
 });
 
 $("#DateSelectorInput").on('change', function (event) {
-    loadWorkzones(new Date(Date.parse(event.target.value)).toLocaleString());
+    if (StringIsEmpty(event.target.value)) return;
+    loadWorkzones(new Date(Date.parse(event.target.value)).toLocaleString(), document.getElementById("TeamCheckBox").checked);
 });
 
 $('#TeamSelectedModal').on('show.bs.modal', function (event) {
@@ -123,13 +137,11 @@ function GenerateTeamModal(modal, data) {
     modal.find('.team-modal-members').html(rawHtml);
 }
 
-$('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
-    var button = $(event.relatedTarget) // Button that triggered the modal
-    var workzoneId = button.data('workzone-id') // Extract info from data-teamid attributes
-    var workzoneName = button.data('workzone-name') // Extract info from data-teamid attributes
-    let datetimeArrive = $("#DateSelectorInput").val()
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+$('#WorkzoneDefaultSelectedModal').on('shown.bs.modal', function (event) {
+    var button = $(event.relatedTarget)
+    var workzoneId = button.data('workzone-id')
+    var workzoneName = button.data('workzone-name')
+    var datetimeArrive = $("#DateSelectorInput").val()
 
     var modal = $(this)
     modal.find('.modal-title').text('Werkblok: ' + workzoneName)
@@ -137,10 +149,48 @@ $('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
     modal.find('#WorkzoneArrivingForm').val(datetimeArrive)
     modal.find('#WorkzoneIdForm').val(workzoneId)
 
-    let time = datetimeArrive.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "")
+    var time = datetimeArrive.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "")
     modal.find('#WorkzoneLeavingForm').attr({
         "min": time
     })
+})
+
+
+$('#WorkzoneTeamOnlySelectedModal').on('shown.bs.modal', function (event) {
+    var button = $(event.relatedTarget)
+    var modal = $(this);
+
+    var arrivingTime = $('#DateSelectorInput').val();
+    var workzoneName = button.data('workzoneName');
+    var workzoneId = button.data('workzoneId');
+
+    var reserve = modal.find('.modal-reserve');
+    var alert = modal.find('.alert');
+
+    var team = $('.team-list-item-active')[0];
+    if (team != null) {
+        var teamId = $(team).attr('team-id');
+        var teamName = $(team).attr('team-name');
+
+        modal.find('#Workzone_id').val(workzoneId);
+        modal.find('#TeamId').val(teamId);
+        modal.find('#DateTime_Arriving').val(new Date(arrivingTime).toLocaleString());
+
+
+        modal.find('.modal-title').text('Werkblok: ' + workzoneName);
+        modal.find('.modal-team').text('Selected Team: ' + teamName);
+
+        reserve.attr('disabled', false);
+        alert.addClass('collapse');
+    } else {
+        modal.find('.modal-team').text('');
+        reserve.attr('disabled', true);
+        alert.removeClass('collapse');
+    }
+})
+
+$('#WorkzoneTeamOnlySelectedModal').on('hidden.bs.modal', function (e) {
+    clearSelectedTeams();
 })
 
 $("#FilterUserInput").on("keyup", () => {
@@ -153,6 +203,35 @@ $("#FilterUserInput").on("keyup", () => {
             userbtns = $(".add-user-btn")
         });
 })
+
+document.querySelectorAll('.team-list-item').forEach(x => {
+    x.addEventListener('click', _ => {
+        var teamSelected = x.getAttribute('team-selected');
+        var teamId = x.getAttribute('team-id');
+        if (teamId == null || teamId == 0) return;
+
+        clearSelectedTeams();
+
+        if (teamSelected == 'true') {
+            x.setAttribute('team-selected', 'false');
+            x.classList.remove('team-list-item-active');
+        } else if (teamSelected == 'false') {
+            x.setAttribute('team-selected', 'true');
+            x.classList.add('team-list-item-active')
+        }
+    })
+})
+
+function clearSelectedTeams() {
+    document.querySelectorAll('.team-list-item').forEach(x => {
+        x.setAttribute('team-selected', 'false');
+        x.classList.remove('team-list-item-active');
+    })
+}
+
+function getTimeOnly(datetime) {
+    return datetime.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "");
+}
 
 function AddUserToTeam(id, name, isAdmin) {
     var list = $("#TeamAddedUsers")
@@ -222,7 +301,7 @@ function FloorSelectChange() {
     LoadImage();
 }
 
-async function loadWorkzones(date) {
+function loadWorkzones(date, teamOnly = false) {
     if (date == null) {
         date = new Date().toLocaleString();
     }

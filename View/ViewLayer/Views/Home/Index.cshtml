@@ -9,7 +9,8 @@
     var twentyFourHoursTime = now.ToString("HH:mm");
     var responseModel = ViewData["ResponseModel"] as ResponseViewModel;
 }
-<div class="modal" id="WorkzoneSelectedModal" tabindex="-1" role="form">
+
+<div class="modal" id="WorkzoneDefaultSelectedModal" tabindex="-1" role="form">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form asp-action="Reserve" asp-controller="Reservation" asp-antiforgery="true">
@@ -38,6 +39,48 @@
                     <input type="hidden" name="datetime-start" id="WorkzoneArrivingForm" />
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluiten</button>
                     <button type="submit" class="btn btn-primary">Reserveren</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="WorkzoneTeamOnlySelectedModal" tabindex="-1" role="form">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="Reserve" asp-controller="Reservation" asp-antiforgery="true">
+                <div class="modal-header">
+                    <div class="container p-0 d-inline-flex align-items-center">
+                        <span class="badge badge-primary mr-2 mt-1">Team Only</span>
+                        <h5 class="modal-title">Modal title</h5>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">Start:</div>
+                        <div class="col-6" id="DateAndTimeReservation"></div>
+                        <div class="col-6">Tot en met:</div>
+                        <div class="col-6">
+                            <input type="time" max="18:00" min="08:00" value="18:00" name="DateTime_Leaving" id="DateTime_Leaving" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <small class="text-left font-weight-bold modal-team w-100">Geselecteerde Team: N/A</small>
+                    <div class="container p-0 text-right">
+                        <input type="hidden" name="Workzone_id" id="Workzone_id" />
+                        <input type="hidden" name="DateTime_Arriving" id="DateTime_Arriving" />
+                        <input type="hidden" name="TeamId" id="TeamId" />
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluiten</button>
+                        <button type="submit" class="btn btn-primary modal-reserve">Reserveren</button>
+                    </div>
+                </div>
+                <div class="alert alert-warning mx-3 collapse">
+                    Je moet eerst een team selecteren!
                 </div>
             </form>
         </div>
@@ -74,7 +117,7 @@
 
                 </div>
                 <hr style="height: 0.5px; background-color: #4525F2;" />
-                <div class="container d-inline-flex justify-content-between p-0">
+                <div class="container d-inline-flex mb-2 justify-content-between p-0">
                     <div id="TeamSelector" class="select-menu-item">
                         <input class="form-check-input d-none" type="checkbox" id="TeamCheckBox" onchange="CheckTeamInput()" />
                         <label class="form-check-label" for="TeamCheckBox">
@@ -102,7 +145,8 @@
                 <div id="TeamList" class="list-group team-list d-none height-150 scrollable-div">
                     @foreach (var team in teams)
                     {
-                        <a asp-action="Details" asp-controller="Team" asp-route-id="@team.Id" class="list-group-item team-list-item mr-1">@Html.Encode(team.Name)</a>
+                        @*<a asp-action="Details" asp-controller="Team" asp-route-id="@team.Id" class="list-group-item team-list-item mr-1">@Html.Encode(team.Name)</a>*@
+                        <a team-selected="false" team-name="@Html.Encode(team.Name)" team-id="@team.Id" class="list-group-item team-list-item mr-1">@Html.Encode(team.Name)</a>
                     }
                 </div>
                 <hr style="height: 0.5px; background-color: #4525F2;" />

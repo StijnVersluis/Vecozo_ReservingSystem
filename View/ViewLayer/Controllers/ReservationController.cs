@@ -1,4 +1,4 @@
-﻿using BusinessLayer;
+using BusinessLayer;
 using DataLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -135,6 +135,7 @@ namespace ViewLayer.Controllers
             }
             else
             {
+                // A regular request from endpoint but AdHoc in order to reserve a workplace.
                 result = reservationContainer.CreateReservation(new Reservation(userContainer.GetLoggedInUser().Id, model.Workzone_id, model.DateTime_Arriving, model.DateTime_Leaving));
             }
 
