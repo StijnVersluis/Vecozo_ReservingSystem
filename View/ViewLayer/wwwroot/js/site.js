@@ -296,7 +296,12 @@ function GenerateImagePoints(data) {
 
             img.className = 'overlay-image ' + color;
             img.style.scale = scale;
-            img.src = "/images/Workspace.svg"
+
+            let imgSrc = "Single";
+            if (point.teamOnly) imgSrc = "Group"
+            else if (point.name.includes("ST")) imgSrc = "ST"
+
+            img.src = "/images/Workspace" + imgSrc + ".svg"
             img.alt = point.name
             overlay.appendChild(img);
         }
@@ -318,7 +323,12 @@ function LoadXYImage() {
     img.style.top = y + "px";
     img.className = 'overlay-image';
     img.style.scale = scale;
-    img.src = "/images/Workspace.svg"
+
+    let imgSrc = "Single";
+    if (point.teamOnly) imgSrc = "Group"
+    else if (point.name.includes("ST")) imgSrc = "ST"
+
+    img.src = "/images/Workspace" + imgSrc + ".svg"
     overlay.innerHTML = "";
     overlay.appendChild(img);
 }
@@ -354,7 +364,12 @@ function SwitchTeamWorkzonesImages() {
             img.dataset.workzoneName = point.name
             img.className = 'overlay-image ' + color;
             img.style.scale = scale;
-            img.src = "/images/Workspace.svg"
+
+            let imgSrc = "Single";
+            if (point.teamOnly) imgSrc = "Group" 
+            else if (point.name.includes("ST")) imgSrc = "ST" 
+
+            img.src = "/images/Workspace" + imgSrc +".svg"
             img.alt = point.name
             overlay.appendChild(img);
         }

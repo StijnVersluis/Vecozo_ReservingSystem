@@ -302,7 +302,7 @@ html {
 }
 
     .overlay-image.green {
-        filter: hue-rotate(80deg) saturate(0.5) brightness(100%) saturate(2);
+        filter: hue-rotate(120deg) saturate(0.8) brightness(110%) saturate(2);
     }
     .overlay-image.orange {
         filter: hue-rotate(33deg) saturate(0.5) brightness(390%) saturate(6.5);
