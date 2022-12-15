@@ -10,6 +10,9 @@ namespace ViewLayer.Models
         [HiddenInput]
         public string Workzone_Name { get; set; }
 
+        [HiddenInput]
+        public int? TeamId { get; set; }
+
         [Required]
         [HiddenInput]
         public int Workzone_id { get; set; }
@@ -19,7 +22,7 @@ namespace ViewLayer.Models
         [Required]
         [DisplayName("Aankomsttijd en datum")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DateTime_Arriving { get; set; } = DateTime.Now;
 
         [Required]

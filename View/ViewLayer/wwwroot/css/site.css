@@ -319,3 +319,12 @@ html {
     top: 10%;
     right: 10%;
 }
+
+.team-list-item-active {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.btn-primary.disabled, .btn-primary:disabled {
+    background-color: rgba(27, 111, 194, 0.3) !important;
+    border: none !important;
+}

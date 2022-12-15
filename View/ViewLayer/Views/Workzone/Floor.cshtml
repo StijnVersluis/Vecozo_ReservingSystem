@@ -8,7 +8,7 @@
         <div class="list-group">
             @foreach (var workzone in Model)
             {
-                <a class="list-group-item" data-toggle="modal" data-target="#WorkzoneSelectedModal" data-workzone-id="@workzone.Id" data-workzone-name="@workzone.Name">
+                    <a class="list-group-item" data-toggle="modal" data-target="@(workzone.TeamOnly ? "#WorkzoneTeamOnlySelectedModal" : "#WorkzoneDefaultSelectedModal")" data-workzone-id="@workzone.Id" data-workzone-name="@workzone.Name">
                     <div class="container px-0 d-inline-flex justify-content-between align-items-center">
                         <p class="m-0">@Html.Encode(workzone.Name)</p>
 
