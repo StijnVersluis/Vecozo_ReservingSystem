@@ -60,71 +60,78 @@ namespace ViewLayer.Controllers
         /// </summary>
         /// <param name="collection">The necessary parameters (workzone-id, datetime-arriving and datetime-leaving).</param>
         /// <returns>The index with or success message or error message.</returns>
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Reserve(IFormCollection collection)
+        //{
+        //    ActionResult result = null; //The view to return to
+        //    bool success = false;
+        //    string message = String.Empty;
+
+        //    try
+        //    {
+        //        //Get parameters from form/collection
+        //        var filledInStart = collection["datetime-start"];
+        //        var filledInEnd = collection["datetime-leaving"];
+        //        int workzone_id = Int32.Parse(collection["workzone-id"]); //Is dynamicly set, so is always filled in.
+
+        //        //Check if everything is filled in.
+        //        if (String.IsNullOrEmpty(filledInStart) ||
+        //            String.IsNullOrEmpty(filledInEnd))
+        //            throw new Exception("Zorg ervoor dat de data en tijden correct zijn ingevoerd!");
+
+        //        //Set the datetime-leaving to a datetime to easily get the time
+        //        DateTime dtFilledInLeave = DateTime.Parse(filledInEnd);
+
+        //        //Create the starting datetime and ending datetime
+        //        DateTime start = DateTime.Parse(filledInStart);
+        //        DateTime leave = new DateTime(start.Year, start.Month, start.Day,
+        //            dtFilledInLeave.Hour, dtFilledInLeave.Minute, dtFilledInLeave.Second);
+                
+        //        //Get the workzone that the reservation is corresponding to
+        //        Workzone workzone = workzoneContainer.GetById(workzone_id);
+
+        //        //Go through the checks required for a reservation
+        //        var checks = reservationContainer.CheckReservationRules(new Reservation(userContainer.GetLoggedInUser().Id, workzone.Id, start, leave), workzone);
+
+        //        //If any checks fail checks contains errormessages
+        //        if (checks.Count > 0) message = String.Join(',', checks);
+        //        else
+        //        {
+        //            //Else create the reservation
+        //            success = reservationContainer.CreateReservation(new Reservation(userContainer.GetLoggedInUser().Id, workzone.Id, start, leave));
+        //            message = success ?
+        //                $"{workzone.Name} is succesvol gereserveerd om {start.ToString("dd/MM/yyyy HH:mm")} tot {leave.ToString("HH:mm")}" :
+        //                $"{workzone.Name} kan niet gereserveerd worden, probeer het later nog eens.";
+        //        }
+        //    }
+        //    catch (Exception e) { message = e.Message; }
+        //    finally
+        //    {
+        //        result = RedirectToAction("Index", "Home");
+        //    }
+
+
+        //    this.SendResponse(
+        //            success,
+        //            "Reservering",
+        //            message
+        //        );
+        //    return result;
+        //}
+
+        /// <summary>
+        /// Try to reserve a workzone with  a viewmodel.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>The index with or success message or error message.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Reserve(IFormCollection collection)
-        {
-            ActionResult result = null; //The view to return to
-            bool success = false;
-            string message = String.Empty;
-
-            try
-            {
-                //Get parameters from form/collection
-                var filledInStart = collection["datetime-start"];
-                var filledInEnd = collection["datetime-leaving"];
-                int workzone_id = Int32.Parse(collection["workzone-id"]); //Is dynamicly set, so is always filled in.
-
-                //Check if everything is filled in.
-                if (String.IsNullOrEmpty(filledInStart) ||
-                    String.IsNullOrEmpty(filledInEnd))
-                    throw new Exception("Zorg ervoor dat de data en tijden correct zijn ingevoerd!");
-
-                //Set the datetime-leaving to a datetime to easily get the time
-                DateTime dtFilledInLeave = DateTime.Parse(filledInEnd);
-
-                //Create the starting datetime and ending datetime
-                DateTime start = DateTime.Parse(filledInStart);
-                DateTime leave = new DateTime(start.Year, start.Month, start.Day,
-                    dtFilledInLeave.Hour, dtFilledInLeave.Minute, dtFilledInLeave.Second);
-                
-                //Get the workzone that the reservation is corresponding to
-                Workzone workzone = workzoneContainer.GetById(workzone_id);
-
-                //Go through the checks required for a reservation
-                var checks = reservationContainer.CheckReservationRules(new Reservation(userContainer.GetLoggedInUser().Id, workzone.Id, start, leave), workzone);
-
-                //If any checks fail checks contains errormessages
-                if (checks.Count > 0) message = String.Join(',', checks);
-                else
-                {
-                    //Else create the reservation
-                    success = reservationContainer.CreateReservation(new Reservation(userContainer.GetLoggedInUser().Id, workzone.Id, start, leave));
-                    message = success ?
-                        $"{workzone.Name} is succesvol gereserveerd om {start.ToString("dd/MM/yyyy HH:mm")} tot {leave.ToString("HH:mm")}" :
-                        $"{workzone.Name} kan niet gereserveerd worden, probeer het later nog eens.";
-                }
-            }
-            catch (Exception e) { message = e.Message; }
-            finally
-            {
-                result = RedirectToAction("Index", "Home");
-            }
-
-
-            this.SendResponse(
-                    success,
-                    "Reservering",
-                    message
-                );
-            return result;
-        }
-
-        [HttpGet]
         public ActionResult Reserve(WorkzoneReservationViewModel model)
         {
             bool result = false;
 
+            // Check if the request is coming from a AdHoc Endpoint.
             string json = HttpContext.Session.GetString(AUTH_SESSION_STATE_KEY);
             if (!String.IsNullOrEmpty(json))
             {
