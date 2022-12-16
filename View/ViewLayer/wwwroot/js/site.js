@@ -23,6 +23,11 @@
         var datestring = date.getFullYear() + "-" + month + "-" + day + "T" + hour + ":" + minutes
         //$("#BhvRegisterDateTimeInput").val(datestring)
     }
+
+    $("input[name=datetime-start]").each(function () {
+        console.log($(this))
+        $(this).val($("#DateSelectorInput").val())
+    })
 });
 
 $(document).ready(function () {
@@ -97,6 +102,11 @@ staticPopupModals.forEach(async obj => {
 
 $("#DateSelectorInput").on('change', function (event) {
     if (StringIsEmpty(event.target.value)) return;
+    console.log($("input[name=datetime-coming]"))
+    $("input[name=datetime-start]").each(function () {
+        console.log($(this))
+        $(this).val($("#DateSelectorInput").val())
+    })
     loadWorkzones(new Date(Date.parse(event.target.value)).toLocaleString(), document.getElementById("TeamCheckBox").checked);
 });
 
@@ -145,8 +155,7 @@ $('#WorkzoneDefaultSelectedModal').on('shown.bs.modal', function (event) {
 
     var modal = $(this)
     modal.find('.modal-title').text('Werkblok: ' + workzoneName)
-    modal.find('#DateAndTimeReservation').text($("#DateSelectorInput").val().replace(/T/g, " "))
-    modal.find('#WorkzoneArrivingForm').val(datetimeArrive)
+
     modal.find('#WorkzoneIdForm').val(workzoneId)
 
     var time = datetimeArrive.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "")
@@ -176,7 +185,6 @@ $('#WorkzoneTeamOnlySelectedModal').on('shown.bs.modal', function (event) {
         modal.find('#TeamId').val(teamId);
         modal.find('#DateTime_Arriving').val(new Date(arrivingTime).toLocaleString());
 
-
         modal.find('.modal-title').text('Werkblok: ' + workzoneName);
         modal.find('.modal-team').text('Selected Team: ' + teamName);
 
@@ -189,9 +197,9 @@ $('#WorkzoneTeamOnlySelectedModal').on('shown.bs.modal', function (event) {
     }
 })
 
-$('#WorkzoneTeamOnlySelectedModal').on('hidden.bs.modal', function (e) {
-    clearSelectedTeams();
-})
+//$('#WorkzoneTeamOnlySelectedModal').on('hidden.bs.modal', function (e) {
+//    clearSelectedTeams();
+//})
 
 $("#FilterUserInput").on("keyup", () => {
     var userbtns = $(".add-user-btn")
@@ -321,6 +329,9 @@ function loadWorkzones(date, teamOnly = false) {
             if (workzone.data("teamOnly") == "True" && !workzone.hasClass("d-none")) {
                 workzone.addClass("d-none")
             }
+            this.dataset.target = "#WorkzoneDefaultSelectedModal"
+        } else {
+            this.dataset.target = "#WorkzoneTeamOnlySelectedModal"
         }
     })
 }
@@ -364,7 +375,8 @@ function GenerateImagePoints(data) {
             img.title = point.name;
             img.id = "DataPoint" + point.id
             img.dataset.toggle = "modal"
-            img.dataset.target = "#WorkzoneSelectedModal"
+            if (teamonly) img.dataset.target = "#WorkzoneTeamOnlySelectedModal"
+            else img.dataset.target = "#WorkzoneDefaultSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
 
@@ -390,6 +402,8 @@ function GenerateImagePoints(data) {
 function LoadXYImage() {
     let xValue = $("#XPosistionInput").val()
     let yValue = $("#YPosistionInput").val()
+    let name = $("#Name").val()
+    let teamonly = $("#TeamOnly").prop("checked")
     const overlay = document.querySelector('.image-overlay');
     const image = document.querySelector('#FloorImage');
 
@@ -400,12 +414,12 @@ function LoadXYImage() {
     let img = document.createElement('img');
     img.style.left = (xValue + "%");
     img.style.top = y + "px";
-    img.className = 'overlay-image';
+    img.className = 'green overlay-image';
     img.style.scale = scale;
 
     let imgSrc = "Single";
-    if (point.teamOnly) imgSrc = "Group"
-    else if (point.name.includes("ST")) imgSrc = "ST"
+    if (teamonly) imgSrc = "Group"
+    else if (name.includes("ST")) imgSrc = "ST"
 
     img.src = "/images/Workspace" + imgSrc + ".svg"
     overlay.innerHTML = "";
@@ -416,8 +430,8 @@ function SwitchTeamWorkzonesImages() {
     let teamonly = $("#TeamCheckBox").prop('checked')
     const overlay = document.querySelector('.image-overlay');
     const image = document.querySelector('#FloorImage');
-    $("#ImageOverlay").html("")
     let data = floorImages;
+    $("#ImageOverlay").html("")
     data.forEach((point) => {
         if (point.ypos == "" || point.xpos == "") { return };
         if ((!teamonly && point.teamOnly == teamonly) || teamonly) {
@@ -432,23 +446,24 @@ function SwitchTeamWorkzonesImages() {
             if (percentage <= 50) color = "orange"
             if (percentage <= 0) color = "red"
             if (point.teamOnly && percentage < 100) color = "red"
+            if (teamonly) img.dataset.target = "#WorkzoneTeamOnlySelectedModal"
+            else img.dataset.target = "#WorkzoneDefaultSelectedModal"
 
             img.style.left = (point.xpos + "%");
             img.style.top = y + "px";
             img.title = point.name;
             img.id = "DataPoint" + point.id
             img.dataset.toggle = "modal"
-            img.dataset.target = "#WorkzoneSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
             img.className = 'overlay-image ' + color;
             img.style.scale = scale;
 
             let imgSrc = "Single";
-            if (point.teamOnly) imgSrc = "Group" 
-            else if (point.name.includes("ST")) imgSrc = "ST" 
+            if (point.teamOnly) imgSrc = "Group"
+            else if (point.name.includes("ST")) imgSrc = "ST"
 
-            img.src = "/images/Workspace" + imgSrc +".svg"
+            img.src = "/images/Workspace" + imgSrc + ".svg"
             img.alt = point.name
             overlay.appendChild(img);
         }

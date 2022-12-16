@@ -286,13 +286,20 @@ namespace DataLayer
                 {
                     reservationsCount++;
                 }
+                //var teamReservations = GetTeamReservationsWithinDate(datetime);
 
                 availableWorkspaces = workzone.Workspaces - reservationsCount;
+                //if (teamReservations.Any(tr =>
+                //{
+                //    return tr.Workzones.Any(workzone => workzone.Id == id);
+                //})) availableWorkspaces = 0;
 
-            } catch (Exception e) { }
+            }
+            catch (Exception e) { }
             finally { CloseCon(); }
             return availableWorkspaces;
         }
         #endregion
+
     }
 }
