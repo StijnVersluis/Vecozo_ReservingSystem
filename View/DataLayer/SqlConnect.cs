@@ -15,7 +15,7 @@ namespace DataLayer
         //Methode om connection tussen database op te zetten.
         public void InitializeDB()
         {
-            string connectionString = @"Data Source=mssqlstud.fhict.local;Database=dbi482774_vecozoprf;User Id=dbi482774_vecozoprf;Password=VecozoPrf;";
+            string connectionString = @"Data Source=mssqlstud.fhict.local;Database=dbi482774_vecozoprf;User Id=dbi482774_vecozoprf;Password=VecozoPrf;MultipleActiveResultSets=true;";
             DBConnection = new SqlConnection(connectionString);
             DbCom = DBConnection.CreateCommand();
         }

@@ -73,6 +73,70 @@ namespace DataLayer
             return reservations;
         }
 
+        public List<TeamReservationDTO> GetTeamReservationsWithinTimeFrame(DateTime timeFrameStart, DateTime timeFrameEnd)
+        {
+            List<TeamReservationDTO> result = new();
+            try
+            {
+                if (DbCom.Connection.State == ConnectionState.Closed) OpenCon();
+                DbCom.Parameters.Clear();
+                DbCom.CommandText = "SELECT Id, Team_Id, DateTime_Arriving, DateTime_Leaving FROM Teamreservations " +
+                    " WHERE (DateTime_Arriving BETWEEN @startday and @endday)" +
+                    " OR (DateTime_Leaving BETWEEN @startday and @endday)";
+                DbCom.Parameters.AddWithValue("startday", timeFrameStart);
+                DbCom.Parameters.AddWithValue("endday", timeFrameEnd);
+
+                var reservationReader = DbCom.ExecuteReader();
+
+                while (reservationReader.Read())
+                {
+                    var teamDTO = new TeamReservationDTO();
+                    teamDTO.Id = (int)reservationReader["Id"];
+                    teamDTO.TeamId = (int)reservationReader["Team_Id"];
+                    teamDTO.TimeArriving = DateTime.Parse(reservationReader["DateTime_Arriving"].ToString());
+                    teamDTO.TimeLeaving = DateTime.Parse(reservationReader["DateTime_Leaving"].ToString());
+                    result.Add(teamDTO);
+                }
+                result.ForEach(teamDTO =>
+                {
+                    //DbCom = new SqlCommand();
+                    DbCom.Connection = DBConnection;
+                    DbCom.Parameters.Clear();
+                    DbCom.CommandText = "SELECT DateTime_Arriving, DateTime_Leaving, Teamreservation_Id, Workzone_Id FROM Teamreservations" +
+                    " INNER JOIN TeamreservationsWorkzones ON Teamreservations.Id = TeamreservationsWorkzones.Teamreservation_Id" +
+                    " WHERE Teamreservation_Id = @tId AND" +
+                    " ((DateTime_Arriving BETWEEN @startday and @endday)" +
+                    " OR (DateTime_Leaving BETWEEN @startday and @endday))";
+                    DbCom.Parameters.AddWithValue("tId", teamDTO.Id);
+                    DbCom.Parameters.AddWithValue("startday", timeFrameStart);
+                    DbCom.Parameters.AddWithValue("endday", timeFrameEnd);
+                    var teamWorkzoneReader = DbCom.ExecuteReader();
+                    while (teamWorkzoneReader.Read())
+                    {
+                        teamDTO.WorkzoneIds.Add((int)teamWorkzoneReader["Workzone_Id"]);
+                    }
+                    //DbCom = new SqlCommand();
+                    DbCom.Connection = DBConnection;
+                    DbCom.CommandText = "SELECT DateTime_Arriving, DateTime_Leaving, Teamreservation_Id, User_Id FROM Teamreservations " +
+                    " INNER JOIN TeamreservationUsers ON Teamreservations.Id = TeamreservationUsers.Teamreservation_Id" +
+                    " WHERE Teamreservation_Id = @tId AND" +
+                    " ((DateTime_Arriving BETWEEN @startday and @endday)" +
+                    " OR (DateTime_Leaving BETWEEN @startday and @endday))";
+                    DbCom.Parameters.AddWithValue("tId", teamDTO.Id);
+                    DbCom.Parameters.AddWithValue("startday", timeFrameStart);
+                    DbCom.Parameters.AddWithValue("endday", timeFrameEnd);
+                    var teamUserReader = DbCom.ExecuteReader();
+                    while (teamUserReader.Read())
+                    {
+                        teamDTO.UserIds.Add((int)teamUserReader["User_Id"]);
+                    }
+                });
+            }
+            catch (Exception) { return new(); }
+            finally { CloseCon(); }
+            return result;
+        }
+
         // Fix this not right
         public bool CreateReservation(ReservationDTO reservationDTO)
         {
@@ -189,6 +253,47 @@ namespace DataLayer
             }
 
             return reservation;
+        }
+
+        public bool CreateTeamReservation(TeamReservationDTO reservationDTO)
+        {
+            bool success = false;
+            int successFullInserts = 0;
+            try
+            {
+
+
+                OpenCon();
+                DbCom.CommandText = "INSERT INTO Teamreservations (Team_Id, DateTime_Arriving, DateTime_Leaving) Values (@team, @arrive, @leave) SELECT SCOPE_IDENTITY()";
+                DbCom.Parameters.AddWithValue("team", reservationDTO.TeamId);
+                DbCom.Parameters.AddWithValue("arrive", reservationDTO.TimeArriving);
+                DbCom.Parameters.AddWithValue("leave", reservationDTO.TimeLeaving);
+                decimal insertedId = (decimal)DbCom.ExecuteScalar();
+                if (insertedId > 0) successFullInserts++;
+
+                reservationDTO.WorkzoneIds.ForEach(workzoneId =>
+                {
+                    DbCom.Parameters.Clear();
+                    DbCom.CommandText = "INSERT INTO TeamreservationsWorkzones (Team_Id, Workzone_Id) Values (@team, @workzone)";
+                    DbCom.Parameters.AddWithValue("team", insertedId);
+                    DbCom.Parameters.AddWithValue("workzone", workzoneId);
+                    if (DbCom.ExecuteNonQuery() > 0) successFullInserts++;
+                });
+
+                reservationDTO.UserIds.ForEach(userId =>
+                {
+                    DbCom.Parameters.Clear();
+                    DbCom.CommandText = "INSERT INTO TeamreservationUsers (Teamreservation_Id, User_Id) Values (@team, @user)";
+                    DbCom.Parameters.AddWithValue("team", insertedId);
+                    DbCom.Parameters.AddWithValue("user", userId);
+                    if (DbCom.ExecuteNonQuery() > 0) successFullInserts++;
+                });
+
+                if (successFullInserts == reservationDTO.UserIds.Count + reservationDTO.WorkzoneIds.Count + 2) success = true;
+
+            } catch(Exception) { success = false; }
+            finally { CloseCon(); }
+            return success;
         }
     }
 }
