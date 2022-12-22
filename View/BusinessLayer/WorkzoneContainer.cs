@@ -55,5 +55,9 @@ namespace BusinessLayer
         {
             return workzoneContainer.Edit(workzone.toDTO());
         }
+        public bool DeleteWorkzone(int id)
+        {
+            return workzoneContainer.DeleteWorkzone(id);
+        }
     }
 }

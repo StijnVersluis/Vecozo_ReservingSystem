@@ -137,9 +137,36 @@ namespace ViewLayer.Controllers
             return RedirectToAction("Edit", "Admin", new { id = workzoneViewModel.Id });
         }
 
-        public class FloorJson
+        [HttpPost]
+        public IActionResult DeleteWorkspace(WorkzoneViewModel model)
         {
-            public int floorId;
+            try
+            {
+                workzoneContainer.DeleteWorkzone(model.Id);
+
+                return RedirectToAction("index","Workzone");
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Shared");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult DeleteWorkspace(int id)
+        {
+            try
+            {
+                Workzone workzone = workzoneContainer.GetById(id);
+
+                WorkzoneViewModel model = new WorkzoneViewModel(workzone);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return View(ex.Message);
+            }
         }
     }
 }
