@@ -36,6 +36,7 @@ namespace BusinessLayer
         }
         public TeamReservation(TeamReservationDTO teamReservationDTO)
         {
+            Id = teamReservationDTO.Id;
             TeamId = teamReservationDTO.TeamId;
             TimeArriving = teamReservationDTO.TimeArriving;
             TimeLeaving = teamReservationDTO.TimeLeaving;

@@ -2,7 +2,8 @@
     ViewData["Title"] = "Dashboard";
 
     var teams = ViewData["TeamsOfUser"] as List<TeamViewModel>;
-    var reservations = ViewData["AllUserReservations"] as List<ReservationViewModel>;
+    var individualReservations = ViewData["IndividualReservations"] as List<ReservationViewModel>;
+    var teamReservations = ViewData["TeamReservations"] as List<TeamReservationViewModel>;
     var floors = ViewData["Floors"] as List<FloorViewModel>;
     var workzones = ViewData["Workzones"] as List<WorkzoneViewModel>;
     DateTime now = DateTime.Now;
@@ -22,12 +23,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="row align-items-center">
-                        <div class="col-6">Start:</div>
                         <div class="col-6">
-                            <input type="time" value="@twentyFourHoursTime" name="datetime-coming" class="form-control" />
-                        </div>
-                        <div class="col-6">
-                            Tot en met:
+                            Eind Tijd:
                         </div>
                         <div class="col-6">
                             <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="WorkzoneLeavingForm" class="form-control" />
@@ -51,7 +48,7 @@
             <form asp-action="ReserveTeam" asp-controller="Reservation" asp-antiforgery="true">
                 <div class="modal-header">
                     <div class="container p-0 d-inline-flex align-items-center">
-                        <span class="badge badge-primary mr-2 mt-1">Team Only</span>
+                        <span id="teamOnlyBadge" class="badge badge-primary mr-2 mt-1">Team Only</span>
                         <h5 class="modal-title">Modal title</h5>
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -60,11 +57,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row align-items-center">
-                        <div class="col-6">Start:</div>
-                        <div class="col-6">
-                            <input type="time" value="@twentyFourHoursTime" name="datetime-coming" class="form-control" />
-                        </div>
-                        <div class="col-6">Tot en met:</div>
+                        <div class="col-6">Eindtijd:</div>
                         <div class="col-6">
                             <input type="time" max="18:00" min="08:00" value="18:00" name="datetime-leaving" id="DateTimeLeaving" class="form-control" />
                         </div>
@@ -155,19 +148,28 @@
                 <hr style="height: 0.5px; background-color: #4525F2;" />
                 <div id="WorkSpotSelect" class="select-menu-item">
                     <h5 class="mb-0"><span id="WorkspotCount"></span> Werkplekken: </h5>
-                    <small>Beschikbaarheid is op aankomsttijd.</small>
+                    <small class="pb-1">Beschikbaarheid is op aankomsttijd.</small>
                     <div id="WorkSpotSelectList" class="WorkSpotSelectList">
                         @if (workzones != null && workzones.Count != 0)
                         {
                             <div class="list-group">
                                 @foreach (var workzone in workzones)
                                 {
+                                    bool isFull = (workzone.TeamOnly && workzone.AvailableWorkspaces < workzone.Workspaces) || (!workzone.TeamOnly && workzone.AvailableWorkspaces <= 0);
                                     string target = workzone.TeamOnly ? "#WorkzoneTeamOnlySelectedModal" : "#WorkzoneDefaultSelectedModal";
-                                    <a class="list-group-item workzone-list-item" data-toggle="modal" data-target="@target" data-floor="@workzone.Floor" data-team-only="@workzone.TeamOnly" data-workzone-id="@workzone.Id" data-workzone-name="@workzone.Name">
+
+                                    <a class="list-group-item workzone-list-item" data-target="@target" data-full="@(isFull ? "true" : "false")"  data-floor="@workzone.Floor" data-team-only="@(workzone.TeamOnly ? "true" : "false")" data-workzone-id="@workzone.Id" data-workzone-name="@workzone.Name">
                                         <div class="container px-0 d-inline-flex justify-content-between align-items-center">
                                             <p class="m-0">@Html.Encode(workzone.Name)</p>
 
-                                            @if ((workzone.TeamOnly && workzone.AvailableWorkspaces < workzone.Workspaces) || (!workzone.TeamOnly && workzone.AvailableWorkspaces <= 0))
+                                            @if (workzone.TeamOnly)
+                                            {
+                                                <small>
+                                                    <b>Team Only</b>
+                                                </small>
+                                            }
+
+                                            @if (isFull)
                                             {
                                                 <span class="badge badge-danger">
                                                     <text>vol</text>
@@ -193,12 +195,13 @@
                         }
                     </div>
                 </div>
-                <h5>Vandaag gereserveerd: </h5>
-                <div id="ReserverdWorkSpotSelect" class="select-menu-item WorkSpotSelectList">
-                    @if (reservations.Count != 0)
-                    {
+                <h5 class="mb-0">Vandaag gereserveerd: </h5>
+                @if (individualReservations.Count != 0)
+                {
+                    <small class="pb-1">Individuele reserveringen.</small>
+                    <div id="ReserverdWorkSpotSelect" class="select-menu-item WorkSpotSelectList mt-0">
                         <div class="list-group">
-                            @foreach (var reservation in reservations)
+                            @foreach (var reservation in individualReservations)
                             {
                                 <text>
                                     <div class="list-group-item mr-1">
@@ -218,14 +221,46 @@
                                 </text>
                             }
                         </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-warning">
-                            Er zijn vandaag geen <span class="alert-heading font-weight-bold">reseveringen</span>
+                    </div>
+                }
+
+                @if (teamReservations.Count != 0)
+                {
+                    <small>Team reserveringen.</small>
+                    <div id="ReserverdWorkSpotSelect" class="select-menu-item WorkSpotSelectList mt-0">
+                        <div class="list-group">
+                            @foreach (var reservation in teamReservations)
+                            {
+                                <text>
+                                    <div class="list-group-item mr-1">
+                                        <div class="row">
+                                            <div class="col-12 font-weight-bold" style="font-size: 14px;">@Html.Encode(reservation.Team.Name)</div>
+                                            <div class="col-12">
+                                                <small>@Html.Encode(string.Join(", ", reservation.Workzones.Select(x => x.Name)))</small>
+                                            </div>
+                                            <div class="col-12">
+                                                <small>@reservation.TimeArriving.TimeOfDay - @reservation.TimeLeaving.TimeOfDay</small>
+                                            </div>
+                                            <div class="col-12">
+                                                <form asp-action="CancelTeam" asp-controller="Reservation" asp-antiforgery="true">
+                                                    <input id="Id" name="Id" type="hidden" value="@reservation.Id" />
+                                                    <button type="submit" class="hyperlink__button">Annuleer</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </text>
+                            }
                         </div>
-                    }
-                </div>
+                    </div>
+                }
+
+                @if (individualReservations.Count == 0 && teamReservations.Count == 0)
+                {
+                    <div class="alert alert-warning mt-2">
+                        Er zijn vandaag geen <span class="alert-heading font-weight-bold">reseveringen</span>
+                    </div>
+                }
             </div>
         </div>
         <div id="WorkspaceHotspots" class="col-md-9 d-none d-md-block">

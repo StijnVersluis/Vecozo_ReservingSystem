@@ -30,6 +30,26 @@ a.navbar-brand {
     word-break: break-all;
 }
 
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
 .aDisable {
     text-decoration: none !important;
 }
@@ -209,9 +229,18 @@ html {
     margin: auto 0;
 }
 
-.absolute__alert {
+.alert {
     z-index: 10000 !important;
+}
+
+.absolute__alert {
     position: absolute;
+    display: block;
+    margin: 0;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    right: 0;
+    bottom: 0;
 }
 
 .absolute__alert__validation-summary ul {
@@ -351,4 +380,8 @@ html {
 
 .text-table-header {
     font-size: 1.2rem;
+}
+
+.list-group {
+    margin-right: 8px;
 }

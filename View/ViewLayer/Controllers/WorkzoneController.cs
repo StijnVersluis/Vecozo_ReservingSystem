@@ -1,14 +1,10 @@
 ﻿using BusinessLayer;
 using DataLayer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ViewLayer.Models;
 using System;
 using System.Collections.Generic;
 using ViewLayer.Util;
-using System.Linq;
-using InterfaceLayer;
-using System.Threading.Tasks;
 
 namespace ViewLayer.Controllers
 {
@@ -18,17 +14,18 @@ namespace ViewLayer.Controllers
         private static readonly WorkzoneDAL wDAL = new WorkzoneDAL();
         private readonly WorkzoneContainer workzoneContainer = new(wDAL);
         private readonly ReservationContainer reservationContainer = new(new ReservationDAL());
-        FloorContainer floorContainer = new FloorContainer(new FloorDAL());
+        private readonly FloorContainer floorContainer = new FloorContainer(new FloorDAL());
 
         [HttpGet("/AdHoc/{id}")]
         public ActionResult Index(int id)
         {
-            var result = workzoneContainer.GetByDateAndId(id, DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+            var result = workzoneContainer.GetById(id);
             if (result == null)
             {
                 return NotFound();
             }
 
+            this.GetResponse();
             return View(new WorkzoneReservationViewModel
             {
                 Workzone_Name = result.Name,
@@ -37,38 +34,7 @@ namespace ViewLayer.Controllers
             });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ValidateData(WorkzoneReservationViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError(String.Empty, "Zorg ervoor dat de datum/tijden correct zijn ingevulgd!");
-                return View("Index", model);
-            }
-
-            Workzone workzone = workzoneContainer.GetById(model.Workzone_id);
-            if (workzone != null)
-            {
-                // There are still workspaces left and the workzone is not only for teams.
-                if (workzone.Workspaces != 0 && !workzone.TeamOnly)
-                {
-                    var messages = reservationContainer.CheckReservationRules(new Reservation(0, 0, model.DateTime_Arriving, model.DateTime_Leaving), workzone);
-                    if (messages.Count != 0)
-                    {
-                        messages.ForEach(x => ModelState.AddModelError(String.Empty, x));
-                        return View("Index", model);
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, $"{workzone.Name} kan niet gereserveerd worden, probeer het later nog eens.");
-                }
-            }
-
-            return RedirectToAction("Reserve", "Reservation", model);
-        }
-
+        [HttpGet]
         public JsonResult GetWorkzonePositions(int id)
         {
             var workzones = workzoneContainer.GetAllFromFloor(id).ConvertAll(workzone => new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, wDAL)));
@@ -87,8 +53,6 @@ namespace ViewLayer.Controllers
             }
 
             return View(workzoneViewModels);
-
-
         }
 
         [HttpGet]
@@ -105,36 +69,49 @@ namespace ViewLayer.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(WorkzoneViewModel workzoneViewModel)
         {
-            if (workzoneViewModel != null)
+            Workzone workzone = workzoneContainer.GetById(workzoneViewModel.Id);
+            if (workzone == null)
             {
-                if (workzoneViewModel.Workspaces < 0)
-                {
-                    ModelState.AddModelError(String.Empty, "Het aantal werplekken moet groter zijn dan 0");
-                    return View(workzoneViewModel);
-                }
-
-                Workzone workzone = new Workzone();
-                workzone.Id = workzoneViewModel.Id;
-                workzone.Name = workzoneViewModel.Name;
-                workzone.Floor = workzoneViewModel.Floor;
-                workzone.TeamOnly = workzoneViewModel.TeamOnly;
-                workzone.Xpos = workzoneViewModel.Xpos;
-                workzone.Ypos = workzoneViewModel.Ypos;
-                workzone.Workspaces = workzoneViewModel.Workspaces;
-
-                var result = workzoneContainer.Edit(workzone);
-                if (result)
-                {
-                    return RedirectToAction("Index", "Admin");
-                }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, "Het aantal werkplekken zijn niet gewijzigd.");
-                    return RedirectToAction("Edit", "Admin", new { id = workzoneViewModel.Id });
-                }
+                return NotFound();
             }
 
-            return RedirectToAction("Edit", "Admin", new { id = workzoneViewModel.Id });
+            workzoneViewModel.Floors = floorContainer.GetAll().ConvertAll(x => new FloorViewModel(x));
+
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(String.Empty, "Voer alle velden in!");
+                return View(workzoneViewModel);
+            }
+
+            if (workzoneViewModel.Workspaces < 0)
+            {
+                ModelState.AddModelError(String.Empty, "Het aantal werplekken moet groter zijn dan 0");
+                return View(workzoneViewModel);
+            }
+
+            bool sucess = workzoneContainer.Edit(new Workzone(                
+                workzoneViewModel.Id,
+                workzoneViewModel.Name,
+                workzoneViewModel.Workspaces,
+                workzoneViewModel.Floor,
+                workzoneViewModel.TeamOnly,
+                workzoneViewModel.Xpos,
+                workzoneViewModel.Ypos
+            ));
+
+            if (!sucess)
+            {
+                ModelState.AddModelError(String.Empty, "Het wijzigen van een werkplek is mislukt, probeer het later nog eens.");
+                return RedirectToAction("Edit", new { id = workzoneViewModel.Id });
+            }
+
+            this.SendResponse(
+                sucess,
+                "Werkblok Wijziging",
+                $"De werkblok {workzoneViewModel.Name} is succesvol gewijzigd."
+            );
+
+            return RedirectToAction("Index", "Admin");
         }
 
         public class FloorJson

@@ -28,6 +28,8 @@
         console.log($(this))
         $(this).val($("#DateSelectorInput").val())
     })
+
+
 });
 
 $(document).ready(function () {
@@ -41,6 +43,17 @@ function StringIsEmpty(str) {
     return (str?.trim()?.length || 0) === 0;
 }
 
+function toLocalTime() {
+    var date = new Date();
+    var addZ = (n) => {
+        return (n < 10 ? '0' : '') + n;
+    }
+
+    return date.getFullYear() + '-' +
+        addZ(date.getMonth() + 1) + '-' +
+        addZ(date.getDate());
+}
+
 function CheckTeamInput() {
     date = null;
     if (StringIsEmpty($("#DateSelectorInput").val())) {
@@ -48,8 +61,6 @@ function CheckTeamInput() {
     } else {
         date = new Date(Date.parse($("#DateSelectorInput").val())).toLocaleString();
     }
-
-    loadWorkzones(null, document.getElementById("TeamCheckBox").checked)
 
     if (document.getElementById("TeamCheckBox").checked) {
         //Teams on
@@ -107,7 +118,7 @@ $("#DateSelectorInput").on('change', function (event) {
         console.log($(this))
         $(this).val($("#DateSelectorInput").val())
     })
-    loadWorkzones(new Date(Date.parse(event.target.value)).toLocaleString(), document.getElementById("TeamCheckBox").checked);
+    loadWorkzones();
 });
 
 $('#TeamSelectedModal').on('show.bs.modal', function (event) {
@@ -169,8 +180,17 @@ $('#WorkzoneTeamOnlySelectedModal').on('shown.bs.modal', function (event) {
     var button = $(event.relatedTarget)
     var modal = $(this);
 
-    var arrivingTime = $('#DateSelectorInput').val();
     var workzoneName = button.data('workzoneName');
+    var teamOnly = button.data('team-only');
+
+    modal.find('.modal-title').text('Werkblok: ' + workzoneName);
+    if (!teamOnly) {
+        $("#teamOnlyBadge").css("display", "none");
+    } else {
+        $("#teamOnlyBadge").css("display", "block");
+    }
+
+    var arrivingTime = $('#DateSelectorInput').val();
     var workzoneId = button.data('workzoneId');
 
     var reserve = modal.find('.modal-reserve');
@@ -184,8 +204,6 @@ $('#WorkzoneTeamOnlySelectedModal').on('shown.bs.modal', function (event) {
         modal.find('#Workzone_id').val(workzoneId);
         modal.find('#TeamId').val(teamId);
         modal.find('#DateTime_Arriving').val(new Date(arrivingTime).toLocaleString());
-
-        modal.find('.modal-title').text('Werkblok: ' + workzoneName);
         modal.find('.modal-team').text('Selected Team: ' + teamName);
 
         reserve.attr('disabled', false);
@@ -309,20 +327,22 @@ function FloorSelectChange() {
     LoadImage();
 }
 
-function loadWorkzones(date, teamOnly = false) {
-    if (date == null) {
-        date = new Date().toLocaleString();
-    }
 
+function loadWorkzones() {
     let floorId = $('#FloorSelectorSelect').val();
-    let teamonly = $("#TeamCheckBox").prop('checked')
+    let teamonly = $("#TeamCheckBox").prop('checked');
 
     $(".workzone-list-item").each(function () {
-        workzone = $(this)
+        workzone = $(this);
+
         if (workzone.data("floor") == floorId) {
             workzone.removeClass("d-none")
         } else {
             if (!workzone.hasClass("d-none")) workzone.addClass("d-none")
+        }
+
+        if (this.dataset.full == 'false' || '') {
+            $(workzone).attr('data-toggle', 'modal');
         }
 
         if (!teamonly) {
@@ -339,10 +359,16 @@ function loadWorkzones(date, teamOnly = false) {
 
 //Image overlay
 function LoadImage() {
+    var input = $('#DateSelectorInput').val();
+    if (!StringIsEmpty(input)) {
+        console.log(input)
+    }
+
     GenerateNewImage()
-    var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
+    fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
         .then(resp => resp.json())
         .then(data => {
+
             GenerateImagePoints(data)
             $('#LoadingVisualWorkspots').alert('close')
         })

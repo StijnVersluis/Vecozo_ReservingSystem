@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -176,6 +177,16 @@ namespace DataLayer
             if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
         }
 
+        public bool CancelTeamReservation(int id)
+        {
+            OpenCon();
+
+            DbCom.CommandText = "DELETE FROM Teamreservations WHERE id = @id";
+            DbCom.Parameters.AddWithValue("id", id);
+
+            if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
+        }
+
         public List<ReservationDTO> GetAllReservations()
         {
             try
@@ -228,6 +239,60 @@ namespace DataLayer
             return reservations;
         }
 
+        public List<TeamReservationDTO> GetReservationsFromTeam(int userId)
+        {
+            List<TeamReservationDTO> reservations = new List<TeamReservationDTO>();
+            List<int> teamIds = new List<int>();
+
+            try
+            {
+                OpenCon();
+
+                // Insert team ids of user.
+                DbCom.CommandText = "SELECT Team_Id FROM TeamMembers WHERE User_Id = @user";
+                DbCom.Parameters.AddWithValue("user", userId);
+                reader = DbCom.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    teamIds.Add((int)reader["Team_Id"]);
+                }
+
+                CloseCon();
+
+                // Get team reservations.
+                teamIds.ForEach(x =>
+                {
+                    OpenCon();
+                    DbCom.Parameters.Clear();
+                    DbCom.CommandText =
+                        "SELECT a.Id, a.Team_Id, a.DateTime_Arriving, a.DateTime_Leaving, b.Workzone_Id " +
+                        "FROM Teamreservations a " +
+                        "INNER JOIN TeamreservationsWorkzones b " +
+                        "ON b.Teamreservation_Id = a.Id " +
+                        "WHERE a.Team_Id = @team";
+
+                    DbCom.Parameters.AddWithValue("team", x);
+                    reader = DbCom.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        reservations.Add(new TeamReservationDTO((int)reader["Id"], (int)reader["Team_Id"], (DateTime)reader["DateTime_Arriving"], (DateTime)reader["DateTime_Leaving"], new List<int> { (int)reader["Workzone_Id"] }));
+                    }
+                    CloseCon();
+                });
+            }
+            finally
+            {
+                if (DbCom.Connection.State == ConnectionState.Open)
+                {
+                    CloseCon();
+                }
+            }
+
+            return reservations;
+        }
+
         public ReservationDTO GetById(int id)
         {
             ReservationDTO reservation = null;
@@ -237,7 +302,6 @@ namespace DataLayer
                 OpenCon();
                 DbCom.CommandText = "SELECT * FROM Reservations WHERE Id = @id";
                 DbCom.Parameters.AddWithValue("id", id);
-
                 reader = DbCom.ExecuteReader();
 
                 while (reader.Read())
@@ -274,7 +338,7 @@ namespace DataLayer
                 reservationDTO.WorkzoneIds.ForEach(workzoneId =>
                 {
                     DbCom.Parameters.Clear();
-                    DbCom.CommandText = "INSERT INTO TeamreservationsWorkzones (Team_Id, Workzone_Id) Values (@team, @workzone)";
+                    DbCom.CommandText = "INSERT INTO TeamreservationsWorkzones (Teamreservation_Id, Workzone_Id) Values (@team, @workzone)";
                     DbCom.Parameters.AddWithValue("team", insertedId);
                     DbCom.Parameters.AddWithValue("workzone", workzoneId);
                     if (DbCom.ExecuteNonQuery() > 0) successFullInserts++;
@@ -289,9 +353,13 @@ namespace DataLayer
                     if (DbCom.ExecuteNonQuery() > 0) successFullInserts++;
                 });
 
-                if (successFullInserts == reservationDTO.UserIds.Count + reservationDTO.WorkzoneIds.Count + 2) success = true;
+                if (successFullInserts == reservationDTO.UserIds.Count + reservationDTO.WorkzoneIds.Count + 1) success = true;
 
-            } catch(Exception) { success = false; }
+            } 
+            catch(Exception e) {
+                Debug.WriteLine(e.Message);
+                success = false; 
+            }
             finally { CloseCon(); }
             return success;
         }

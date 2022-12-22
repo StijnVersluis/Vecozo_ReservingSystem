@@ -32,6 +32,14 @@ namespace IntefaceLayer.DTO
             WorkzoneIds = workzoneIds;
             UserIds = userIds;
         }
+        public TeamReservationDTO(int id, int teamId, DateTime timeArriving, DateTime timeLeaving, List<int> workzoneIds)
+        {
+            Id = id;
+            TeamId = teamId;
+            TimeArriving = timeArriving;
+            TimeLeaving = timeLeaving;
+            WorkzoneIds = workzoneIds;
+        }
         public TeamReservationDTO() {
             WorkzoneIds = new();
             UserIds = new();

@@ -17,7 +17,6 @@ namespace ViewLayer.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private UserContainer uCont = new(new UserDAL());
         private TeamContainer tCont = new(new TeamDAL());
         private ReservationContainer rCont = new(new ReservationDAL());
@@ -27,16 +26,19 @@ namespace ViewLayer.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            ViewData["AllUserReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).Where(reservation=>reservation.DateTime_Arriving.Date == DateTime.Now.Date).ToList().ConvertAll(reservation => new ReservationViewModel(reservation));
+            ViewData["IndividualReservations"] = rCont.GetReservationsFromUser(uCont.GetLoggedInUser().Id).Where(reservation => reservation.DateTime_Arriving.Date == DateTime.Now.Date).ToList().ConvertAll(reservation => new ReservationViewModel(reservation));
+            ViewData["TeamReservations"] = rCont.GetReservationsFromTeam(uCont.GetLoggedInUser().Id).Where(reservation => reservation.TimeArriving.Date == DateTime.Now.Date).ToList().ConvertAll(reservation => new TeamReservationViewModel(reservation));
+
             ViewData["TeamsOfUser"] = tCont.GetTeamsOfUser(uCont.GetLoggedInUser().Id).ConvertAll(team => new TeamViewModel(team));
             ViewData["LoggedInUserName"] = uCont.GetLoggedInUser().Name;
             ViewData["Floors"] = fCont.GetAll().ConvertAll(x => new FloorViewModel(x));
+
             var workzones = wCont.GetAll();
             List<WorkzoneViewModel> workzoneViewModels = new();
-            workzones.ForEach(workzone =>
-            {
-                workzoneViewModels.Add(new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, new WorkzoneDAL())));
-            });
+            //workzones.ForEach(workzone =>
+            //{
+            //    workzoneViewModels.Add(new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, new WorkzoneDAL())));
+            //});
             ViewData["Workzones"] = workzoneViewModels;
             this.GetResponse();
             return View();
@@ -45,7 +47,7 @@ namespace ViewLayer.Controllers
         [HttpGet("Home/BhvRegister")]
         public ActionResult BhvRegister(DateTime datetime)
         {
-            if (datetime == null || datetime.ToString() == "01/01/0001 00:00:00") datetime = DateTime.Now;
+            if (datetime == default(DateTime) || datetime.ToString() == "01/01/0001 00:00:00") datetime = DateTime.Now;
             var users = uCont.GetAll().Where(user => user.IsBhv).ToList();
 
             var uDal = new UserDAL();
@@ -61,21 +63,13 @@ namespace ViewLayer.Controllers
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         [HttpGet("/Error")]
-        public IActionResult Error(int statuscode)
+        public IActionResult Error(int statusCode)
         {
-            int result;
-
-            switch (statuscode)
+            return View(new ErrorViewModel
             {
-                case 401:
-                    result = 404;
-                    break;
-
-                default:
-                    result = 404;
-                    break;
-            }
-            return View();
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                StatusCode = statusCode
+            });
         }
 
         [HttpPost]
