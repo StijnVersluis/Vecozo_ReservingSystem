@@ -35,10 +35,10 @@ namespace ViewLayer.Controllers
 
             var workzones = wCont.GetAll();
             List<WorkzoneViewModel> workzoneViewModels = new();
-            //workzones.ForEach(workzone =>
-            //{
-            //    workzoneViewModels.Add(new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, new WorkzoneDAL())));
-            //});
+            workzones.ForEach(workzone =>
+            {
+                workzoneViewModels.Add(new WorkzoneViewModel(workzone, workzone.GetAvailableWorkspaces(DateTime.Now, new WorkzoneDAL())));
+            });
             ViewData["Workzones"] = workzoneViewModels;
             this.GetResponse();
             return View();

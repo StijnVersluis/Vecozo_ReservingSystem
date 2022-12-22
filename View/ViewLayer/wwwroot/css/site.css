@@ -229,10 +229,6 @@ html {
     margin: auto 0;
 }
 
-.alert {
-    z-index: 10000 !important;
-}
-
 .absolute__alert {
     position: absolute;
     display: block;
@@ -241,6 +237,7 @@ html {
     margin-bottom: 8px;
     right: 0;
     bottom: 0;
+    z-index: 10000 !important;
 }
 
 .absolute__alert__validation-summary ul {
