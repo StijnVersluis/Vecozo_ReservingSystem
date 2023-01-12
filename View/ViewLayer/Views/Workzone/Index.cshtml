@@ -7,12 +7,15 @@
     var userContainer = new UserContainer(new UserDAL());
       DateTime now = DateTime.Now;
     var twentyFourHoursTime = now.ToString("yyyy-MM-ddTHH:mm");
+    var responseModel = ViewData["ResponseModel"] as ResponseViewModel;
 }
+
+<partial name="_ResponseModalPartial" model="@responseModel" />
 
 <div class="modal" id="adHocModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <form asp-action="ValidateData" asp-antiforgery="true">
+            <form asp-action="ReserveAdHoc" asp-controller="Reservation" asp-antiforgery="true">
                 <div class="modal-header">
                     <div class="container d-inline-flex align-items-center p-0">
                         <span class="badge badge-primary mr-2 mt-1">AdHoc</span>
@@ -37,11 +40,10 @@
                 <div class="modal-footer">
                     <input asp-for="Workzone_id" />
                     <input asp-for="Workzone_Name" />
-                    <button type="submit" class="btn btn-primary @(Model.Workspaces == 0 ? "" : "disabled")">Reserveren</button>
+                    <input asp-for="RedirectUrl" value="/AdHoc/@Model.Workzone_id" />
+                    <button type="submit" class="btn btn-primary">Reserveren</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<partial name="_ModelStateModalPartial" />
