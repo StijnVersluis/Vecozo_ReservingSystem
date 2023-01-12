@@ -30,6 +30,12 @@ namespace VecozoTests
             };
             
         }
+
+        public bool DeleteWorkzone(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Edit(WorkzoneDTO workzoneDTO)
         {
             throw new NotImplementedException();

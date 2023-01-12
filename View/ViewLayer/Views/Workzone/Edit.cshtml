@@ -57,7 +57,10 @@
             <div class="form-group">
                 <input asp-for="Id" hidden class="form-control" />
                 <button type="submit" class="btn btn-info">Wijzigen</button>
+                <a asp-action="RemoveBook" asp-route-id="@Model.Id" class="btn btn-danger">Verwijderen</a>
             </div>
+           
+            
         </form>
     </div>
 

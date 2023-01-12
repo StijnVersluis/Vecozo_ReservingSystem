@@ -266,6 +266,25 @@ namespace DataLayer
             }
 
         }
+        public bool DeleteWorkzone(int id)
+        {
+            try
+            {
+                OpenCon();
+                var command = "Delete from  Workzones  Where Id=@Id";
+                DbCom.CommandText = command;
+                DbCom.Parameters.AddWithValue("@Id", id);
+               
+                return DbCom.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally { CloseCon(); }
+
+
+        }
         #endregion
 
         #region Workzone 

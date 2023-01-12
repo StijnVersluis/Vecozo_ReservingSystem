@@ -12,5 +12,6 @@ namespace IntefaceLayer
         public List<WorkzoneDTO> GetAllFromFloor(int id);
         public List<WorkzoneDTO> GetAllFromFloorWithDate(int id, string date);
         public bool Edit(WorkzoneDTO workzoneDTO);
+        public bool DeleteWorkzone(int id);
     }
 }
