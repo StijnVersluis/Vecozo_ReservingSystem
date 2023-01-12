@@ -21,6 +21,7 @@ namespace ViewLayer.Models
             this.Workzone_id = reservation.Workzone_id;
             this.DateTime_Arriving = reservation.DateTime_Arriving;
             this.DateTime_Leaving = reservation.DateTime_Leaving;
+
             var container = new WorkzoneContainer(new WorkzoneDAL());
             this.Workzone = container.GetById(reservation.Workzone_id);
         }

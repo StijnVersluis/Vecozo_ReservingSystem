@@ -1,10 +1,15 @@
 ﻿@model IEnumerable<ViewLayer.Models.WorkzoneViewModel>
+@{
+    var responseModel = ViewData["ResponseModel"] as ResponseViewModel;
+}
 
 @{
     ViewData["Title"] = "Werkblokken";
 }
 
 <h1>Werkblokken</h1>
+
+<partial name="_ResponseModalPartial" model="@responseModel" />
 
 
 <table class="table">

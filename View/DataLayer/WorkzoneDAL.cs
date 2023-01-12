@@ -135,11 +135,7 @@ namespace DataLayer
 
             try
             {
-                if (DbCom.Connection.State == ConnectionState.Closed)
-                {
-                    OpenCon();
-                }
-
+                OpenCon();
                 string clause = floorId > 0 ? "WHERE a.Floor = @floor " : " ";
                 DbCom.CommandText =
                     "SELECT a.Id, a.Name, a.PositionX, a.PositionY, a.Floor, a.TeamOnly, COUNT(a.Id) AS 'Workspaces' " +
@@ -223,16 +219,22 @@ namespace DataLayer
                 DbCom.CommandText = "SELECT * FROM Workzones WHERE Floor = @floor";
                 DbCom.Parameters.AddWithValue("floor", id);
                 reader = DbCom.ExecuteReader();
-                while (reader.Read())
+
+                if (reader.HasRows)
                 {
-                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
+                    while (reader.Read())
+                    {
+                        workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
+                    }
                 }
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message, e);
             }
-            finally { CloseCon(); }
+            finally {
+                CloseCon();
+            }
             return workzones;
         }
 
@@ -298,20 +300,32 @@ namespace DataLayer
                 DbCom.CommandText = "SELECT Id, User_Id, Workzone_Id, DateTime_Arriving, DateTime_Leaving FROM Reservations WHERE " +
                     "@datetime BETWEEN DateTime_Arriving and DateTime_Leaving AND " +
                     "Workzone_Id = @workzone_id";
-                DbCom.Parameters.AddWithValue("datetime", datetime);
+                DbCom.Parameters.AddWithValue("datetime", datetime.ToString("yyyy/MM/dd HH:mm"));
                 DbCom.Parameters.AddWithValue("workzone_id", id);
                 var reservationReader = DbCom.ExecuteReader();
-                while (reservationReader.Read())
+                if (reservationReader.HasRows)
                 {
-                    reservationsCount++;
+                    while (reservationReader.Read())
+                    {
+                        reservationsCount++;
+                    }
                 }
+                //var teamReservations = GetTeamReservationsWithinDate(datetime);
 
                 availableWorkspaces = workzone.Workspaces - reservationsCount;
+                //if (teamReservations.Any(tr =>
+                //{
+                //    return tr.Workzones.Any(workzone => workzone.Id == id);
+                //})) availableWorkspaces = 0;
 
-            } catch (Exception e) { }
-            finally { CloseCon(); }
+            }
+            catch (Exception e) { }
+            finally {
+                CloseCon();
+            }
             return availableWorkspaces;
         }
         #endregion
+
     }
 }

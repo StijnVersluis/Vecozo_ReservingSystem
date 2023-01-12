@@ -23,6 +23,13 @@
         var datestring = date.getFullYear() + "-" + month + "-" + day + "T" + hour + ":" + minutes
         //$("#BhvRegisterDateTimeInput").val(datestring)
     }
+
+    $("input[name=datetime-start]").each(function () {
+        console.log($(this))
+        $(this).val($("#DateSelectorInput").val())
+    })
+
+
 });
 
 $(document).ready(function () {
@@ -32,7 +39,29 @@ $(document).ready(function () {
     $("#DateSelectorInput").val(currentDateFormat)
 });
 
+function StringIsEmpty(str) {
+    return (str?.trim()?.length || 0) === 0;
+}
+
+function toLocalTime() {
+    var date = new Date();
+    var addZ = (n) => {
+        return (n < 10 ? '0' : '') + n;
+    }
+
+    return date.getFullYear() + '-' +
+        addZ(date.getMonth() + 1) + '-' +
+        addZ(date.getDate());
+}
+
 function CheckTeamInput() {
+    date = null;
+    if (StringIsEmpty($("#DateSelectorInput").val())) {
+        date = new Date().toLocaleString();
+    } else {
+        date = new Date(Date.parse($("#DateSelectorInput").val())).toLocaleString();
+    }
+
     if (document.getElementById("TeamCheckBox").checked) {
         //Teams on
         document.getElementById("TeamCheckBoxOff").classList.add("d-none")
@@ -83,7 +112,13 @@ staticPopupModals.forEach(async obj => {
 });
 
 $("#DateSelectorInput").on('change', function (event) {
-    loadWorkzones(new Date(Date.parse(event.target.value)).toLocaleString());
+    if (StringIsEmpty(event.target.value)) return;
+    console.log($("input[name=datetime-coming]"))
+    $("input[name=datetime-start]").each(function () {
+        console.log($(this))
+        $(this).val($("#DateSelectorInput").val())
+    })
+    loadWorkzones();
 });
 
 $('#TeamSelectedModal').on('show.bs.modal', function (event) {
@@ -123,25 +158,66 @@ function GenerateTeamModal(modal, data) {
     modal.find('.team-modal-members').html(rawHtml);
 }
 
-$('#WorkzoneSelectedModal').on('shown.bs.modal', function (event) {
-    var button = $(event.relatedTarget) // Button that triggered the modal
-    var workzoneId = button.data('workzone-id') // Extract info from data-teamid attributes
-    var workzoneName = button.data('workzone-name') // Extract info from data-teamid attributes
-    let datetimeArrive = $("#DateSelectorInput").val()
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+$('#WorkzoneDefaultSelectedModal').on('shown.bs.modal', function (event) {
+    var button = $(event.relatedTarget)
+    var workzoneId = button.data('workzone-id')
+    var workzoneName = button.data('workzone-name')
+    var datetimeArrive = $("#DateSelectorInput").val()
 
     var modal = $(this)
     modal.find('.modal-title').text('Werkblok: ' + workzoneName)
-    modal.find('#DateAndTimeReservation').text($("#DateSelectorInput").val().replace(/T/g, " "))
-    modal.find('#WorkzoneArrivingForm').val(datetimeArrive)
+
     modal.find('#WorkzoneIdForm').val(workzoneId)
 
-    let time = datetimeArrive.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "")
+    var time = datetimeArrive.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "")
     modal.find('#WorkzoneLeavingForm').attr({
         "min": time
     })
 })
+
+
+$('#WorkzoneTeamOnlySelectedModal').on('shown.bs.modal', function (event) {
+    var button = $(event.relatedTarget)
+    var modal = $(this);
+
+    var workzoneName = button.data('workzoneName');
+    var teamOnly = button.data('team-only');
+
+    modal.find('.modal-title').text('Werkblok: ' + workzoneName);
+    if (!teamOnly) {
+        $("#teamOnlyBadge").css("display", "none");
+    } else {
+        $("#teamOnlyBadge").css("display", "block");
+    }
+
+    var arrivingTime = $('#DateSelectorInput').val();
+    var workzoneId = button.data('workzoneId');
+
+    var reserve = modal.find('.modal-reserve');
+    var alert = modal.find('.alert');
+
+    var team = $('.team-list-item-active')[0];
+    if (team != null) {
+        var teamId = $(team).attr('team-id');
+        var teamName = $(team).attr('team-name');
+
+        modal.find('#Workzone_id').val(workzoneId);
+        modal.find('#TeamId').val(teamId);
+        modal.find('#DateTime_Arriving').val(new Date(arrivingTime).toLocaleString());
+        modal.find('.modal-team').text('Selected Team: ' + teamName);
+
+        reserve.attr('disabled', false);
+        alert.addClass('collapse');
+    } else {
+        modal.find('.modal-team').text('');
+        reserve.attr('disabled', true);
+        alert.removeClass('collapse');
+    }
+})
+
+//$('#WorkzoneTeamOnlySelectedModal').on('hidden.bs.modal', function (e) {
+//    clearSelectedTeams();
+//})
 
 $("#FilterUserInput").on("keyup", () => {
     var userbtns = $(".add-user-btn")
@@ -153,6 +229,35 @@ $("#FilterUserInput").on("keyup", () => {
             userbtns = $(".add-user-btn")
         });
 })
+
+document.querySelectorAll('.team-list-item').forEach(x => {
+    x.addEventListener('click', _ => {
+        var teamSelected = x.getAttribute('team-selected');
+        var teamId = x.getAttribute('team-id');
+        if (teamId == null || teamId == 0) return;
+
+        clearSelectedTeams();
+
+        if (teamSelected == 'true') {
+            x.setAttribute('team-selected', 'false');
+            x.classList.remove('team-list-item-active');
+        } else if (teamSelected == 'false') {
+            x.setAttribute('team-selected', 'true');
+            x.classList.add('team-list-item-active')
+        }
+    })
+})
+
+function clearSelectedTeams() {
+    document.querySelectorAll('.team-list-item').forEach(x => {
+        x.setAttribute('team-selected', 'false');
+        x.classList.remove('team-list-item-active');
+    })
+}
+
+function getTimeOnly(datetime) {
+    return datetime.replace(/([0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2})T/g, "");
+}
 
 function AddUserToTeam(id, name, isAdmin) {
     var list = $("#TeamAddedUsers")
@@ -222,26 +327,31 @@ function FloorSelectChange() {
     LoadImage();
 }
 
-async function loadWorkzones(date) {
-    if (date == null) {
-        date = new Date().toLocaleString();
-    }
 
+function loadWorkzones() {
     let floorId = $('#FloorSelectorSelect').val();
-    let teamonly = $("#TeamCheckBox").prop('checked')
+    let teamonly = $("#TeamCheckBox").prop('checked');
 
     $(".workzone-list-item").each(function () {
-        workzone = $(this)
+        workzone = $(this);
+
         if (workzone.data("floor") == floorId) {
             workzone.removeClass("d-none")
         } else {
             if (!workzone.hasClass("d-none")) workzone.addClass("d-none")
         }
 
+        if (this.dataset.full == 'false' || '') {
+            $(workzone).attr('data-toggle', 'modal');
+        }
+
         if (!teamonly) {
             if (workzone.data("teamOnly") == "True" && !workzone.hasClass("d-none")) {
                 workzone.addClass("d-none")
             }
+            this.dataset.target = "#WorkzoneDefaultSelectedModal"
+        } else {
+            this.dataset.target = "#WorkzoneTeamOnlySelectedModal"
         }
     })
 }
@@ -249,10 +359,16 @@ async function loadWorkzones(date) {
 
 //Image overlay
 function LoadImage() {
+    var input = $('#DateSelectorInput').val();
+    if (!StringIsEmpty(input)) {
+        console.log(input)
+    }
+
     GenerateNewImage()
-    var something = fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
+    fetch(window.location.origin + "/Workzone/GetWorkzonePositions/" + $("#FloorSelectorSelect").val())
         .then(resp => resp.json())
         .then(data => {
+
             GenerateImagePoints(data)
             $('#LoadingVisualWorkspots').alert('close')
         })
@@ -285,7 +401,8 @@ function GenerateImagePoints(data) {
             img.title = point.name;
             img.id = "DataPoint" + point.id
             img.dataset.toggle = "modal"
-            img.dataset.target = "#WorkzoneSelectedModal"
+            if (teamonly) img.dataset.target = "#WorkzoneTeamOnlySelectedModal"
+            else img.dataset.target = "#WorkzoneDefaultSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
 
@@ -311,6 +428,8 @@ function GenerateImagePoints(data) {
 function LoadXYImage() {
     let xValue = $("#XPosistionInput").val()
     let yValue = $("#YPosistionInput").val()
+    let name = $("#Name").val()
+    let teamonly = $("#TeamOnly").prop("checked")
     const overlay = document.querySelector('.image-overlay');
     const image = document.querySelector('#FloorImage');
 
@@ -321,12 +440,12 @@ function LoadXYImage() {
     let img = document.createElement('img');
     img.style.left = (xValue + "%");
     img.style.top = y + "px";
-    img.className = 'overlay-image';
+    img.className = 'green overlay-image';
     img.style.scale = scale;
 
     let imgSrc = "Single";
-    if (point.teamOnly) imgSrc = "Group"
-    else if (point.name.includes("ST")) imgSrc = "ST"
+    if (teamonly) imgSrc = "Group"
+    else if (name.includes("ST")) imgSrc = "ST"
 
     img.src = "/images/Workspace" + imgSrc + ".svg"
     overlay.innerHTML = "";
@@ -337,8 +456,8 @@ function SwitchTeamWorkzonesImages() {
     let teamonly = $("#TeamCheckBox").prop('checked')
     const overlay = document.querySelector('.image-overlay');
     const image = document.querySelector('#FloorImage');
-    $("#ImageOverlay").html("")
     let data = floorImages;
+    $("#ImageOverlay").html("")
     data.forEach((point) => {
         if (point.ypos == "" || point.xpos == "") { return };
         if ((!teamonly && point.teamOnly == teamonly) || teamonly) {
@@ -353,23 +472,24 @@ function SwitchTeamWorkzonesImages() {
             if (percentage <= 50) color = "orange"
             if (percentage <= 0) color = "red"
             if (point.teamOnly && percentage < 100) color = "red"
+            if (teamonly) img.dataset.target = "#WorkzoneTeamOnlySelectedModal"
+            else img.dataset.target = "#WorkzoneDefaultSelectedModal"
 
             img.style.left = (point.xpos + "%");
             img.style.top = y + "px";
             img.title = point.name;
             img.id = "DataPoint" + point.id
             img.dataset.toggle = "modal"
-            img.dataset.target = "#WorkzoneSelectedModal"
             img.dataset.workzoneId = point.id
             img.dataset.workzoneName = point.name
             img.className = 'overlay-image ' + color;
             img.style.scale = scale;
 
             let imgSrc = "Single";
-            if (point.teamOnly) imgSrc = "Group" 
-            else if (point.name.includes("ST")) imgSrc = "ST" 
+            if (point.teamOnly) imgSrc = "Group"
+            else if (point.name.includes("ST")) imgSrc = "ST"
 
-            img.src = "/images/Workspace" + imgSrc +".svg"
+            img.src = "/images/Workspace" + imgSrc + ".svg"
             img.alt = point.name
             overlay.appendChild(img);
         }
