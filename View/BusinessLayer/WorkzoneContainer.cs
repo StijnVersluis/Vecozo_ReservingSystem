@@ -26,6 +26,11 @@ namespace BusinessLayer
             return output;
         }
 
+        public bool DeleteWorkzone(int id)
+        {
+            return workzoneContainer.DeleteWorkzone(id);
+        }
+
         //public Workzone GetByDateAndId(int id, string date)
         //{
         //    Workzone output = null;
@@ -76,6 +81,10 @@ namespace BusinessLayer
             }
 
             return messages;
+        }
+        public bool DeleteWorkzone(int id)
+        {
+            return workzoneContainer.DeleteWorkzone(id);
         }
     }
 }
