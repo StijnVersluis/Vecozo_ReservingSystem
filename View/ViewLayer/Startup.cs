@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 using System;
 using ViewLayer.Util;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ViewLayer
 {
@@ -28,6 +27,7 @@ namespace ViewLayer
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+                options.Cookie.SameSite = SameSiteMode.Strict;
             });
         }
 

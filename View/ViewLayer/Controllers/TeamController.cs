@@ -39,6 +39,7 @@ namespace ViewLayer.Controllers
             {
                 return NotFound();
             }
+
             return View(new TeamViewModel(team)
             {
                 Owner = teamContainer.GetTeamAdmin(team.Id),

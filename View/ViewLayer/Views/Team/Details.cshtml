@@ -6,7 +6,7 @@
     UserContainer userContainer = new UserContainer(new UserDAL());
 }
 
-@if (Model.Owner.Id == userContainer.GetLoggedInUser().Id)
+@if (Model?.Owner?.Id == userContainer.GetLoggedInUser()?.Id)
 {
     <div id="editTeamModal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -38,7 +38,7 @@
                     <div class="modal-footer">
                         <input asp-for="Id" class="team-modal-hidden-id" />
                         <button type="submit" class="btn btn-secondary">Wijzigen</button>
-                        @if (Model.Users.Count <= 1)
+                        @if (Model.Users?.Count <= 1)
                         {
                             <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Archiveren</a>
                         }

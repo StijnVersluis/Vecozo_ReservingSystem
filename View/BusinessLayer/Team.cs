@@ -12,6 +12,8 @@ namespace BusinessLayer
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
         public Team(int id, string name)
         {
             Id = id;
@@ -29,6 +31,7 @@ namespace BusinessLayer
 
             this.Id = team.Id;
             this.Name = team.Name;
+            this.DeletedAt = team.DeletedAt;
         }
 
         public TeamDTO ToDTO()

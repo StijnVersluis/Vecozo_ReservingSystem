@@ -1,7 +1,6 @@
 ﻿using BusinessLayer;
 using DataLayer;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
 using ViewLayer.Models;
 using ViewLayer.Util;
@@ -12,8 +11,10 @@ namespace ViewLayer.Controllers
     public class AdminController : Controller
     {
         WorkzoneContainer workzoneContainer = new WorkzoneContainer(new WorkzoneDAL());
-        FloorContainer floorContainer = new FloorContainer(new FloorDAL()); 
+        TeamContainer teamContainer = new TeamContainer(new TeamDAL());
+        UserContainer userContainer = new UserContainer(new UserDAL());
 
+        [HttpGet]
         public ActionResult Index()
         {
             this.GetResponse();
@@ -21,6 +22,16 @@ namespace ViewLayer.Controllers
             return View(workzoneContainer.GetAll().ConvertAll(x => new WorkzoneViewModel(x)).OrderBy(workzone=> workzone.Floor));
         }
 
+        [HttpGet]
+        public ActionResult Teams()
+        {
+            return View(
+                teamContainer.GetArchivedTeams().ConvertAll(team => new TeamViewModel(team)
+                {
+                    Owner = teamContainer.GetTeamAdmin(team.Id)
+                })
+            );
+        }
     }
 }
 

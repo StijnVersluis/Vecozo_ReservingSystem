@@ -1,5 +1,6 @@
 ﻿using BusinessLayer;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +16,8 @@ namespace ViewLayer.Models
         public string AddedUserIds { get; set; }
         public string Name { get; set; }
 
+        public DateTime? DeletedAt { get; set; }
+
         public User Owner { get; set; }
 
         public List<User> Users { get; set; }
@@ -25,6 +28,7 @@ namespace ViewLayer.Models
         {
             this.Id = team.Id;
             this.Name = team.Name;
+            this.DeletedAt = team.DeletedAt;
         }
 
         public TeamViewModel(List<User> users)

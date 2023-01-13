@@ -10,11 +10,19 @@ namespace IntefaceLayer.DTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public TeamDTO(int id, string name)
         {
             Id = id;
             Name = name;
+        }
+
+        public TeamDTO(int id, string name, DateTime? deletedAt)
+        {
+            Id = id;
+            Name = name;
+            DeletedAt = deletedAt;
         }
     }
 }

@@ -201,7 +201,7 @@
                     <small class="pb-1">Individuele reserveringen.</small>
                     <div id="ReserverdWorkSpotSelect" class="select-menu-item WorkSpotSelectList mt-0">
                         <div class="list-group">
-                            @foreach (var reservation in individualReservations)
+                            @foreach (var reservation in individualReservations.OrderBy(x => x.DateTime_Arriving))
                             {
                                 <text>
                                     <div class="list-group-item mr-1">
@@ -229,7 +229,7 @@
                     <small>Team reserveringen.</small>
                     <div id="ReserverdWorkSpotSelect" class="select-menu-item WorkSpotSelectList mt-0">
                         <div class="list-group">
-                            @foreach (var reservation in teamReservations)
+                            @foreach (var reservation in teamReservations.OrderBy(x => x.TimeArriving))
                             {
                                 <text>
                                     <div class="list-group-item mr-1">

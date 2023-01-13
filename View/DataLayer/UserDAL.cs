@@ -31,7 +31,9 @@ namespace DataLayer
                 {
                     list.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]));
                 }
-            } finally
+            }
+            catch { }
+            finally
             {
                 CloseCon();
             }
@@ -51,7 +53,7 @@ namespace DataLayer
 
             if (userPass == filledIn) { user = DBuser; }
 
-            GlobalVariables.LoggedInUser = user;
+            GlobalVariables.Machines.Add(Environment.MachineName, user);
             if (user == null) { return false; }
             else return true;
         }
@@ -81,6 +83,7 @@ namespace DataLayer
 
             return user;
         }
+
         //Done
         public string GetUserPassword(UserDTO user)
         {
@@ -94,6 +97,7 @@ namespace DataLayer
                 reader = DbCom.ExecuteReader();
                 while (reader.Read()) { password = (string)reader["Password"]; }
             }
+            catch { }
             finally
             {
                 CloseCon();
@@ -141,6 +145,7 @@ namespace DataLayer
                     users.Add(new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]));
                 }
             }
+            catch { }
             finally
             {
                 CloseCon();
@@ -164,6 +169,7 @@ namespace DataLayer
                     user = new UserDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]);
                 }
             }
+            catch { }
             finally
             {
                 CloseCon();
@@ -174,17 +180,20 @@ namespace DataLayer
 
         public bool IsLoggedIn()
         {
-            return GlobalVariables.LoggedInUser != null;
+            return GlobalVariables.LoggedInUser() != null;
         }
 
         public UserDTO GetLoggedInUser()
         {
-            return GlobalVariables.LoggedInUser;
+            return GlobalVariables.LoggedInUser();
         }
 
         public void Logout()
         {
-            GlobalVariables.LoggedInUser = null;
+            if (GlobalVariables.Machines.ContainsKey(Environment.MachineName))
+            {
+                GlobalVariables.Machines.Remove(Environment.MachineName);
+            }
         }
 
         #endregion

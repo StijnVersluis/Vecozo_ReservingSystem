@@ -138,10 +138,11 @@ namespace BusinessLayer
             return messages;
         }
 
-        public List<string> CheckTeamReservationRules(TeamReservation teamReservation)
+        public List<string> CheckTeamReservationRules(TeamReservation teamReservation, int availableWorkspaces)
         {
             // check on existing team reservations
             // check on existing reservations
+            // Check on amount of avaiable seats.
             // check timeframe is valid
             List<string> messages = new();
             var workzone = teamReservation.WorkzoneIds;
@@ -160,10 +161,13 @@ namespace BusinessLayer
             if (teamReservation.TimeLeaving.Hour > 18)
                 messages.Add("De starttijd moet voor 18:00 zijn.");
 
-            if (messages.Count > 0) return messages;
-
             if (teamReservation.TimeLeaving < teamReservation.TimeArriving.AddHours(1))
                 messages.Add("Eindtijd moet minimaal 1 uur later zijn dan starttijd.");
+
+            if (teamReservation.UserIds.Count > availableWorkspaces)
+                messages.Add("Er zijn niet genoeg werkplekken voor voor het hele team.");
+
+            if (messages.Count > 0) return messages;
 
             bool workzoneIsReserved = false;
             teamReservation.WorkzoneIds.ForEach(workzoneId =>

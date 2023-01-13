@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System;
 using System.Reflection.Metadata.Ecma335;
+using System.Diagnostics;
 
 namespace DataLayer
 {
@@ -34,6 +35,7 @@ namespace DataLayer
                     workzone = new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]);
                 }
             }
+            catch { }
             finally
             {
                 CloseCon();
@@ -43,10 +45,10 @@ namespace DataLayer
         }
 
         // Notice: Not returning the correct amount of workspaces.
-        public WorkzoneDTO GetByDateAndId(int id, string date)
-        {
-            return GetAvailableWorkzones(date).Where(x => x.Id == id).FirstOrDefault();
-        }
+        //public WorkzoneDTO GetByDateAndId(int id, string date)
+        //{
+        //    return GetAvailableWorkzones(date).Where(x => x.Id == id).FirstOrDefault();
+        //}
 
         // Notice: Not returning the correct amount of workspaces.
         public List<WorkzoneDTO> GetAll()
@@ -64,6 +66,7 @@ namespace DataLayer
                     workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
                 }
             }
+            catch { }
             finally
             {
                 CloseCon();
@@ -72,31 +75,9 @@ namespace DataLayer
             return workzones;
         }
 
-        private bool WorkzoneHasReservations(int id, string date = "")
+        public bool HasReservations(int id)
         {
             bool result = false;
-            string query = string.Empty;
-
-            if (string.IsNullOrEmpty(date))
-            {
-                query =
-                    "SELECT a.* FROM Workzones a " +
-                    "INNER JOIN Reservations b " +
-                    "ON b.Workzone_Id = a.Id " +
-                    "WHERE a.Id = @id";
-            }
-            else
-            {
-                query =
-                    "SELECT * FROM Workzones a " +
-                    "WHERE a.Id = @id " +
-                    "AND EXISTS " +
-                    "(SELECT * FROM Reservations b " +
-                    "WHERE b.Workzone_Id = a.Id AND " +
-                    "(@date BETWEEN b.DateTime_Arriving AND b.DateTime_Leaving) OR " +
-                    "(b.DateTime_Arriving >= @date AND @date <= b.DateTime_Leaving))";
-            }
-
             try
             {
                 if (DbCom.Connection.State == ConnectionState.Closed)
@@ -104,13 +85,12 @@ namespace DataLayer
                     OpenCon();
                 }
 
-                DbCom.CommandText = query;
+                DbCom.CommandText =
+                    "SELECT a.* FROM Workzones a " +
+                    "INNER JOIN Reservations b " +
+                    "ON b.Workzone_Id = a.Id " +
+                    "WHERE a.Id = @id"; ;
                 DbCom.Parameters.AddWithValue("id", id);
-
-                if (!string.IsNullOrEmpty(date))
-                {
-                    DbCom.Parameters.AddWithValue("date", date);
-                }
 
 
                 reader = DbCom.ExecuteReader();
@@ -118,6 +98,7 @@ namespace DataLayer
 
                 result = reader.HasRows ? true : false;
             }
+            catch { }
             finally
             {
                 if (DbCom.Connection.State == ConnectionState.Open)
@@ -129,86 +110,86 @@ namespace DataLayer
             return result;
         }
 
-        private List<WorkzoneDTO> GetWorkzones(string date, int floorId = 0)
-        {
-            List<WorkzoneDTO> workzones = new List<WorkzoneDTO>();
+        //private List<WorkzoneDTO> GetWorkzones(string date, int floorId = 0)
+        //{
+        //    List<WorkzoneDTO> workzones = new List<WorkzoneDTO>();
 
-            try
-            {
-                OpenCon();
-                string clause = floorId > 0 ? "WHERE a.Floor = @floor " : " ";
-                DbCom.CommandText =
-                    "SELECT a.Id, a.Name, a.PositionX, a.PositionY, a.Floor, a.TeamOnly, COUNT(a.Id) AS 'Workspaces' " +
-                    "FROM Workzones a " +
-                    "LEFT JOIN Reservations b " +
-                    "ON b.Workzone_Id = a.Id " +
-                    $"AND (DateTime_Arriving >= @date AND @date <= b.DateTime_Leaving) {clause} " +
-                    "GROUP BY a.Id, a.Name, a.PositionX, a.PositionY, a.Floor, a.TeamOnly";
+        //    try
+        //    {
+        //        OpenCon();
+        //        string clause = floorId > 0 ? "WHERE a.Floor = @floor " : " ";
+        //        DbCom.CommandText =
+        //            "SELECT a.Id, a.Name, a.PositionX, a.PositionY, a.Floor, a.TeamOnly, COUNT(a.Id) AS 'Workspaces' " +
+        //            "FROM Workzones a " +
+        //            "LEFT JOIN Reservations b " +
+        //            "ON b.Workzone_Id = a.Id " +
+        //            $"AND (DateTime_Arriving >= @date AND @date <= b.DateTime_Leaving) {clause} " +
+        //            "GROUP BY a.Id, a.Name, a.PositionX, a.PositionY, a.Floor, a.TeamOnly";
 
-                if (floorId > 0)
-                {
-                    DbCom.Parameters.AddWithValue("floor", floorId);
-                }
+        //        if (floorId > 0)
+        //        {
+        //            DbCom.Parameters.AddWithValue("floor", floorId);
+        //        }
 
-                DbCom.Parameters.AddWithValue("date", date);
-                reader = DbCom.ExecuteReader();
+        //        DbCom.Parameters.AddWithValue("date", date);
+        //        reader = DbCom.ExecuteReader();
 
-                while (reader.Read())
-                {
-                    workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
-                }
-            }
-            finally
-            {
-                if (DbCom.Connection.State == ConnectionState.Open)
-                {
-                    CloseCon();
-                }
-            }
+        //        while (reader.Read())
+        //        {
+        //            workzones.Add(new WorkzoneDTO((int)reader["Id"], (string)reader["Name"], (int)reader["Workspaces"], (int)reader["Floor"], (bool)reader["TeamOnly"], (int)reader["PositionX"], (int)reader["PositionY"]));
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        if (DbCom.Connection.State == ConnectionState.Open)
+        //        {
+        //            CloseCon();
+        //        }
+        //    }
 
-            return workzones;
-        }
+        //    return workzones;
+        //}
 
-        public List<WorkzoneDTO> GetAvailableWorkzones(string date, int id = 0)
-        {
-            List<WorkzoneDTO> workzones = new List<WorkzoneDTO>();
+        //public List<WorkzoneDTO> GetAvailableWorkzones(string date, int id = 0)
+        //{
+        //    List<WorkzoneDTO> workzones = new List<WorkzoneDTO>();
 
-            GetWorkzones(date, id).ForEach(x =>
-            {
-                var workzone = GetById(x.Id);
-                if (workzone != null)
-                {
-                    int max = workzone.Workspaces;
-                    int min = 0;
+        //    GetWorkzones(date, id).ForEach(x =>
+        //    {
+        //        var workzone = GetById(x.Id);
+        //        if (workzone != null)
+        //        {
+        //            int max = workzone.Workspaces;
+        //            int min = 0;
 
-                    if (workzone == null) return;
-                    if (workzone.Id != x.Id) return;
+        //            if (workzone == null) return;
+        //            if (workzone.Id != x.Id) return;
 
-                    // Check if the workzone is not an "ST" because it always has 1 workzone
-                    // Check if the workzone has reservations.
-                    if (!workzone.Name.Contains("ST") && WorkzoneHasReservations(workzone.Id))
-                    {
-                        workzone.Workspaces = workzone.Workspaces > min ? workzone.Workspaces - x.Workspaces : min;
-                    }
+        //            // Check if the workzone is not an "ST" because it always has 1 workzone
+        //            // Check if the workzone has reservations.
+        //            if (!workzone.Name.Contains("ST") && WorkzoneHasReservations(workzone.Id))
+        //            {
+        //                workzone.Workspaces = workzone.Workspaces > min ? workzone.Workspaces - x.Workspaces : min;
+        //            }
 
-                    // Increment seats if workzone has no reservation
-                    if (!WorkzoneHasReservations(workzone.Id, date))
-                    {
-                        //workzone.Workspaces = max;
-                        workzone.Workspaces = workzone.Workspaces < max ? workzone.Workspaces + 1 : max;
-                    }
+        //            // Increment seats if workzone has no reservation
+        //            if (!WorkzoneHasReservations(workzone.Id, date))
+        //            {
+        //                //workzone.Workspaces = max;
+        //                workzone.Workspaces = workzone.Workspaces < max ? workzone.Workspaces + 1 : max;
+        //            }
 
-                    workzones.Add(workzone);
-                }
-            });
+        //            workzones.Add(workzone);
+        //        }
+        //    });
 
-            return workzones;
-        }
+        //    return workzones;
+        //}
 
-        public List<WorkzoneDTO> GetAllFromFloorWithDate(int id, string date)
-        {
-            return GetAvailableWorkzones(date, id);
-        }
+        //public List<WorkzoneDTO> GetAllFromFloorWithDate(int id, string date)
+        //{
+        //    return GetAvailableWorkzones(date, id);
+        //}
 
         public List<WorkzoneDTO> GetAllFromFloor(int id)
         {
@@ -230,7 +211,7 @@ namespace DataLayer
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message, e);
+                Debug.WriteLine(e.Message);
             }
             finally {
                 CloseCon();
@@ -240,6 +221,8 @@ namespace DataLayer
 
         public bool Edit(WorkzoneDTO workzoneDTO)
         {
+            bool result = false;
+
             try
             {
                 OpenCon();
@@ -253,17 +236,19 @@ namespace DataLayer
                 DbCom.Parameters.AddWithValue("xpos", workzoneDTO.Xpos);
                 DbCom.Parameters.AddWithValue("ypos", workzoneDTO.Ypos);
                 DbCom.Parameters.AddWithValue("id", workzoneDTO.Id);
-                return DbCom.ExecuteNonQuery() > 0;
+                result = DbCom.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
             {
-                throw ex;
+                Debug.WriteLine(ex.Message);
             }
             finally
             {
 
                 CloseCon();
             }
+
+            return result;
 
         }
         #endregion

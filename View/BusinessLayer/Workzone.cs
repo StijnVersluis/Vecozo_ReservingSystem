@@ -58,5 +58,10 @@ namespace BusinessLayer
         {
             return iworkzone.GetAvailableWorkspaces(this.Id, datetime);
         }
+
+        public bool HasReservations(IWorkzone iworkzone)
+        {
+            return iworkzone.HasReservations(Id);
+        }
     }
 }

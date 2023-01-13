@@ -43,6 +43,9 @@
 
                                         @if (roleContainer.GetRole(userContainer.GetLoggedInUser().Role).Name == "Administrator")
                                         {
+                                            <a asp-action="Teams" asp-controller="Admin" class="dropdown-item">
+                                                <b>Archief Teams</b>
+                                            </a>
                                             <a asp-action="Index" asp-controller="Admin" class="dropdown-item">
                                                 <b>Pandbeheer</b>
                                             </a>

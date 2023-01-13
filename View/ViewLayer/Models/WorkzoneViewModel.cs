@@ -42,6 +42,8 @@ namespace ViewLayer.Models
         [DisplayName("Verdiepingen")]
         public List<FloorViewModel> Floors { get; set; }
 
+        public bool HasReservations { get; set; } = false;
+
         public WorkzoneViewModel(Workzone workzone)
         {
             Id = workzone.Id;

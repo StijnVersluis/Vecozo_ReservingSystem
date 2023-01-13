@@ -20,6 +20,9 @@ namespace BusinessLayer
         }
         public Role(RoleDTO roleDTO)
         {
+            if (roleDTO == null)
+                return;
+
             Id = roleDTO.Id;
             Name = roleDTO.Name;
         }

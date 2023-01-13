@@ -28,6 +28,12 @@ namespace BusinessLayer
         {
             return iTeam.GetTeamsOfUser(userId).ConvertAll(teamdto => new Team(teamdto));
         }
+
+        public List<Team> GetArchivedTeams()
+        {
+            return iTeam.GetArchivedTeams().ConvertAll(teamdto => new Team(teamdto));
+        }
+
         public bool CreateTeam(string name, List<int> userids)
         {
             return iTeam.CreateTeam(name, userids);
@@ -53,9 +59,20 @@ namespace BusinessLayer
             return iTeam.LeaveTeam(teamId, userId);
         }
 
+        public bool Exists(string name, int userId)
+        {
+            return iTeam.Exists(name, userId);
+        }
+
         public User GetTeamAdmin(int teamId)
         {
-            return new User(iTeam.GetTeamAdmin(teamId));
+            var dto = iTeam.GetTeamAdmin(teamId);
+            if (dto == null)
+            {
+                return null;
+            }    
+
+            return new User(dto);
         }
 
         public List<string> CheckEditRules(string name, int adminId, List<int> membersIds)
@@ -87,6 +104,12 @@ namespace BusinessLayer
             if (membersIds.Count == 0)
             {
                 messages.Add("Het team kan niet leeg zijn!");
+            }
+
+            // Check if the same team name does exist.
+            if (Exists(name, adminId))
+            {
+                messages.Add("Er bestaat al een team met dezelfde naam!");
             }
 
             return messages;

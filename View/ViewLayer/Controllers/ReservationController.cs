@@ -28,28 +28,38 @@ namespace ViewLayer.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            var individualReservations = new Dictionary<string, List<ReservationViewModel>>();
+            var reservations = new Dictionary<string, List<object>>();
+
             var individualGroups = reservationContainer.GetReservationsFromUser(userContainer.GetLoggedInUser().Id)
                 .GroupBy(x => $"{x.DateTime_Arriving.Day}-{x.DateTime_Arriving.Month}-{x.DateTime_Arriving.Year}");
-
-            foreach (var group in individualGroups)
-            {
-                individualReservations.Add(group.Key, group.ToList().ConvertAll(x => new ReservationViewModel(x)));
-            }
-
-            var teamReservations = new Dictionary<string, List<TeamReservationViewModel>>();
             var teamGroups = reservationContainer.GetReservationsFromTeam(userContainer.GetLoggedInUser().Id)
                 .GroupBy(x => $"{x.TimeArriving.Day}-{x.TimeArriving.Month}-{x.TimeArriving.Year}");
 
-            foreach (var group in teamGroups)
+            foreach(var group in individualGroups)
             {
-                teamReservations.Add(group.Key, group.ToList().ConvertAll(x => new TeamReservationViewModel(x)));
+                if (!reservations.ContainsKey(group.Key))
+                {
+                    reservations.Add(group.Key, new List<object>());
+                    
+                }
+
+                reservations[group.Key].AddRange(group.ToList().ConvertAll(x => new ReservationViewModel(x)));
             }
 
-            ViewData["IndividualReservations"] = individualReservations;
-            ViewData["TeamReservations"] = teamReservations;
+            foreach (var group in teamGroups)
+            {
+                if (!reservations.ContainsKey(group.Key))
+                {
+                    reservations.Add(group.Key, new List<object>());
 
-            return View();
+                }
+
+                reservations[group.Key].AddRange(group.ToList().ConvertAll(x => new TeamReservationViewModel(x)));
+            }
+
+            this.GetResponse();
+
+            return View(reservations);
         }
 
         [HttpPost]
@@ -227,10 +237,13 @@ namespace ViewLayer.Controllers
                 Team team = teamContainer.GetTeam(Convert.ToInt32(teamId));
                 users = team.GetUsers(new TeamDAL());
 
+                Workzone workzone = workzoneContainer.GetById(workzoneId);
+                int availableWorkspaces = workzone.GetAvailableWorkspaces(startTime, new WorkzoneDAL());
+
                 var teamReservation = new TeamReservation(team.Id, startTime, endTime,
                     new List<int>() { workzoneId }, users.Select(user => user.Id).ToList());
 
-                var errorMessages = reservationContainer.CheckTeamReservationRules(teamReservation);
+                var errorMessages = reservationContainer.CheckTeamReservationRules(teamReservation, availableWorkspaces);
 
                 if (errorMessages.Count > 0) message = String.Join(",", errorMessages);
                 else
@@ -238,7 +251,6 @@ namespace ViewLayer.Controllers
                     reservationContainer.CreateTeamReservation(teamReservation);
                     success = true;
 
-                    Workzone workzone = workzoneContainer.GetById(workzoneId);
                     message = $"{workzone?.Name} is succesvol gereserveerd om {startTime.ToString("dd/MM/yyyy HH:mm")} tot {endTime.ToString("HH:mm")}.";
                 }
 

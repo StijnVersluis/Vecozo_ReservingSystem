@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -43,8 +44,20 @@ namespace ViewLayer.Util
         // Checks if the user has been authenticated or not based on session value.
         private bool IsAuthenticated(HttpContext context)
         {
-            var sessionVal = context.Session.GetString(AUTH_SESSION_KEY);
-            return !string.IsNullOrEmpty(sessionVal) && userContainer.FindUserByEmail(sessionVal) != null;
+            bool output = false;
+
+            try
+            {
+                var sessionVal = context.Session.GetString(AUTH_SESSION_KEY);
+                output = !string.IsNullOrEmpty(sessionVal) && userContainer.FindUserByEmail(sessionVal) != null;
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                output = false;
+            }
+
+            return output;
         }
 
 

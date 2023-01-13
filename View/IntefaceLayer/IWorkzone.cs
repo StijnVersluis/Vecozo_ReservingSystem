@@ -9,5 +9,7 @@ namespace IntefaceLayer
     public interface IWorkzone
     {
         public int GetAvailableWorkspaces(int id, DateTime datetime);
+
+        public bool HasReservations(int id);
     }
 }

@@ -3,6 +3,7 @@ using InterfaceLayer;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,10 @@ namespace DataLayer
                     role = new RoleDTO((int)reader["Id"], (string)reader["Name"]);
                 }
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 CloseCon();
@@ -55,6 +60,10 @@ namespace DataLayer
                 {
                     roles.Add(new RoleDTO((int)reader["Id"], (string)reader["Name"]));
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
             finally
             {

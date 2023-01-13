@@ -47,6 +47,16 @@ namespace TestProject1
             throw new NotImplementedException();
         }
 
+        public bool Exists(string name, int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<TeamDTO> GetArchivedTeams()
+        {
+            throw new NotImplementedException();
+        }
+
         public TeamDTO GetTeam(int id)
         {
            var team=teams.Find(x => x.Id == id); 

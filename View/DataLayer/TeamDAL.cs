@@ -80,6 +80,10 @@ namespace DataLayer
 
                 success = DbCom.ExecuteNonQuery() > 0;
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 CloseCon();
@@ -103,12 +107,48 @@ namespace DataLayer
 
                 success = DbCom.ExecuteNonQuery() > 0;
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 CloseCon();
             }
 
             return success;
+        }
+
+        public bool Exists(string name, int userId)
+        {
+            bool output = false;
+
+            try
+            {
+                OpenCon();
+
+                DbCom.Parameters.Clear();
+                DbCom.CommandText = 
+                    "SELECT COUNT(*) " +
+                    "FROM TeamMembers tm " +
+                    "INNER JOIN Teams t " +
+                    "ON t.Id = tm.Team_Id " +
+                    "WHERE tm.User_Id = @userId AND tm.Is_Team_Admin = 1 AND LOWER(t.Name) = LOWER(@name)";
+                DbCom.Parameters.AddWithValue("name", name);
+                DbCom.Parameters.AddWithValue("userId", userId);
+
+                output = (int)DbCom.ExecuteScalar() > 0;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+            finally
+            {
+                CloseCon();
+            }
+
+            return output;
         }
 
         public bool CreateTeam(string name, List<int> userids)
@@ -123,14 +163,14 @@ namespace DataLayer
                 DbCom.Parameters.Clear();
                 DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id, Is_Team_Admin) Values (@tId, @uId, @isAdmin)";
                 DbCom.Parameters.AddWithValue("tId", idDec);
-                DbCom.Parameters.AddWithValue("uId", GlobalVariables.LoggedInUser.Id);
+                DbCom.Parameters.AddWithValue("uId", GlobalVariables.LoggedInUser().Id);
                 DbCom.Parameters.AddWithValue("isAdmin", 1);
 
                 DbCom.ExecuteNonQuery();
 
                 userids.ForEach(userid =>
                 {
-                    if (GlobalVariables.LoggedInUser.Id == userid) return;
+                    if (GlobalVariables.LoggedInUser().Id == userid) return;
                     DbCom.Parameters.Clear();
                     DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id, Is_Team_Admin) Values (@tId, @uId, @isAdmin)";
                     DbCom.Parameters.AddWithValue("tId", idDec);
@@ -170,7 +210,7 @@ namespace DataLayer
 
                 userids.ForEach(userid =>
                 {
-                    if (userid == GlobalVariables.LoggedInUser.Id) return;
+                    if (userid == GlobalVariables.LoggedInUser().Id) return;
 
                     DbCom.Parameters.Clear();
                     DbCom.CommandText = "INSERT INTO TeamMembers (Team_Id, User_Id, Is_Team_Admin) Values (@tId, @uId, @isAdmin)";
@@ -250,12 +290,43 @@ namespace DataLayer
 
                 result = DbCom.ExecuteNonQuery() > 0 ? true : false;
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 CloseCon();
             }
 
             return result;
+        }
+
+        public List<TeamDTO> GetArchivedTeams()
+        {
+            List<TeamDTO> teams = new();
+
+            try
+            {
+                OpenCon();
+                DbCom.Parameters.Clear();
+                DbCom.CommandText = "SELECT * FROM Teams WHERE Deleted_At IS NOT NULL";
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
+                    teams.Add(new TeamDTO((int)reader["Id"], (string)reader["Name"], (DateTime?)reader["Deleted_At"]));
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+            finally
+            {
+                CloseCon();
+            }
+
+            return teams;
         }
 
         public TeamDTO GetTeam(int id)
@@ -273,6 +344,10 @@ namespace DataLayer
                 {
                     team = new TeamDTO((int)reader["Id"], (string)reader["Name"]);
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
             finally
             {
@@ -324,6 +399,10 @@ namespace DataLayer
                 result = reader.HasRows ? true : false;
 
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 CloseCon();
@@ -351,6 +430,10 @@ namespace DataLayer
                     user = new((int)reader["Id"], (string)reader["Name"], (int)reader["Role"], (bool)reader["IsBHV"]);
                 }
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 CloseCon();
@@ -361,27 +444,29 @@ namespace DataLayer
         public bool Check_Accessibility(string username)
         {
             bool Is_Team_Admin = false;
-            OpenCon();
-            reader = null;
-            DbCom.CommandText = "select * TeamMembers Where UserName=@username  ";
-            DbCom.Parameters.AddWithValue("username", username);
-            reader = DbCom.ExecuteReader();
-            while (reader.Read())
+            try
             {
+                OpenCon();
+                reader = null;
+                DbCom.CommandText = "select * TeamMembers Where UserName=@username  ";
+                DbCom.Parameters.AddWithValue("username", username);
+                reader = DbCom.ExecuteReader();
+                while (reader.Read())
+                {
 
-                Is_Team_Admin = Convert.ToBoolean(reader["Is_Team_Admin"]);
+                    Is_Team_Admin = Convert.ToBoolean(reader["Is_Team_Admin"]);
 
-            }
-            CloseCon();
-            if (Is_Team_Admin == true)
+                }
+                CloseCon();
+                if (Is_Team_Admin == true)
+                {
+                    return true;
+                }
+            } catch(Exception ex)
             {
-                return true;
+                Debug.WriteLine(ex.Message);
             }
             return false;
-
-
-
-
         }
     }
 }

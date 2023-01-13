@@ -40,7 +40,7 @@ namespace DataLayer
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message, e);
+                Debug.WriteLine(e.Message);
             }
             finally { CloseCon(); }
             return reservations;
@@ -68,7 +68,7 @@ namespace DataLayer
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message, e);
+                Debug.WriteLine(e.Message);
             }
             finally { CloseCon(); }
             return reservations;
@@ -169,30 +169,47 @@ namespace DataLayer
 
         public bool CancelReservation(int id)
         {
-            OpenCon();
+            bool result = false;
 
-            DbCom.CommandText = "DELETE FROM Reservations WHERE id = @id";
-            DbCom.Parameters.AddWithValue("id", id);
+            try
+            {
+                OpenCon();
 
-            if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
+                DbCom.CommandText = "DELETE FROM Reservations WHERE id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
+
+                if (DbCom.ExecuteNonQuery() > 0) return result = true; else result = false;
+            }
+            catch { }
+
+            return result;
         }
 
         public bool CancelTeamReservation(int id)
         {
-            OpenCon();
+            bool result = false;
 
-            DbCom.CommandText = "DELETE FROM Teamreservations WHERE id = @id";
-            DbCom.Parameters.AddWithValue("id", id);
+            try
+            {
+                OpenCon();
 
-            if (DbCom.ExecuteNonQuery() > 0) return true; else return false;
+                DbCom.CommandText = "DELETE FROM Teamreservations WHERE id = @id";
+                DbCom.Parameters.AddWithValue("id", id);
+
+                if (DbCom.ExecuteNonQuery() > 0) return result = true; else result = false;
+            }
+            catch { }
+
+            return result;
         }
 
         public List<ReservationDTO> GetAllReservations()
         {
+            List<ReservationDTO> reservationlist = new List<ReservationDTO>();
+
             try
             {
                 OpenCon();
-                List<ReservationDTO> reservationlist = new List<ReservationDTO>();
 
                 DbCom.CommandText = "SELECT * FROM Reservations";
 
@@ -206,10 +223,16 @@ namespace DataLayer
 
                 return reservationlist;
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 CloseCon();
             }
+
+            return reservationlist;
         }
 
         public List<ReservationDTO> GetReservationsFromUser(int id)
@@ -230,6 +253,10 @@ namespace DataLayer
                 }
 
                 CloseCon();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
             finally
             {
@@ -282,6 +309,10 @@ namespace DataLayer
                     CloseCon();
                 });
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
             finally
             {
                 if (DbCom.Connection.State == ConnectionState.Open)
@@ -310,6 +341,10 @@ namespace DataLayer
                 }
 
                 CloseCon();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
             finally
             {

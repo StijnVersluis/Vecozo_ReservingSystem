@@ -9,6 +9,9 @@ namespace DataLayer
 {
     public static class GlobalVariables
     {
-        internal static UserDTO LoggedInUser = null;
+        public static Dictionary<string, UserDTO> Machines = new();
+
+        internal static UserDTO LoggedInUser() => Machines.ContainsKey(Environment.MachineName) ? Machines[Environment.MachineName] : null;
+        //internal static UserDTO LoggedInUser = null;
     }
 }

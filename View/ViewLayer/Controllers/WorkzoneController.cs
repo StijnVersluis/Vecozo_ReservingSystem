@@ -59,7 +59,16 @@ namespace ViewLayer.Controllers
         public ActionResult Edit(int id)
         {
             var workzone = workzoneContainer.GetById(id);
-            var model = new WorkzoneViewModel(workzone);
+            if (workzone == null)
+            {
+                return NotFound();
+            }
+
+            var model = new WorkzoneViewModel(workzone)
+            {
+                HasReservations = workzone.HasReservations(new WorkzoneDAL())
+            };
+
             model.Floors = floorContainer.GetAll().ConvertAll(x => new FloorViewModel(x));
             return View(model);
         }
@@ -69,6 +78,8 @@ namespace ViewLayer.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(WorkzoneViewModel workzoneViewModel)
         {
+            bool success = false;
+            string message = string.Empty;
             Workzone workzone = workzoneContainer.GetById(workzoneViewModel.Id);
             if (workzone == null)
             {
@@ -83,30 +94,32 @@ namespace ViewLayer.Controllers
                 return View(workzoneViewModel);
             }
 
-            if (workzoneViewModel.Workspaces < 0)
+            var messages = workzoneContainer.CheckEditRules(new Workzone(workzoneViewModel.Id, workzoneViewModel.Name, workzoneViewModel.Workspaces, workzoneViewModel.Floor, workzoneViewModel.TeamOnly), new WorkzoneDAL());
+            if (messages.Count > 0)
             {
-                ModelState.AddModelError(String.Empty, "Het aantal werplekken moet groter zijn dan 0");
+                messages.ForEach(x => ModelState.AddModelError(String.Empty, x));
                 return View(workzoneViewModel);
+            } else
+            {
+                success = workzoneContainer.Edit(new Workzone(
+                    workzoneViewModel.Id,
+                    workzoneViewModel.Name,
+                    workzoneViewModel.Workspaces,
+                    workzoneViewModel.Floor,
+                    workzoneViewModel.TeamOnly,
+                    workzoneViewModel.Xpos,
+                    workzoneViewModel.Ypos
+                ));
             }
 
-            bool sucess = workzoneContainer.Edit(new Workzone(                
-                workzoneViewModel.Id,
-                workzoneViewModel.Name,
-                workzoneViewModel.Workspaces,
-                workzoneViewModel.Floor,
-                workzoneViewModel.TeamOnly,
-                workzoneViewModel.Xpos,
-                workzoneViewModel.Ypos
-            ));
-
-            if (!sucess)
+            if (!success)
             {
                 ModelState.AddModelError(String.Empty, "Het wijzigen van een werkplek is mislukt, probeer het later nog eens.");
                 return RedirectToAction("Edit", new { id = workzoneViewModel.Id });
             }
 
             this.SendResponse(
-                sucess,
+                true,
                 "Werkblok Wijziging",
                 $"De werkblok {workzoneViewModel.Name} is succesvol gewijzigd."
             );
