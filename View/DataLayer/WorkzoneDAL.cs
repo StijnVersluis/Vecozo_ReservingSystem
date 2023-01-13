@@ -3,9 +3,7 @@ using IntefaceLayer.DTO;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
 using System;
-using System.Reflection.Metadata.Ecma335;
 using System.Diagnostics;
 
 namespace DataLayer
@@ -253,6 +251,8 @@ namespace DataLayer
         }
         public bool DeleteWorkzone(int id)
         {
+            bool result = false;
+
             try
             {
                 OpenCon();
@@ -260,15 +260,15 @@ namespace DataLayer
                 DbCom.CommandText = command;
                 DbCom.Parameters.AddWithValue("@Id", id);
                
-                return DbCom.ExecuteNonQuery() > 0;
+                result = DbCom.ExecuteNonQuery() > 0;
             }
             catch (Exception ex)
             {
-                throw ex;
+                Debug.WriteLine(ex.Message);
             }
             finally { CloseCon(); }
 
-
+            return result;
         }
         #endregion
 
